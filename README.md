@@ -1,4 +1,4 @@
-```markdown
+
 # 💻 MegaJR - Front-End
 
 Repositório do projeto Front-End do Grupo 3 da Mega, desenvolvido com **React**, **Next.js (App Router)** e **Tailwind CSS**.
@@ -103,4 +103,4 @@ megajr-front-end/
 ---
 
 Pronto! Agora você pode começar a codar 🎯
-```
+
