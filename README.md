@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+```markdown
+# 💻 MegaJR - Front-End
 
-## Getting Started
+Repositório do projeto Front-End do Grupo 3 da Mega, desenvolvido com **React**, **Next.js (App Router)** e **Tailwind CSS**.
 
-First, run the development server:
+🔗 **Deploy:** [https://megajr-front-end.vercel.app](https://megajr-front-end.vercel.app)
+
+---
+
+## 🚀 Tecnologias utilizadas
+
+- [React](https://reactjs.org/)
+- [Next.js 13+ (App Router)](https://nextjs.org/docs/app)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [npm](https://www.npmjs.com/)
+
+---
+
+## ⚙️ Pré-requisitos
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/) (versão LTS recomendada)
+- [npm](https://www.npmjs.com/)
+
+---
+
+## 📥 Como clonar o projeto
+
+Abra o terminal e execute os comandos abaixo:
+
+```bash
+# Clone o repositório
+git clone https://github.com/MEGA-JR-Grupo-3/megajr-front-end.git
+
+# Acesse a pasta do projeto
+cd megajr-front-end
+```
+
+---
+
+## 📦 Instalando as dependências
+
+```bash
+npm install
+```
+
+---
+
+## 🧪 Executando o projeto localmente
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Depois disso, abra o navegador e acesse:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📁 Estrutura do projeto
 
-To learn more about Next.js, take a look at the following resources:
+```
+megajr-front-end/
+├── public/                 → arquivos públicos (imagens, ícones, etc.)
+├── src/
+│   └── app/                → estrutura de rotas e layout (App Router)
+│       ├── favicon.ico
+│       ├── globals.css     → estilos globais com Tailwind
+│       ├── layout.js       → layout principal da aplicação
+│       └── page.js         → página inicial
+├── .gitignore
+├── eslint.config.mjs      → configuração do ESLint
+├── jsconfig.json          → configurações de importações
+├── next.config.mjs        → configurações do Next.js
+├── postcss.config.mjs     → configurações do PostCSS (Tailwind)
+├── package.json
+├── package-lock.json
+└── README.md
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧑‍💻 Boas práticas da equipe
 
-## Deploy on Vercel
+- Crie uma branch com o nome da feature ou correção: `git checkout -b nome-da-feature`
+- Após finalizar, faça commit com mensagem clara: `git commit -m "feat: nome da feature"`
+- Suba a branch: `git push origin nome-da-feature`
+- Abra um Pull Request para revisão
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ✅ Checklist para novos colaboradores
+
+- [ ] Clonou o repositório?
+- [ ] Instalou as dependências com `npm install`?
+- [ ] Executou `npm run dev` e o projeto abriu normalmente?
+- [ ] Está usando uma branch separada para suas alterações?
+- [ ] Seguiu o padrão do App Router (`src/app`)?
+
+---
+
+Pronto! Agora você pode começar a codar 🎯
+```
