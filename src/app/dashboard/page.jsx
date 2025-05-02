@@ -1,16 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Login from "../login/page";
-import Logout from "../logout/page";
+import dynamic from "next/dynamic";
 import { auth } from "../../firebaseConfig";
 import ButtonLogout from "../../components/ButtonLogout";
+
+// Importe Login como um componente cliente dinâmico para evitar problemas de SSR se ele usar hooks
+const Login = dynamic(() => import("../login/page"), { ssr: false });
+const Logout = dynamic(() => import("../logout/page"), { ssr: false });
 
 function Dashboard() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    auth.onAuthStateChanged(setUser);
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return () => unsubscribe(); // Clean up the listener
   }, []);
 
   return (
