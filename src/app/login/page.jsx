@@ -6,46 +6,48 @@ import Input from "../../components/Input";
 import GoogleLoginButton from "../../components/ButtonGoogle";
 import PatoImg from "../../../public/assets/pato.png";
 import Button from "../../components/Button";
-import { auth } from "../../firebaseConfig";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, googleAuthProvider } from "../../firebaseConfig";
+import { useRouter } from "next/navigation";
 
-function page() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isEmailFilled, setIsEmailFilled] = useState(false);
   const [isPasswordFilled, setIsPasswordFilled] = useState(false);
+  const router = useRouter(); // Inicialize o useRouter
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
     console.log("Enviando formulário com:", { email, password });
-    // Aqui você faria a lógica de autenticação tradicional
+    // Aqui você faria a lógica de autenticação tradicional com e-mail e senha
   };
 
-  const handleGoogleLoginSuccess = (credentialResponse) => {
-    console.log("Login com Google Sucesso:", credentialResponse);
-    // Aqui você enviaria o token do Google para o seu backend para autenticação
+  const handleGoogleLoginSuccess = (user) => {
+    console.log("Login com Google Sucesso:", user);
+    // Redireciona para o dashboard após o sucesso
+    router.push("/dashboard");
+    // Você pode querer fazer algo mais aqui, como salvar o usuário em um estado global
   };
 
-  const handleGoogleLoginError = () => {
-    console.error("Erro ao logar com Google");
+  const handleGoogleLoginError = (error) => {
+    console.error("Erro ao logar com Google:", error);
     // Aqui você exibiria uma mensagem de erro ao usuário
   };
-  ("use client");
 
   const loginGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-
     try {
-      const result = await signInWithPopup(auth, provider);
-      console.log("Usuário logdo:", result.user);
+      const result = await signInWithPopup(auth, googleAuthProvider); // Use googleAuthProvider importado
+      console.log("Usuário logado:", result.user);
+      handleGoogleLoginSuccess(result.user); // Chama a função de sucesso e redireciona
     } catch (error) {
       console.error("Erro ao fazer login:", error);
+      handleGoogleLoginError(error); // Chama a função de erro
     }
   };
 
   return (
     <div className="flex flex-col items-center px-8">
-      <h2 className="text-[32px] font-[700] text-center pt-[58px]">
+      <h2 className="text-[32px] font-[700] text-center pt-[30px]">
         Jubileu está esperando sua próxima tarefa!
       </h2>
       <Image src={PatoImg} className="h-[347px] w-auto" alt="Pato" priority />
@@ -84,13 +86,12 @@ function page() {
           />
         </form>
         <GoogleLoginButton
-          onClick={loginGoogle}
-          onSuccess={handleGoogleLoginSuccess}
-          onError={handleGoogleLoginError}
+          onClick={loginGoogle} // Chama a função de login do Google diretamente
+          // As props onSuccess e onError agora são tratadas dentro de loginGoogle
         />
       </div>
     </div>
   );
 }
 
-export default page;
+export default Login;
