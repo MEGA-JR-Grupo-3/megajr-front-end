@@ -3,7 +3,7 @@
 import React from "react";
 import GoogleIcon from "../../public/assets/googleIcon.svg";
 import Image from "next/image";
-import { auth, googleAuthProvider, signInWithPopup } from "../firebaseConfig"; // Importe signInWithPopup
+import { auth, googleAuthProvider, signInWithPopup } from "../firebaseConfig";
 import { useRouter } from "next/navigation";
 
 function GoogleLoginButton({ onSuccess, onError }) {
@@ -11,7 +11,7 @@ function GoogleLoginButton({ onSuccess, onError }) {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signInWithPopup(auth, googleAuthProvider); // Use signInWithPopup importado
+      const result = await signInWithPopup(auth, googleAuthProvider);
       // O usuário fez login com sucesso
       console.log("Login com Google bem-sucedido:", result.user);
       if (onSuccess) {
