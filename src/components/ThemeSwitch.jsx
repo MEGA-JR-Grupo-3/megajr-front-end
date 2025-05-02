@@ -16,13 +16,13 @@ export default function ThemeSwitch() {
 
   if (resolvedTheme === "dark") {
     return (
-      <div className="fixed top-[20px] right-[20px]">
+      <div className="fixed top-[20px] right-[20px] z-30">
         <FiSun onClick={() => setTheme("light")} />
       </div>
     );
   } else {
     return (
-      <div className="fixed top-[20px] right-[20px]">
+      <div className="fixed top-[20px] right-[20px] z-30">
         <FiMoon onClick={() => setTheme("dark")} />
       </div>
     );
