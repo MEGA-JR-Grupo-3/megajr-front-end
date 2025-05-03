@@ -24,10 +24,18 @@ export default function Register() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    console.log("handleFormSubmit chamado");
 
     setIsLoading(true);
+    console.log("isLoading:", isLoading);
     try {
+      console.log("Chamando cadastrarUsuario com:", {
+        name,
+        email,
+        senha: password,
+      });
       await cadastrarUsuario({ name: name, email, senha: password });
+      console.log("cadastrarUsuario completado com sucesso");
       await createUserWithEmailAndPassword(auth, email, password);
       toast.success("Cadastro realizado com sucesso!");
       router.push("/dashboard");
@@ -36,6 +44,7 @@ export default function Register() {
       console.error("Erro no cadastro:", error);
     } finally {
       setIsLoading(false);
+      console.log("isLoading:", isLoading);
     }
   };
 
