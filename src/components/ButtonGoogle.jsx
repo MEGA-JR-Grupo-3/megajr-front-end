@@ -13,7 +13,7 @@ function GoogleLoginButton({ onSuccess, onError }) {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
       // O usuário fez login com sucesso
-      console.log("Login com Google bem-sucedido:", result.user);
+      //console.log("Login com Google bem-sucedido:", result.user);
       if (onSuccess) {
         onSuccess(result.user);
       }
