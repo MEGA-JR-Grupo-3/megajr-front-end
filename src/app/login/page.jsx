@@ -51,7 +51,7 @@ function Login() {
       // Verificar se o usuário existe no banco de dados
       const userExists = await checkIfUserExists(email);
       if (!userExists) {
-        //console.log("Usuário não encontrado");
+        console.log("Usuário não encontrado");
         setErrorMessage("Usuário não encontrado"); // Define a mensagem de erro
         return;
       }
@@ -77,7 +77,7 @@ function Login() {
   };
 
   const handleGoogleLoginSuccess = async (user) => {
-    //console.log("Login com Google Sucesso:", user);
+    console.log("Login com Google Sucesso:", user);
     if (user) {
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
@@ -101,7 +101,7 @@ function Login() {
         });
 
         if (response.ok) {
-          //console.log("Usuário cadastrado no banco de dados");
+          console.log("Usuário cadastrado no banco de dados");
           // Associar a senha com a conta do Google
           const password = prompt(
             "Crie uma senha para sua conta (será usada para logins futuros com e-mail/senha):"
@@ -122,13 +122,13 @@ function Login() {
                 password
               );
               await linkWithCredential(user, credential);
-              //console.log("Senha vinculada com sucesso!");
+              console.log("Senha vinculada com sucesso!");
             } catch (error) {
               console.error("Erro ao vincular senha:", error);
               alert("Erro ao vincular senha: " + error.message);
             }
           } else {
-            //console.log("Usuário já tem login por senha vinculado.");
+            console.log("Usuário já tem login por senha vinculado.");
           }
         } else {
           console.error("Erro ao cadastrar usuário no banco");
@@ -161,7 +161,7 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
       const user = result.user;
-      //console.log("Usuário logado:", result.user);
+      console.log("Usuário logado:", result.user);
       handleGoogleLoginSuccess(result.user);
     } catch (error) {
       console.error("Erro ao fazer login:", error);
