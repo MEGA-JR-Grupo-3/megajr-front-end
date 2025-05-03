@@ -36,7 +36,9 @@ function Login() {
 
   // Função para verificar se o usuário já existe no banco de dados
   const checkIfUserExists = async (email) => {
-    const response = await fetch(`http://localhost:8800/users?email=${email}`);
+    const response = await fetch(
+      `https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/users?email=${email}`
+    );
     const data = await response.json();
     return data.length > 0; // Se o usuário existe, vai retornar algum dado
   };
@@ -88,7 +90,7 @@ function Login() {
 
       // Enviar esses dados para o backend para salvar no banco de dados
       try {
-        const response = await fetch("/api/cadastro", {
+        const response = await fetch("/cadastro", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -144,19 +146,21 @@ function Login() {
 
   // Função para criar o usuário no banco de dados
   const createUserInDB = async (name, email) => {
-    const response = await fetch("http://localhost:8800/cadastro", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, senha: "senha_placeholder" }),
-    });
+    const response = await fetch(
+      "https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/cadastro",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, senha: "senha_placeholder" }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Erro ao criar usuário no banco de dados.");
     }
   };
-
   const loginGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
