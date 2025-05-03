@@ -1,4 +1,3 @@
-// api.js
 export const cadastrarUsuario = async ({ name, email, senha }) => {
   try {
     const response = await fetch(
