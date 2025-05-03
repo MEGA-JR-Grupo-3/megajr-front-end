@@ -1,8 +1,8 @@
-// Definindo o endpoint para cadastro de usuário
+// api.js
 export const cadastrarUsuario = async ({ name, email, senha }) => {
   try {
     const response = await fetch(
-      "megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/cadastro",
+      "https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/cadastro",
       {
         method: "POST",
         headers: {

@@ -37,7 +37,7 @@ function Login() {
   // Função para verificar se o usuário já existe no banco de dados
   const checkIfUserExists = async (email) => {
     const response = await fetch(
-      `https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/users?email=${email}`
+      `https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/check-user?email=${email}`
     );
     const data = await response.json();
     return data.length > 0; // Se o usuário existe, vai retornar algum dado
