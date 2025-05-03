@@ -1,7 +1,7 @@
 export const cadastrarUsuario = async ({ name, email, senha }) => {
   try {
     const response = await fetch(
-      "https://megajr-back-n3k976u9t-enzo-valencuelas-projects.vercel.app/cadastro",
+      "https://megajr-back-end.vercel.app/cadastro",
       {
         method: "POST",
         headers: {
