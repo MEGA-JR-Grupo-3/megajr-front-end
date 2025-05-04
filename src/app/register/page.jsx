@@ -5,11 +5,13 @@ import React, { useState } from "react";
 import Input from "../../components/Input";
 import PatoImg from "../../../public/assets/pato.png";
 import Button from "../../components/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { cadastrarUsuario } from "../../services/api";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
+import InputPassword from "../../components/InputPassword";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -34,8 +36,38 @@ export default function Register() {
         email,
         senha: password,
       });
-      await cadastrarUsuario({ name: name, email, senha: password });
-      console.log("cadastrarUsuario completado com sucesso");
+      const response = await cadastrarUsuario({
+        name: name,
+        email,
+        senha: password,
+      });
+
+      if (response.status === 409) {
+        toast.error(
+          <div>
+            Este e-mail já está cadastrado.
+            <Button
+              buttonText="Fazer Login"
+              buttonLink="/login"
+              buttonStyle="mt-[20px]"
+            />
+          </div>,
+          {
+            duration: 5000,
+            position: "top-center",
+            closeOnClick: true,
+            draggable: true,
+            pauseOnHover: true,
+          }
+        );
+        return; // Interrompe o processo de cadastro
+      }
+
+      if (!response.ok) {
+        toast.error("Erro ao cadastrar. Tente novamente.");
+        return;
+      }
+
       await createUserWithEmailAndPassword(auth, email, password);
       toast.success("Cadastro realizado com sucesso!");
       router.push("/dashboard");
@@ -56,7 +88,7 @@ export default function Register() {
       <Image src={PatoImg} className="h-[347px] w-auto" alt="Pato" priority />
 
       <div className="flex flex-col items-center">
-        <form onSubmit={handleFormSubmit} className="mb-6">
+        <form onSubmit={handleFormSubmit}>
           <Input
             type="text"
             id="name"
@@ -81,10 +113,8 @@ export default function Register() {
             }}
             placeholder="seu@email.com"
           />
-          <Input
-            type="password"
+          <InputPassword
             id="password"
-            name="password"
             label="Senha"
             value={password}
             onChange={(e) => {
@@ -93,6 +123,7 @@ export default function Register() {
             }}
             placeholder="sua senha"
           />
+
           <Button
             buttonText={isLoading ? "Enviando..." : "Cadastrar-se"}
             buttonStyle="mt-[20px]"
@@ -102,6 +133,11 @@ export default function Register() {
             }
           />
         </form>
+        <Link href="/login">
+          <button className="mt-[20px] self-center underline text-[#676767]">
+            login
+          </button>
+        </Link>
       </div>
     </div>
   );

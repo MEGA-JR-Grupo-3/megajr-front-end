@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "firebase": "^11.6.1",
     "ldrs": "^1.1.7",
     "next": "15.3.1",

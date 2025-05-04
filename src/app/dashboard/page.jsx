@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebaseConfig";
-import AddTaskButton from "../../components/ButtonAddTask";
+import ButtonAddTask from "../../components/ButtonAddTask";
 import { LineSpinner } from "ldrs/react";
 import "ldrs/react/LineSpinner.css";
 import Menu from "../../components/Menu";
@@ -11,6 +11,8 @@ import Menu from "../../components/Menu";
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [registeredName, setRegisteredName] = useState("");
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
 
   useEffect(() => {
@@ -21,6 +23,33 @@ function Dashboard() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`${backendUrl}/user-data`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: user.email }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setRegisteredName(data.name);
+          } else {
+            console.error("Erro ao buscar dados do usuário");
+          }
+        } catch (error) {
+          console.error("Erro ao comunicar com o backend:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -42,11 +71,11 @@ function Dashboard() {
 
       <div className="flex flex-col items-start justify-items-center h-auto transition-all duration-300">
         <h2 className="pt-[40px]">
-          Olá, {user ? user.displayName : "parceiro!"}{" "}
+          Olá, {registeredName || user?.displayName || "parceiro!"}{" "}
         </h2>
         <h1 className="text-[22px] font-[700] text-start ">Suas JubiTasks</h1>
 
-        <AddTaskButton />
+        <ButtonAddTask />
       </div>
     </div>
   );
