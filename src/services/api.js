@@ -1,12 +1,15 @@
 export const cadastrarUsuario = async ({ name, email, senha }) => {
   try {
-    const response = await fetch("https://megajr-front.netlify.app/cadastro", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, senha }),
-    });
+    const response = await fetch(
+      "https://megajr-back-end.onrender.com/cadastro",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, senha }),
+      }
+    );
 
     return response; // Retorna o objeto response completo
 
