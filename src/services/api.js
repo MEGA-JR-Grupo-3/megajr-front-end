@@ -1,6 +1,6 @@
 export const cadastrarUsuario = async ({ name, email, senha }) => {
   try {
-    const response = await fetch("https://megajr-back.netlify.app/cadastro", {
+    const response = await fetch("https://megajr-front.netlify.app/cadastro", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
