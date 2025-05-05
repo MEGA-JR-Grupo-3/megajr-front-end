@@ -71,7 +71,7 @@ function Dashboard() {
 
       <div className="flex flex-col items-start justify-items-center h-auto transition-all duration-300">
         <h2 className="pt-[40px]">
-          Olá, {registeredName || user?.displayName || "parceiro!"}{" "}
+          Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
         </h2>
         <h1 className="text-[22px] font-[700] text-start ">Suas JubiTasks</h1>
 
