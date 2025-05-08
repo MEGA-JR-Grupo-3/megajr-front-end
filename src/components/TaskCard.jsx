@@ -82,18 +82,20 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-md p-4 mb-2 flex items-center justify-start gap-2">
+    <div className="bg-[var(--subbackground)] shadow-md rounded-md p-4 mb-2 flex items-center justify-start gap-2 w-[340px]">
       <div className="flex flex-col justify-start text-center gap-1">
-        <h3 className="text-lg font-semibold">{tarefa.titulo}</h3>
+        <h3 className="text-lg font-semibold text-start">{tarefa.titulo}</h3>
         {tarefa.descricao && (
-          <p className="text-gray-600 text-sm">{tarefa.descricao}</p>
+          <p className="text-gray-600 text-sm text-start">{tarefa.descricao}</p>
         )}
         {tarefa.data_prazo ? (
-          <p className="text-gray-500 text-xs">Prazo: {tarefa.data_prazo}</p>
+          <p className="text-gray-500 text-xs text-start">
+            Prazo: {tarefa.data_prazo}
+          </p>
         ) : (
-          <p className="text-gray-500 text-xs">Prazo: Indefinido</p>
+          <p className="text-gray-500 text-xs text-start">Prazo: Indefinido</p>
         )}
-        <p className="text-var(--text) text-xs">
+        <p className="text-var(--text) text-xs text-start">
           Prioridade: {tarefa.prioridade}
         </p>
       </div>
