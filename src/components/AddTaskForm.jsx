@@ -21,7 +21,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
     const newTask = {
       titulo,
       descricao,
-      data_prazo: dataPrazo,
+      data_prazo: dataPrazo === "" ? null : dataPrazo,
       prioridade,
       estado_tarefa: estadoTarefa,
       email: user.email,
@@ -63,7 +63,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed top-0 left-0 w-full h-full bg-[#000000a5] bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-md p-6 w-[330px]">
         <h2 className="text-xl font-semibold mb-4">Adicionar Nova Tarefa</h2>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
@@ -124,6 +124,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={prioridade}
               onChange={(e) => setPrioridade(e.target.value)}
+              required
             >
               <option value="Baixa">Baixa</option>
               <option value="Normal">Normal</option>
@@ -143,6 +144,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={estadoTarefa}
               onChange={(e) => setEstadoTarefa(e.target.value)}
+              required
             >
               <option value="Pendente">Pendente</option>
               <option value="Finalizada">Finalizada</option>
