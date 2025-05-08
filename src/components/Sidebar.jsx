@@ -41,7 +41,29 @@ const sidebarVariants = {
 
 const MenuHamburguer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState(null);
+  const [creationDate, setCreationDate] = useState(null);
   const menuRef = useRef(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserName(user.displayName || "Usuário Anônimo");
+        const creationTime = user.metadata?.creationTime;
+        if (creationTime) {
+          const date = new Date(creationTime);
+          const formattedDate = date.toLocaleDateString();
+          setCreationDate(formattedDate);
+        }
+      } else {
+        setUserName(null);
+        setCreationDate(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -77,7 +99,7 @@ const MenuHamburguer = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="text-[var(--secondary)] hover:bg-gray-200  transition-colors"
+        className="text-[var(--primary)] hover:bg-gray-200  transition-colors"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -95,6 +117,18 @@ const MenuHamburguer = () => {
             className="fixed top-0 right-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--primary)]"
           >
             {/* Cabeçalho do Menu */}
+            <div className="flex flex-col items-start justify-center mb-4">
+              {userName && (
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {userName}
+                </h3>
+              )}
+              {creationDate && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Conta criada em: {creationDate}
+                </p>
+              )}
+            </div>
             <div className="flex items-center justify-between ">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Menu
@@ -167,7 +201,7 @@ const MenuHamburguer = () => {
             <div className="mt-auto">
               <button
                 variant="ghost"
-                className="w-full absolute bottom-[40px] text-start  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />

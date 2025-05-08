@@ -90,7 +90,8 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
         )}
         {tarefa.data_prazo ? (
           <p className="text-gray-500 text-xs text-start">
-            Prazo: {tarefa.data_prazo}
+            Prazo:
+            {new Date(tarefa.data_prazo).toLocaleDateString("pt-BR")}
           </p>
         ) : (
           <p className="text-gray-500 text-xs text-start">Prazo: Indefinido</p>
