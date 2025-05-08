@@ -199,11 +199,11 @@ function Dashboard() {
     <div className="flex flex-col h-screen p-2 transition-all duration-300">
       <Menu />
       <InputSearch tarefas={allTasks} onSearch={handleSearch} />
-      <div className="flex flex-col items-start justify-items-center h-auto transition-all duration-300">
-        <h2 className="pt-[40px]">
+      <div className="flex flex-col items-center justify-items-center h-auto transition-all duration-300">
+        <h2 className="pt-[40px] text-start">
           Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
         </h2>
-        <h1 className="text-[22px] font-[700] text-start ">Suas JubiTasks</h1>
+        <h1 className="text-[22px] font-[700] text-start">Suas JubiTasks</h1>
         <ul className="flex flex-col justify-center text-center w-screen mt-[30px]">
           {filteredTasks.map((tarefa) => (
             <li
