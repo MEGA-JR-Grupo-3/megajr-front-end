@@ -113,6 +113,34 @@ function Dashboard() {
     }
   }, [user]);
 
+  const fetchTasks = async () => {
+    if (user?.email) {
+      try {
+        const response = await fetch(`${backendUrl}/tasks`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAllTasks(data);
+          setFilteredTasks(data);
+        } else {
+          console.error("Erro ao buscar tarefas");
+        }
+      } catch (error) {
+        console.error("Erro ao comunicar com o backend:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [backendUrl, user]);
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/");
@@ -133,6 +161,40 @@ function Dashboard() {
     fetchTasks();
   };
 
+  const handleTaskDeleted = (deletedTaskId) => {
+    console.log("Tarefa deletada com ID:", deletedTaskId);
+    // Atualiza a lista de tarefas removendo a tarefa deletada
+    setAllTasks(allTasks.filter((task) => task.id_tarefa !== deletedTaskId));
+    setFilteredTasks(
+      filteredTasks.filter((task) => task.id_tarefa !== deletedTaskId)
+    );
+  };
+
+  const handleTaskUpdated = (updatedTask) => {
+    console.log("Tarefa atualizada:", updatedTask);
+    // Atualiza o estado da tarefa na lista
+    const updatedAllTasks = allTasks.map((task) =>
+      task.id_tarefa === updatedTask.id_tarefa
+        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
+        : task
+    );
+    setAllTasks(updatedAllTasks);
+    const updatedFilteredTasks = filteredTasks.map((task) =>
+      task.id_tarefa === updatedTask.id_tarefa
+        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
+        : task
+    );
+    setFilteredTasks(updatedFilteredTasks);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LineSpinner size="40" stroke="3" speed="1" color="black" />;
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen p-2 transition-all duration-300">
       <Menu />
@@ -145,7 +207,11 @@ function Dashboard() {
         <ul>
           {filteredTasks.map((tarefa) => (
             <li key={tarefa.id_tarefa}>
-              <TaskCard tarefa={tarefa} />
+              <TaskCard
+                tarefa={tarefa}
+                onTaskDeleted={handleTaskDeleted}
+                onTaskUpdated={handleTaskUpdated}
+              />
             </li>
           ))}
         </ul>
