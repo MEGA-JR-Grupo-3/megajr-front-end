@@ -5,6 +5,7 @@ import { useState } from "react";
 function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { prioridade } = tarefa;
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -35,6 +36,21 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
       console.error("Erro ao comunicar com o backend:", error);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const getPriorityColor = (prioridade) => {
+    switch (prioridade) {
+      case "Urgente":
+        return "bg-red-500 text-white";
+      case "Alta":
+        return "bg-orange-500 text-white";
+      case "Normal":
+        return "bg-yellow-500 text-gray-800";
+      case "Baixa":
+        return "bg-green-500 text-white";
+      default:
+        return "bg-gray-300 text-gray-800";
     }
   };
 
@@ -91,9 +107,16 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
         {tarefa.data_prazo && (
           <p className="text-gray-500 text-xs">Prazo: {tarefa.data_prazo}</p>
         )}
-        <p className="text-[#f0f0f0] text-xs">
-          Prioridade: {tarefa.prioridade}
-        </p>
+        <div className="flex items-center space-x-2 mb-1">
+          <span className="font-semibold">Prioridade:</span>
+          <span
+            className={`rounded-full px-2 py-1 text-xs ${getPriorityColor(
+              prioridade
+            )}`}
+          >
+            {prioridade}
+          </span>
+        </div>
       </div>
       <div className="flex items-center space-x-2">
         <label className="flex items-center text-sm text-gray-700">
