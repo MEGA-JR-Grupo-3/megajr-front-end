@@ -206,7 +206,10 @@ function Dashboard() {
         <h1 className="text-[22px] font-[700] text-start ">Suas JubiTasks</h1>
         <ul className="flex flex-col justify-center text-center">
           {filteredTasks.map((tarefa) => (
-            <li key={tarefa.id_tarefa}>
+            <li
+              key={tarefa.id_tarefa}
+              className="flex flex-col justify-center text-center"
+            >
               <TaskCard
                 tarefa={tarefa}
                 onTaskDeleted={handleTaskDeleted}
