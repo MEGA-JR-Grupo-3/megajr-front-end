@@ -16,14 +16,22 @@ export default function ThemeSwitch() {
 
   if (resolvedTheme === "dark") {
     return (
-      <div className="fixed top-[20px] right-[20px] z-30">
-        <FiSun onClick={() => setTheme("light")} />
+      <div
+        className=" text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex flex-row justify-center gap-1"
+        onClick={() => setTheme("light")}
+      >
+        <FiSun />
+        Mudar tema
       </div>
     );
   } else {
     return (
-      <div className="fixed top-[20px] right-[20px] z-30">
-        <FiMoon onClick={() => setTheme("dark")} />
+      <div
+        className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex flex-row justify-center gap-1"
+        onClick={() => setTheme("dark")}
+      >
+        <FiMoon />
+        Mudar tema
       </div>
     );
   }

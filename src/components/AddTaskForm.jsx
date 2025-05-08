@@ -23,7 +23,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
       descricao,
       data_prazo: dataPrazo === "" ? null : dataPrazo,
       prioridade,
-      estado_tarefa: estadoTarefa,
+      estado_tarefa: "Pendente",
       email: user.email,
     };
 

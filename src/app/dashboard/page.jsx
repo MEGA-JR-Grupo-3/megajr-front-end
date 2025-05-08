@@ -7,10 +7,12 @@ import ButtonAddTask from "../../components/ButtonAddTask";
 import Button from "../../components/Button";
 import { LineSpinner } from "ldrs/react";
 import "ldrs/react/LineSpinner.css";
-import Menu from "../../components/Menu";
 import InputSearch from "../../components/InputSearch";
 import TaskCard from "../../components/TaskCard";
 import AddTaskForm from "../../components/AddTaskForm";
+import Logo from "../../../public/assets/pato.png";
+import Image from "next/image";
+import Sidebar from "../../components/Sidebar";
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -197,13 +199,16 @@ function Dashboard() {
 
   return (
     <div className="flex flex-col h-screen p-2 transition-all duration-300">
-      <Menu />
-      <InputSearch tarefas={allTasks} onSearch={handleSearch} />
-      <div className="flex flex-col items-center justify-center text-start h-auto transition-all duration-300">
-        <h2 className="pt-[40px] text-start">
+      <nav className="flex flex-row items-center justify-between pr-3">
+        <Image src={Logo} className="h-16 w-auto" alt="Logo Jubileu" priority />
+        <h2 className="text-xl font-bold">
           Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
         </h2>
-        <h1 className="text-[22px] font-[700] text-start">Suas JubiTasks</h1>
+        <Sidebar />
+      </nav>
+      <InputSearch tarefas={allTasks} onSearch={handleSearch} />
+      <div className="flex flex-col items-center justify-center h-auto transition-all duration-300">
+        <h1 className="text-[22px] font-[700] pt-[30px]">Suas JubiTasks</h1>
         <ul className="flex flex-col justify-center text-center w-screen mt-[30px]">
           {filteredTasks.map((tarefa) => (
             <li

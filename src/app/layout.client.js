@@ -5,7 +5,6 @@ import React from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Providers } from "./providers";
-import ThemeSwitch from "../components/ThemeSwitch";
 import { auth } from "../firebaseConfig";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,7 +26,6 @@ export default function RootLayoutClient({ children, dosis }) {
     <html lang="pt-BR" className={dosis.className} suppressHydrationWarning>
       <body className="antialiased bg-[var(--background)] text-[var(--text)] lg:px-[50px]">
         <Providers>
-          <ThemeSwitch />
           <ToastContainer autoClose={3000} position="bottom-left" />
 
           {children}

@@ -1,0 +1,184 @@
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import ThemeSwitch from "./ThemeSwitch";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBars,
+  faTimes,
+  faPencilAlt,
+  faCog,
+  faInfoCircle,
+  faQuestionCircle,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import { useRouter } from "next/navigation";
+
+// Variantes para animações do menu
+const sidebarVariants = {
+  open: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+      duration: 0.3,
+    },
+  },
+  closed: {
+    x: "100%",
+    opacity: 0,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+      duration: 0.3,
+    },
+  },
+};
+
+const MenuHamburguer = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        router.push("/");
+        setIsOpen(false);
+      })
+      .catch((error) => {
+        console.error("Erro ao fazer logout:", error);
+      });
+  };
+
+  return (
+    <div>
+      {/* Botão do Menu Hamburguer */}
+      <button
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsOpen(!isOpen)}
+        className="text-[var(--secondary)] hover:bg-gray-200  transition-colors"
+        aria-label="Abrir Menu"
+      >
+        <FontAwesomeIcon icon={faBars} size="2x" />
+      </button>
+
+      {/* Menu Lateral */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            ref={menuRef}
+            variants={sidebarVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            className="fixed top-0 right-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--primary)]"
+          >
+            {/* Cabeçalho do Menu */}
+            <div className="flex items-center justify-between ">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Menu
+              </h2>
+              <button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsOpen(false)}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Fechar Menu"
+              >
+                <FontAwesomeIcon icon={faTimes} size="lg" />
+              </button>
+            </div>
+
+            {/* Botões de Navegação */}
+            <div className="space-y-6">
+              <button
+                variant="ghost"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => {
+                  console.log("Ir para Editar Perfil");
+                  setIsOpen(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
+                Editar Perfil
+              </button>
+              <button
+                variant="ghost"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => {
+                  console.log("Ir para Configurações");
+                  setIsOpen(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faCog} className="mr-2" />
+                Configurações
+              </button>
+              <button
+                variant="ghost"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => {
+                  console.log("Ir para Sobre o App");
+                  setIsOpen(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
+                Sobre o App
+              </button>
+              <button
+                variant="ghost"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => {
+                  console.log("Ir para Ajuda");
+                  setIsOpen(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faQuestionCircle} className="mr-2" />
+                Ajuda
+              </button>
+            </div>
+
+            {/*Botão switch*/}
+            <div className="flex items-center justify-between">
+              <ThemeSwitch></ThemeSwitch>
+            </div>
+
+            {/* Botão de Logout */}
+            <div className="mt-auto">
+              <button
+                variant="ghost"
+                className="w-full absolute bottom-[40px] text-start  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={handleLogout}
+              >
+                <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default MenuHamburguer;
