@@ -55,8 +55,8 @@ function AddTaskForm({ onClose, onTaskAdded }) {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-[330px] h-full bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-md p-6 w-96">
+    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white rounded-md p-6 w-[330px]">
         <h2 className="text-xl font-semibold mb-4">Adicionar Nova Tarefa</h2>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
           <div>
