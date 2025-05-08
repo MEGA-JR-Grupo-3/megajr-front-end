@@ -82,7 +82,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
   };
 
   return (
-    <div className="bg-[var(--subbackground)] shadow-md rounded-md p-4 mb-2 flex items-center justify-start gap-2 w-[340px]">
+    <div className="bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex items-center justify-start gap-2 w-[360px]">
       <div className="flex flex-col justify-start text-center gap-1">
         <h3 className="text-lg font-semibold text-start">{tarefa.titulo}</h3>
         {tarefa.descricao && (

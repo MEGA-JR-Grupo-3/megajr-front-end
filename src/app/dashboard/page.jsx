@@ -204,11 +204,11 @@ function Dashboard() {
           Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
         </h2>
         <h1 className="text-[22px] font-[700] text-start ">Suas JubiTasks</h1>
-        <ul className="flex flex-col justify-center text-center">
+        <ul className="flex flex-col justify-center text-center w-screen">
           {filteredTasks.map((tarefa) => (
             <li
               key={tarefa.id_tarefa}
-              className="flex flex-col justify-center text-center"
+              className="flex flex-col justify-center text-center w-screen"
             >
               <TaskCard
                 tarefa={tarefa}
