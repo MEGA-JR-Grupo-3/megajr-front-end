@@ -1,11 +1,11 @@
 import React from "react";
 
-function AddTaskButton() {
+function AddTaskButton({ onClick }) {
   return (
     <button
       title="Add New Task"
       className="fixed bottom-[20px] right-[20px] group cursor-pointer outline-none hover:rotate-90 duration-300"
-      onClick={() => setIsAddTaskFormVisible(true)}
+      onClick={onClick}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

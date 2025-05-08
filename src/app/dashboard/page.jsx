@@ -161,7 +161,7 @@ function Dashboard() {
             </div>
           </div>
         )}
-        <ButtonAddTask />
+        <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
         {isAddTaskFormVisible && (
           <AddTaskForm
             onClose={() => setIsAddTaskFormVisible(false)}
