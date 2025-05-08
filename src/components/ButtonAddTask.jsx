@@ -5,6 +5,7 @@ function AddTaskButton() {
     <button
       title="Add New Task"
       className="fixed bottom-[20px] right-[20px] group cursor-pointer outline-none hover:rotate-90 duration-300"
+      onClick={() => setIsAddTaskFormVisible(true)}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

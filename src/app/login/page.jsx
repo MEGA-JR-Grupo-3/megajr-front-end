@@ -34,7 +34,7 @@ function Login() {
   const checkIfUserExists = async (email) => {
     try {
       const response = await fetch(
-        `https://megajr-back-end.onrender.com//check-user?email=${email}`
+        `https://megajr-back-end.onrender.com/check-user?email=${email}`
       );
       const data = await response.json();
       return data.exists; // Retorna o valor da propriedade 'exists' do JSON

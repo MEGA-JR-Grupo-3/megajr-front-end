@@ -5,6 +5,7 @@
   --primary: #612f7a;
   --secondary: #634982;
   --background: #fff5ee;
+  --subbackground: #cecece;
   --text: #612f7a;
 }
 
@@ -13,5 +14,6 @@
   --primary: #e9227b;
   --secondary: #e03618;
   --background: #1b1b1b;
+  --subbackground: #2b2b2b;
   --text: #e9227b;
 }
