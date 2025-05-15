@@ -17,6 +17,7 @@ import Sidebar from "../../components/Sidebar";
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingTasks, setLoadingTasks] = useState(false);
   const [registeredName, setRegisteredName] = useState("");
   const [allTasks, setAllTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -28,6 +29,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchTasks = async () => {
       if (user?.email) {
+        setLoadingTasks(true);
         try {
           const response = await fetch(`${backendUrl}/tasks`, {
             method: "POST",
@@ -46,6 +48,8 @@ function Dashboard() {
           }
         } catch (error) {
           console.error("Erro ao comunicar com o backend:", error);
+        } finally {
+          setLoadingTasks(false);
         }
       }
     };
@@ -55,6 +59,7 @@ function Dashboard() {
 
   const handleSearch = async (searchTerm) => {
     if (searchTerm) {
+      setLoadingTasks(true);
       try {
         const response = await fetch(
           `${backendUrl}/tasks/search?query=${searchTerm}`,
@@ -158,13 +163,11 @@ function Dashboard() {
   }
 
   const handleTaskAdded = (newTaskId) => {
-    console.log("Tarefa adicionada com ID:", newTaskId);
     // Recarrega as tarefas para atualizar a lista
     fetchTasks();
   };
 
   const handleTaskDeleted = (deletedTaskId) => {
-    console.log("Tarefa deletada com ID:", deletedTaskId);
     // Atualiza a lista de tarefas removendo a tarefa deletada
     setAllTasks(allTasks.filter((task) => task.id_tarefa !== deletedTaskId));
     setFilteredTasks(
@@ -173,7 +176,6 @@ function Dashboard() {
   };
 
   const handleTaskUpdated = (updatedTask) => {
-    console.log("Tarefa atualizada:", updatedTask);
     // Atualiza o estado da tarefa na lista
     const updatedAllTasks = allTasks.map((task) =>
       task.id_tarefa === updatedTask.id_tarefa
@@ -209,20 +211,26 @@ function Dashboard() {
       <InputSearch tarefas={allTasks} onSearch={handleSearch} />
       <div className="flex flex-col items-center justify-center h-auto transition-all duration-300">
         <h1 className="text-[22px] font-[700] pt-[30px]">Suas JubiTasks</h1>
-        <ul className="flex flex-col justify-center text-center w-screen mt-[30px]">
-          {filteredTasks.map((tarefa) => (
-            <li
-              key={tarefa.id_tarefa}
-              className="flex flex-col justify-center items-center text-center w-full"
-            >
-              <TaskCard
-                tarefa={tarefa}
-                onTaskDeleted={handleTaskDeleted}
-                onTaskUpdated={handleTaskUpdated}
-              />
-            </li>
-          ))}
-        </ul>
+        {loadingTasks ? (
+          <div className="flex justify-center items-center mt-[30px]">
+            <LineSpinner size="30" stroke="3" speed="1" color="gray" />
+          </div>
+        ) : (
+          <ul className="flex flex-col justify-center text-center w-screen mt-[30px]">
+            {filteredTasks.map((tarefa) => (
+              <li
+                key={tarefa.id_tarefa}
+                className="flex flex-col justify-center items-center text-center w-full"
+              >
+                <TaskCard
+                  tarefa={tarefa}
+                  onTaskDeleted={handleTaskDeleted}
+                  onTaskUpdated={handleTaskUpdated}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
         {errorMessage && (
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
             <div className="h-[200px] w-[340px] bg-[var(--subbackground)] rounded-2xl border border-[#ffffff] p-4 flex flex-col justify-center text-center text-red-600">
