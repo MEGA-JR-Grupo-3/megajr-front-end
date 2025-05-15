@@ -157,7 +157,7 @@ function Dashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <LineSpinner size="40" stroke="3" speed="1" color="black" />;
+        <LineSpinner size="40" stroke="3" speed="1" color="black" />
       </div>
     );
   }
