@@ -93,7 +93,7 @@ const MenuHamburguer = () => {
   };
 
   return (
-    <div>
+    <div className="text-[#fff5ee]">
       {/* Botão do Menu Hamburguer */}
       <button
         variant="ghost"
