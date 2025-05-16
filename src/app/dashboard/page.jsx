@@ -200,7 +200,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen p-2 transition-all duration-300">
+    <div className="flex flex-col h-screen p-2 transition-all duration-300 text-[var(--text)]">
       <nav className="flex flex-row items-center justify-between pr-3">
         <Image src={Logo} className="h-16 w-auto" alt="Logo Jubileu" priority />
         <h2 className="text-xl font-bold">
