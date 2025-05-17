@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import Input from "../../components/Input";
-import PatoImg from "../../../public/assets/pato.png";
+import PatoGif from "../../../public/assets/gif-pato.gif";
 import Button from "../../components/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -81,63 +81,73 @@ export default function Register() {
   };
 
   return (
-    <div className="flex flex-col items-center px-8">
+    <div className="flex flex-col items-center lg:gap-24 justify-center px-8 min-h-screen">
       <h2 className="text-[32px] font-[700] text-center pt-[30px]">
         Organize suas tarefas com Jubitasks!
       </h2>
-      <Image src={PatoImg} className="h-[347px] w-auto" alt="Pato" priority />
+      <div className="flex flex-row justify-center lg:gap-24">
+        <Image
+          src={PatoGif}
+          className="h-[347px] lg:h-[385px] w-auto object-cover"
+          alt="Pato"
+          priority
+        />
 
-      <div className="flex flex-col items-center">
-        <form onSubmit={handleFormSubmit}>
-          <Input
-            type="text"
-            id="name"
-            name="name"
-            label="Nome"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setIsNameFilled(e.target.value.trim() !== "");
-            }}
-            placeholder="seu nome"
-          />
-          <Input
-            type="email"
-            id="email"
-            name="email"
-            label="E-mail"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setIsEmailFilled(e.target.value.trim() !== "");
-            }}
-            placeholder="seu@email.com"
-          />
-          <InputPassword
-            id="password"
-            label="Senha"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setIsPasswordFilled(e.target.value.trim() !== "");
-            }}
-            placeholder="sua senha"
-          />
+        <div className="flex flex-col items-center lg:mr-15">
+          <form onSubmit={handleFormSubmit}>
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              label="Nome"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setIsNameFilled(e.target.value.trim() !== "");
+              }}
+              placeholder="seu nome"
+            />
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              label="E-mail"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setIsEmailFilled(e.target.value.trim() !== "");
+              }}
+              placeholder="seu@email.com"
+            />
+            <InputPassword
+              id="password"
+              label="Senha"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setIsPasswordFilled(e.target.value.trim() !== "");
+              }}
+              placeholder="sua senha"
+            />
 
-          <Button
-            buttonText={isLoading ? "Enviando..." : "Cadastrar-se"}
-            buttonStyle="mt-[20px]"
-            onClick={handleFormSubmit}
-            disabled={
-              !isNameFilled || !isEmailFilled || !isPasswordFilled || isLoading
-            }
-          />
-        </form>
-        <Link href="/login">
-          <button className="mt-[20px] self-center underline text-[#676767]">
-            login
-          </button>
-        </Link>
+            <Button
+              buttonText={isLoading ? "Enviando..." : "Cadastrar-se"}
+              buttonStyle="mt-[20px]"
+              onClick={handleFormSubmit}
+              disabled={
+                !isNameFilled ||
+                !isEmailFilled ||
+                !isPasswordFilled ||
+                isLoading
+              }
+            />
+          </form>
+          <Link href="/login">
+            <button className="mt-[20px] self-center underline text-[#676767]">
+              login
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -15,10 +15,13 @@ const SplashScreen = () => {
 
   return (
     isVisible && (
-      <div className="fixed top-0 left-0 w-full h-full bg-[var(--background)] flex justify-center items-center z-50">
-        <div className="text-white text-4xl font-bold animate-[pulse_0.75s_ease-in-out_infinite]">
+      <div className="fixed top-0 left-0 w-full h-full bg-[var(--background)] flex justify-center items-center z-50 ">
+        <div className="flex flex-col items-center justify-center text-4xl font-bold animate-[pulse_0.75s_ease-in-out_infinite] gap-14">
+          <h2 className="text-[22px] font-[700] pt-[30px] text-[var(--text)]">
+            JubiTasks
+          </h2>
           <Image
-            src="/assets/splashPato.png"
+            src="/assets/gif-pato.gif"
             alt="Logo"
             width={200}
             height={200}

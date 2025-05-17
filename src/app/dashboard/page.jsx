@@ -10,7 +10,7 @@ import "ldrs/react/LineSpinner.css";
 import InputSearch from "../../components/InputSearch";
 import TaskCard from "../../components/TaskCard";
 import AddTaskForm from "../../components/AddTaskForm";
-import Logo from "../../../public/assets/pato.png";
+import Logo from "../../../public/assets/splashPato.png";
 import Image from "next/image";
 import Sidebar from "../../components/Sidebar";
 
@@ -204,7 +204,7 @@ function Dashboard() {
       <nav className="w-full flex flex-row items-center justify-between pr-3">
         <Image
           src={Logo}
-          className="lg:hidden h-16 w-auto"
+          className="lg:hidden h-14 w-auto"
           alt="Logo Jubileu"
           priority
         />
@@ -214,7 +214,7 @@ function Dashboard() {
         <Sidebar />
       </nav>
       <InputSearch tarefas={allTasks} onSearch={handleSearch} />
-      <div className="flex flex-col items-center justify-center h-auto transition-all duration-300">
+      <div className="flex flex-col items-center justify-start h-full transition-all duration-300">
         <h1 className="text-[22px] font-[700] pt-[30px]">Suas JubiTasks</h1>
         {loadingTasks ? (
           <div className="flex justify-center items-center mt-[30px]">
@@ -222,18 +222,32 @@ function Dashboard() {
           </div>
         ) : (
           <ul className="flex flex-col justify-center text-center w-screen lg:w-full mt-[30px]">
-            {filteredTasks.map((tarefa) => (
-              <li
-                key={tarefa.id_tarefa}
-                className="flex flex-col justify-center items-center text-center w-full"
-              >
-                <TaskCard
-                  tarefa={tarefa}
-                  onTaskDeleted={handleTaskDeleted}
-                  onTaskUpdated={handleTaskUpdated}
+            {filteredTasks.length === 0 ? (
+              <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
+                <p className="text-[22px] font-[700] pt-[30px]">
+                  Bora organizar sua vida!
+                </p>
+                <Image
+                  src="/assets/pato-triste.png"
+                  alt="Sem Tarefas"
+                  width={250}
+                  height={250}
                 />
               </li>
-            ))}
+            ) : (
+              filteredTasks.map((tarefa) => (
+                <li
+                  key={tarefa.id_tarefa}
+                  className="flex flex-col justify-center items-center text-center w-full"
+                >
+                  <TaskCard
+                    tarefa={tarefa}
+                    onTaskDeleted={handleTaskDeleted}
+                    onTaskUpdated={handleTaskUpdated}
+                  />
+                </li>
+              ))
+            )}
           </ul>
         )}
         {errorMessage && (

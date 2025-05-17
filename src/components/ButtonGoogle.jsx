@@ -29,7 +29,7 @@ function GoogleLoginButton({ onSuccess, onError }) {
   return (
     <button
       onClick={handleGoogleSignIn}
-      className="relative flex items-center justify-center bg-[radial-gradient(circle_at_center,var(--primary)_0%,var(--secondary)_70%)] rounded-4xl p-2 text-[#ffffff] font-[600] w-[312px]"
+      className="relative flex items-center justify-center mt-[13px] bg-[radial-gradient(circle_at_center,var(--primary)_0%,var(--secondary)_70%)] rounded-4xl p-2 text-[#ffffff] font-[600] w-[312px]"
     >
       <Image className="absolute left-[10px]" src={GoogleIcon} alt="" />
       <span>Entre com sua conta Google</span>

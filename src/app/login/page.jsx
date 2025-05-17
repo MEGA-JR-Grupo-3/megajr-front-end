@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import Input from "../../components/Input";
 import InputPassword from "../../components/InputPassword";
 import GoogleLoginButton from "../../components/ButtonGoogle";
-import PatoImg from "../../../public/assets/pato.png";
+import PatoGif from "../../../public/assets/gif-pato.gif";
 import Button from "../../components/Button";
 import { auth, googleAuthProvider } from "../../firebaseConfig";
 import { useRouter } from "next/navigation";
@@ -144,48 +144,55 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center px-8">
+    <div className="flex flex-col items-center lg:gap-24 justify-center px-8 min-h-screen">
       <h2 className="text-[32px] font-[700] text-center pt-[30px]">
         Jubileu está esperando sua próxima tarefa!
       </h2>
-      <Image src={PatoImg} className="h-[347px] w-auto" alt="Pato" priority />
+      <div className="flex flex-row justify-center lg:gap-24">
+        <Image
+          src={PatoGif}
+          className="h-[347px] lg:h-[385px] w-auto object-cover"
+          alt="Pato"
+          priority
+        />
 
-      <div className="flex flex-col items-center">
-        <form onSubmit={handleFormSubmit} className="mb-6">
-          <Input
-            type="email"
-            id="email"
-            label="E-mail"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setIsEmailFilled(e.target.value.trim() !== "");
-            }}
-            placeholder="seu@email.com"
-          />
-          <InputPassword
-            id="password"
-            label="Senha"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setIsPasswordFilled(e.target.value.trim() !== "");
-            }}
-            placeholder="sua senha"
-          />
-          <Button
-            buttonText="Entrar"
-            buttonStyle="mt-[20px]"
-            type="submit"
-            disabled={!isEmailFilled || !isPasswordFilled}
-          />
-        </form>
-        <GoogleLoginButton onClick={loginGoogle} />
-        <Link href="/register">
-          <button className="mt-[20px] self-center underline text-[#676767]">
-            cadastrar-se
-          </button>
-        </Link>
+        <div className="flex flex-col items-center lg:mr-15">
+          <form onSubmit={handleFormSubmit} className="mb-6">
+            <Input
+              type="email"
+              id="email"
+              label="E-mail"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setIsEmailFilled(e.target.value.trim() !== "");
+              }}
+              placeholder="seu@email.com"
+            />
+            <InputPassword
+              id="password"
+              label="Senha"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setIsPasswordFilled(e.target.value.trim() !== "");
+              }}
+              placeholder="sua senha"
+            />
+            <Button
+              buttonText="Entrar"
+              buttonStyle="mt-[25px]"
+              type="submit"
+              disabled={!isEmailFilled || !isPasswordFilled}
+            />
+          </form>
+          <GoogleLoginButton onClick={loginGoogle} />
+          <Link href="/register">
+            <button className="mt-[20px] self-center underline text-[#676767]">
+              cadastrar-se
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Renderização condicional da mensagem de erro */}
