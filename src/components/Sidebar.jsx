@@ -41,6 +41,7 @@ const sidebarVariants = {
 
 const MenuHamburguer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [userName, setUserName] = useState(null);
   const [creationDate, setCreationDate] = useState(null);
   const menuRef = useRef(null);
@@ -66,6 +67,23 @@ const MenuHamburguer = () => {
   }, []);
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isLargeScreen) {
+      setIsOpen(true);
+      return;
+    }
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -79,7 +97,7 @@ const MenuHamburguer = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, isLargeScreen]);
 
   const handleLogout = () => {
     signOut(auth)
@@ -99,7 +117,7 @@ const MenuHamburguer = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="text-[var(--primary)] hover:bg-gray-200  transition-colors"
+        className="lg:hidden text-[var(--primary)] hover:bg-gray-200  transition-colors"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -114,34 +132,36 @@ const MenuHamburguer = () => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--primary)]"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--primary)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
-            <div className="flex flex-col items-start justify-center mb-4">
-              {userName && (
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {userName}
-                </h3>
-              )}
-              {creationDate && (
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Conta criada em: {creationDate}
-                </p>
-              )}
+            <div className="flex flex-row items-start justify-between mb-4">
+              <div>
+                {userName && (
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {userName}
+                  </h3>
+                )}
+                {creationDate && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Conta criada em: {creationDate}
+                  </p>
+                )}
+              </div>
+              <button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsOpen(false)}
+                className="lg:hidden text-gray-700 dark:text-gray-300 hover:text-gray-300 dark:hover:text-white transition-colors"
+                aria-label="Fechar Menu"
+              >
+                <FontAwesomeIcon icon={faTimes} size="lg" />
+              </button>
             </div>
             <div className="flex items-center justify-between ">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Menu
               </h2>
-              <button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Fechar Menu"
-              >
-                <FontAwesomeIcon icon={faTimes} size="lg" />
-              </button>
             </div>
 
             {/* Botões de Navegação */}
@@ -205,7 +225,7 @@ const MenuHamburguer = () => {
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                Logout
+                Sair
               </button>
             </div>
           </motion.div>

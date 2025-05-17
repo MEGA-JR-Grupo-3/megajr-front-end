@@ -20,15 +20,15 @@ function InputSearch({ tarefas, onSearch }) {
   };
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center w-[320px] lg:w-[80vw] max-w-[600px]">
       <input
         type="text"
         placeholder="Pesquisar tarefas..."
         value={searchTerm}
         onChange={handleInputChange}
-        className="bg-[#D9D9D9] w-[320px] px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10" // Espaço para os ícones
+        className="bg-[#D9D9D9] w-[100%] px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10" // Espaço para os ícones
       />
-      <div className="absolute right-10 top-[40px] transform -translate-y-1/2 flex items-center space-x-2">
+      <div className="absolute right-10 lg:right-[10px] top-[40px] transform -translate-y-1/2 flex items-center space-x-2">
         {searchTerm && (
           <button
             onClick={handleClearClick}
