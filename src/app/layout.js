@@ -40,7 +40,9 @@ export default function RootLayout({ children }) {
           sizes="<generated>"
         />
       </head>
-      <body className={dosis.className}>
+      <body
+        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)] lg:px-[50px]`}
+      >
         <RootLayoutClient dosis={dosis}>{children}</RootLayoutClient>
       </body>
     </html>
