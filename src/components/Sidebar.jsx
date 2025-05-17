@@ -168,7 +168,7 @@ const MenuHamburguer = () => {
             <div className="space-y-6">
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Editar Perfil");
                   setIsOpen(false);
@@ -179,7 +179,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Configurações");
                   setIsOpen(false);
@@ -190,7 +190,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Sobre o App");
                   setIsOpen(false);
@@ -201,7 +201,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Ajuda");
                   setIsOpen(false);
@@ -214,7 +214,10 @@ const MenuHamburguer = () => {
 
             {/*Botão switch*/}
             <div className="flex items-center justify-between">
-              <ThemeSwitch></ThemeSwitch>
+              <ThemeSwitch
+                style="flex items-center justify-center text-gray-700 dark:text-gray-300 gap-2 cursor-pointer"
+                content="Tema"
+              ></ThemeSwitch>
             </div>
 
             {/* Botão de Logout */}

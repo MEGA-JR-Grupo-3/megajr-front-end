@@ -4,7 +4,7 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
-export default function ThemeSwitch() {
+export default function ThemeSwitch({ style, content }) {
   const [mounted, setMounted] = useState(false);
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -16,22 +16,16 @@ export default function ThemeSwitch() {
 
   if (resolvedTheme === "dark") {
     return (
-      <div
-        className=" text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex flex-row justify-center gap-1"
-        onClick={() => setTheme("light")}
-      >
+      <div className={style} onClick={() => setTheme("light")}>
         <FiSun />
-        Mudar tema
+        {content}
       </div>
     );
   } else {
     return (
-      <div
-        className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 flex flex-row justify-center gap-1"
-        onClick={() => setTheme("dark")}
-      >
+      <div className={style} onClick={() => setTheme("dark")}>
         <FiMoon />
-        Mudar tema
+        {content}
       </div>
     );
   }
