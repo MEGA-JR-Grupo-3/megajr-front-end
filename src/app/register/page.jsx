@@ -81,14 +81,14 @@ export default function Register() {
   };
 
   return (
-    <div className="flex flex-col items-center lg:gap-24 justify-center px-8 min-h-screen">
+    <div className="flex flex-col items-center gap-24 justify-center px-8 min-h-screen">
       <h2 className="text-[32px] font-[700] text-center pt-[30px]">
         Organize suas tarefas com Jubitasks!
       </h2>
-      <div className="flex flex-row justify-center lg:gap-24">
+      <div className="flex flex-col lg:flex-row justify-center lg:gap-24">
         <Image
           src={PatoGif}
-          className="h-[347px] lg:h-[385px] w-auto object-cover"
+          className="h-[185px] w-auto object-contain"
           alt="Pato"
           priority
         />
