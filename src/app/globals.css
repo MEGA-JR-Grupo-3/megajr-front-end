@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+  background-color: var(--background);
+}
+
 /* Estilos para o tema claro (padrão) */
 :root {
   --primary: #612f7a;
