@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import Input from "../../components/Input";
 import InputPassword from "../../components/InputPassword";
 import GoogleLoginButton from "../../components/ButtonGoogle";
-import PatoGif from "../../../public/assets/gif-pato.gif";
+import PatoImg from "../../../public/assets/splashPato.png";
 import Button from "../../components/Button";
 import { auth, googleAuthProvider } from "../../firebaseConfig";
 import { useRouter } from "next/navigation";
@@ -150,8 +150,8 @@ function Login() {
       </h2>
       <div className="flex flex-col lg:flex-row justify-center lg:gap-24">
         <Image
-          src={PatoGif}
-          className="h-[185px] w-auto object-contain"
+          src={PatoImg}
+          className="h-[200px] w-auto object-contain"
           alt="Pato"
           priority
         />

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import PatoGif from "../../public/assets/gif-pato.gif";
+import PatoImg from "../../public/assets/splashPato.png";
 import Button from "../components/Button.jsx";
 import ThemeSwitch from "../components/ThemeSwitch";
 
@@ -8,8 +8,8 @@ export default function Home() {
     <div className="flex flex-col lg:flex-row items-center justify-items-center gap-24 justify-center w-full h-screen transition-all duration-300">
       <ThemeSwitch style="fixed top-5 right-5 text-[var(--text)]" />
       <Image
-        src={PatoGif}
-        className="h-[185px] w-auto object-cover"
+        src={PatoImg}
+        className="h-[200px] w-auto object-cover"
         alt="Pato"
         priority
       />
