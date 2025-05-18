@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MdOutlineDragIndicator } from "react-icons/md"; // Importa o ícone para o drag handle
+import {
+  MdOutlineDragIndicator,
+  MdExpandMore,
+  MdExpandLess,
+} from "react-icons/md";
 
 function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -193,15 +197,15 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer transition-all duration-300
-  ${isExpanded ? "flex-col items-start" : "items-center"}`}
-      // onClick={() => !isEditing && setIsExpanded(!isExpanded)} // <-- COMENTE OU REMOVA ESTA LINHA PARA TESTAR
+      // Remova o onClick daqui
+      className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 transition-all duration-300
+    ${isExpanded ? "flex-col items-start" : "items-center"}`}
     >
       <div className="flex w-full">
         {isDraggable && (
           <div
-            className="flex items-center justify-center  cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 mr-2"
-            {...listeners} // Aplica os listeners de arraste ao drag handle
+            className="flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 mr-2"
+            {...listeners}
           >
             <MdOutlineDragIndicator size={24} />
           </div>
@@ -277,14 +281,30 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
             </>
           )}
         </div>
+        {!isEditing && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // MUITO IMPORTANTE: Previne cliques de propagar para o card
+              setIsExpanded(!isExpanded);
+            }}
+            // Ajuste o estilo conforme a sua preferência para posicionamento e aparência
+            className="ml-auto p-1 rounded-full hover:bg-gray-200 text-gray-500 flex-shrink-0"
+          >
+            {isExpanded ? (
+              <MdExpandLess size={24} />
+            ) : (
+              <MdExpandMore size={24} />
+            )}
+          </button>
+        )}
       </div>
 
       <div
         className={`flex ${
           isExpanded
-            ? "flex-row items-center justify-between w-[298px]"
+            ? "flex-row items-center justify-between w-full"
             : "items-center"
-        }  mt-2 ml-auto gap-2`}
+        } mt-2 gap-2`}
       >
         {!isEditing && (
           <>
