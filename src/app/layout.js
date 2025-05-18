@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)] lg:px-[50px]`}
+        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)]`}
       >
         <RootLayoutClient dosis={dosis}>{children}</RootLayoutClient>
       </body>

@@ -86,18 +86,20 @@ function Login() {
       const userName = user.displayName;
       const userEmail = user.email;
 
-      // Enviar esses dados para o backend para salvar/verificar no banco de dados
       try {
-        const response = await fetch("/cadastro-google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: userName,
-            email: userEmail,
-          }),
-        });
+        const response = await fetch(
+          "https://megajr-back-end.onrender.com/cadastro-google",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: userName,
+              email: userEmail,
+            }),
+          }
+        );
 
         if (response.ok) {
           console.log("Dados do usuário do Google enviados ao backend");
