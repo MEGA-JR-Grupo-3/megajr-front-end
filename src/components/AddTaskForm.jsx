@@ -132,24 +132,6 @@ function AddTaskForm({ onClose, onTaskAdded }) {
               <option value="Urgente">Urgente</option>
             </select>
           </div>
-          <div>
-            <label
-              htmlFor="estadoTarefa"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Estado:
-            </label>
-            <select
-              id="estadoTarefa"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              value={estadoTarefa}
-              onChange={(e) => setEstadoTarefa(e.target.value)}
-              required
-            >
-              <option value="Pendente">Pendente</option>
-              <option value="Finalizada">Finalizada</option>
-            </select>
-          </div>
           <div className="flex justify-end space-x-2">
             <button
               type="button"

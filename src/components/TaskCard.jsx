@@ -1,12 +1,34 @@
-import React from "react";
+// components/TaskCard.js
+import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
-import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { MdOutlineDragIndicator } from "react-icons/md"; // Importa o ícone para o drag handle
 
-function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
+function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // Novo estado para expansão do card
+  const [isEditing, setIsEditing] = useState(false); // Novo estado para modo de edição
+  const [editFormData, setEditFormData] = useState({
+    titulo: tarefa.titulo,
+    descricao: tarefa.descricao || "",
+    data_prazo: tarefa.data_prazo
+      ? new Date(tarefa.data_prazo).toISOString().split("T")[0]
+      : "", // Formata para input type="date"
+    prioridade: tarefa.prioridade,
+  });
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // dnd-kit integration
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -30,9 +52,13 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
       } else {
         const errorData = await response.json();
         console.error("Erro ao deletar tarefa:", errorData);
+        alert(
+          `Erro ao deletar tarefa: ${errorData.message || response.statusText}`
+        );
       }
     } catch (error) {
       console.error("Erro ao comunicar com o backend:", error);
+      alert("Erro de conexão ao deletar tarefa.");
     } finally {
       setIsDeleting(false);
     }
@@ -52,13 +78,16 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
     }
 
     try {
-      const response = await fetch(`${backendUrl}/tasks/${tarefa.id_tarefa}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ estado_tarefa: newStatus }),
-      });
+      const response = await fetch(
+        `${backendUrl}/tasks/${tarefa.id_tarefa}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ estado_tarefa: newStatus }),
+        }
+      );
 
       if (response.ok) {
         console.log(
@@ -73,53 +102,249 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
       } else {
         const errorData = await response.json();
         console.error("Erro ao atualizar estado da tarefa:", errorData);
+        alert(
+          `Erro ao atualizar estado da tarefa: ${
+            errorData.message || response.statusText
+          }`
+        );
       }
     } catch (error) {
       console.error("Erro ao comunicar com o backend:", error);
+      alert("Erro de conexão ao atualizar estado da tarefa.");
     } finally {
       setIsUpdating(false);
     }
   };
 
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleEditSave = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+
+    const user = auth.currentUser;
+    if (!user?.email) {
+      console.error("Usuário não autenticado.");
+      setIsUpdating(false);
+      return;
+    }
+
+    const payload = {
+      ...editFormData,
+      data_prazo: editFormData.data_prazo || null, // Envia null se a data estiver vazia
+      estado_tarefa: tarefa.estado_tarefa,
+    };
+
+    try {
+      const response = await fetch(`${backendUrl}/tasks/${tarefa.id_tarefa}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        console.log("Tarefa atualizada com sucesso:", tarefa.id_tarefa);
+        onTaskUpdated({
+          id_tarefa: tarefa.id_tarefa,
+          ...payload,
+        });
+        setIsEditing(false); // Sai do modo de edição
+        setIsExpanded(false); // Colapsa o card após a edição
+      } else {
+        const errorData = await response.json();
+        console.error("Erro ao atualizar tarefa:", errorData);
+        alert(
+          `Erro ao atualizar tarefa: ${
+            errorData.message || response.statusText
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao comunicar com o backend (edição):", error);
+      alert("Erro de conexão ao atualizar tarefa.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    // Reinicia os dados do formulário para os valores originais da tarefa
+    setEditFormData({
+      titulo: tarefa.titulo,
+      descricao: tarefa.descricao || "",
+      data_prazo: tarefa.data_prazo
+        ? new Date(tarefa.data_prazo).toISOString().split("T")[0]
+        : "",
+      prioridade: tarefa.prioridade,
+    });
+  };
+
   return (
-    <div className="bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex items-center justify-between w-[360px]">
-      <div className="flex flex-col justify-start text-center gap-1">
-        <h3 className="text-lg font-semibold text-start">{tarefa.titulo}</h3>
-        {tarefa.descricao && (
-          <p className="text-gray-600 text-sm text-start">{tarefa.descricao}</p>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer transition-all duration-300
+      ${isExpanded ? "flex-col items-start" : "items-center"}`}
+      onClick={() => !isEditing && setIsExpanded(!isExpanded)} // Só expande/colapsa se não estiver editando
+    >
+      <div className="flex w-full">
+        {isDraggable && (
+          <div
+            className="flex items-center justify-center  cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 mr-2"
+            {...listeners} // Aplica os listeners de arraste ao drag handle
+          >
+            <MdOutlineDragIndicator size={24} />
+          </div>
         )}
-        {tarefa.data_prazo ? (
-          <p className="text-gray-500 text-xs text-start">
-            Prazo:
-            {new Date(tarefa.data_prazo).toLocaleDateString("pt-BR")}
-          </p>
-        ) : (
-          <p className="text-gray-500 text-xs text-start">Prazo: Indefinido</p>
-        )}
-        <p className="text-var(--text) text-xs text-start">
-          Prioridade: {tarefa.prioridade}
-        </p>
+
+        <div className="flex flex-col justify-start text-start gap-1 flex-grow">
+          {isEditing ? (
+            <input
+              type="text"
+              name="titulo"
+              value={editFormData.titulo}
+              onChange={handleEditChange}
+              className="text-lg font-semibold border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full"
+              placeholder="Título da Tarefa"
+            />
+          ) : (
+            <h3 className="text-lg font-semibold">{tarefa.titulo}</h3>
+          )}
+
+          {isExpanded && (
+            <>
+              {isEditing ? (
+                <textarea
+                  name="descricao"
+                  value={editFormData.descricao}
+                  onChange={handleEditChange}
+                  className="text-gray-600 text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 overflow-y-auto bg-transparent"
+                  rows={3}
+                  placeholder="Descrição da Tarefa"
+                ></textarea>
+              ) : (
+                tarefa.descricao && (
+                  <p className="text-gray-600 text-sm mt-1 break-words whitespace-pre-wrap max-h-24 overflow-auto w-[295px]">
+                    {tarefa.descricao}
+                  </p>
+                )
+              )}
+
+              {isEditing ? (
+                <input
+                  type="date"
+                  name="data_prazo"
+                  value={editFormData.data_prazo}
+                  onChange={handleEditChange}
+                  className="text-gray-500 text-xs mt-1 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full"
+                />
+              ) : (
+                <p className="text-gray-500 text-xs mt-1">
+                  Prazo:{" "}
+                  {tarefa.data_prazo
+                    ? new Date(tarefa.data_prazo).toLocaleDateString("pt-BR")
+                    : "Indefinido"}
+                </p>
+              )}
+
+              {isEditing ? (
+                <select
+                  name="prioridade"
+                  value={editFormData.prioridade}
+                  onChange={handleEditChange}
+                  className="text-gray-500 text-xs mt-1 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full"
+                >
+                  <option value="Baixa">Baixa</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Urgente">Urgente</option>
+                </select>
+              ) : (
+                <p className="text-[var(--text)] text-xs mt-1">
+                  Prioridade: {tarefa.prioridade}
+                </p>
+              )}
+            </>
+          )}
+        </div>
       </div>
-      <div className="flex items-center space-x-2">
-        <label className="flex items-center text-sm text-gray-700">
-          <input
-            type="checkbox"
-            className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
-            checked={tarefa.estado_tarefa === "Finalizada"}
-            onChange={handleStatusChange}
-            disabled={isUpdating}
-          />
-          <span className="ml-2">
-            {tarefa.estado_tarefa === "Finalizada" ? "Finalizada" : "Pendente"}
-          </span>
-        </label>
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded text-xs focus:outline-none focus:shadow-outline"
-          disabled={isDeleting}
-        >
-          Deletar
-        </button>
+
+      <div
+        className={`flex ${
+          isExpanded
+            ? "flex-row items-center justify-between w-[298px]"
+            : "items-center"
+        }  mt-2 ml-auto gap-2`}
+      >
+        {!isEditing && (
+          <>
+            <label className="flex items-center text-sm text-gray-700">
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                checked={tarefa.estado_tarefa === "Finalizada"}
+                onChange={handleStatusChange}
+                disabled={isUpdating}
+              />
+            </label>
+            {isExpanded && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Previne que o card colapse/expanda ao clicar no botão
+                  setIsEditing(true);
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
+              >
+                Editar
+              </button>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Previne que o card colapse/expanda ao clicar no botão
+                handleDelete();
+              }}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
+              disabled={isDeleting}
+            >
+              Deletar
+            </button>
+          </>
+        )}
+
+        {isEditing && (
+          <div className="flex space-x-2 mt-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditSave();
+              }}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
+              disabled={isUpdating}
+            >
+              Salvar
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditCancel();
+              }}
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
+              disabled={isUpdating}
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
