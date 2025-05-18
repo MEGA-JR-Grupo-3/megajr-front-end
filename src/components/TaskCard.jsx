@@ -32,6 +32,8 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isDragging ? 0.8 : 1,
+    boxShadow: isDragging ? "0px 4px 10px rgba(0, 0, 0, 0.2)" : "none",
   };
 
   const handleDelete = async () => {
@@ -197,9 +199,10 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // Remova o onClick daqui
-      className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 transition-all duration-300
-    ${isExpanded ? "flex-col items-start" : "items-center"}`}
+      // Use uma classe condicional para a transição
+      className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer 
+      ${isExpanded ? "flex-col items-start" : "items-center"}
+      ${isDragging ? "" : "transition-all duration-300"}`}
     >
       <div className="flex w-full">
         {isDraggable && (
@@ -281,22 +284,6 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
             </>
           )}
         </div>
-        {!isEditing && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // MUITO IMPORTANTE: Previne cliques de propagar para o card
-              setIsExpanded(!isExpanded);
-            }}
-            // Ajuste o estilo conforme a sua preferência para posicionamento e aparência
-            className="ml-auto p-1 rounded-full hover:bg-gray-200 text-gray-500 flex-shrink-0"
-          >
-            {isExpanded ? (
-              <MdExpandLess size={24} />
-            ) : (
-              <MdExpandMore size={24} />
-            )}
-          </button>
-        )}
       </div>
 
       <div
@@ -320,7 +307,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
             {isExpanded && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // Previne que o card colapse/expanda ao clicar no botão
+                  e.stopPropagation();
                   setIsEditing(true);
                 }}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
@@ -330,7 +317,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
             )}
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Previne que o card colapse/expanda ao clicar no botão
+                e.stopPropagation();
                 handleDelete();
               }}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs focus:outline-none focus:shadow-outline w-16"
@@ -339,6 +326,22 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
               Deletar
             </button>
           </>
+        )}
+
+        {!isEditing && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="ml-auto p-1 rounded-full hover:bg-gray-200 text-gray-500 flex-shrink-0"
+          >
+            {isExpanded ? (
+              <MdExpandLess size={24} />
+            ) : (
+              <MdExpandMore size={24} />
+            )}
+          </button>
         )}
 
         {isEditing && (
