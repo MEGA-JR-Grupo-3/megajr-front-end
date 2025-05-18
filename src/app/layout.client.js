@@ -24,10 +24,10 @@ export default function RootLayoutClient({ children }) {
         } else {
           router.push("/");
         }
-      }, 1000);
+      }, 1400);
 
       return () => clearTimeout(timer);
-    }, 1000);
+    }, 1400);
 
     return () => unsubscribe();
   }, [router]);

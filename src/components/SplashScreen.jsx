@@ -8,7 +8,7 @@ const SplashScreen = () => {
     // Simula um tempo de carregamento (você pode substituir por sua lógica real)
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 1000);
+    }, 1400);
 
     return () => clearTimeout(timer); // Limpa o timer caso o componente seja desmontado
   }, []);

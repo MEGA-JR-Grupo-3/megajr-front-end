@@ -100,7 +100,7 @@ function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setAllTasks(data);
-          setFilteredTasks(data); // Inicialmente, as tarefas filtradas são todas as tarefas
+          setFilteredTasks(data);
         } else {
           console.error("Erro ao buscar tarefas:", response.statusText);
           setErrorMessage("Não foi possível carregar suas tarefas.");
@@ -179,7 +179,6 @@ function Dashboard() {
     setFilteredTasks(updateLogic);
   };
 
-  // Dnd-kit handler for drag end: Atualiza a ordem das tarefas
   function handleDragEnd(event) {
     const { active, over } = event;
 
@@ -192,7 +191,6 @@ function Dashboard() {
 
         return arrayMove(items, oldIndex, newIndex);
       });
-      // TODO: Se a ordem precisar ser persistente, adicione uma chamada à API aqui para salvar a nova ordem no backend.
     }
   }
 
@@ -205,22 +203,23 @@ function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 md:p-4 transition-all duration-300 text-[var(--text)] bg-gray-50">
+    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 md:p-4 transition-all duration-300 text-[var(--text)] bg-[var(--background)]">
       <nav className="w-full flex flex-row items-center justify-between pr-3 mb-4 md:mb-6">
         <Image
           src={Logo}
-          className="lg:hidden h-12 w-auto sm:h-14"
+          className="lg:hidden h-12 w-auto sm:h-14 cursor-pointer"
+          onClick={() => router.push("/dashboard")}
           alt="Logo Jubileu"
           priority
         />
-        <h2 className="lg:hidden text-lg sm:text-xl font-bold text-gray-700">
+        <h2 className="lg:hidden text-lg sm:text-xl font-bold">
           Olá, {registeredName || currentUser?.displayName || "parceiro(a)!"}
         </h2>
         <Sidebar />
       </nav>
       <InputSearch onSearch={handleSearch} />
       <div className="flex flex-col items-center justify-start w-full h-full transition-all duration-300 px-2">
-        <h1 className="text-xl sm:text-2xl font-bold pt-6 pb-4 text-gray-800">
+        <h1 className="text-xl sm:text-2xl font-bold pt-6 pb-4 ">
           Suas JubiTasks
         </h1>
 
@@ -229,21 +228,19 @@ function Dashboard() {
             <LineSpinner size="30" stroke="3" speed="1" color="gray" />
           </div>
         ) : (
-          // DndContext envolve os elementos que podem ser arrastados/soltos
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            {/* SortableContext define os itens que são ordenáveis */}
             <SortableContext
-              items={filteredTasks.map((task) => task.id_tarefa)} // IDs dos itens ordenáveis
-              strategy={verticalListSortingStrategy} // Estratégia de ordenação vertical
+              items={filteredTasks.map((task) => task.id_tarefa)}
+              strategy={verticalListSortingStrategy}
             >
               <ul className="flex flex-col justify-center text-center w-full max-w-2xl mt-2 space-y-3">
                 {filteredTasks.length === 0 ? (
-                  <li className="flex flex-col justify-center items-center text-center mt-10 sm:mt-16 gap-8 sm:gap-14 h-full w-full p-4 bg-white rounded-lg shadow">
-                    <p className="text-lg sm:text-xl font-semibold text-gray-700">
+                  <li className="flex flex-col justify-center items-center text-center mt-10 sm:mt-16 gap-8 sm:gap-14 h-full w-full p-4 bg-[var(--subbackground)] rounded-lg shadow">
+                    <p className="text-lg sm:text-xl font-semibold text-[var(--secondary)]">
                       {errorMessage ? errorMessage : "Bora organizar sua vida!"}
                     </p>
                     {!errorMessage && (
