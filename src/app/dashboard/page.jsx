@@ -239,8 +239,8 @@ function Dashboard() {
             >
               <ul className="flex flex-col justify-center text-center w-full max-w-2xl mt-2 space-y-3">
                 {filteredTasks.length === 0 ? (
-                  <li className="flex flex-col justify-center items-center text-center mt-10 sm:mt-16 gap-8 sm:gap-14 h-full w-full p-4 bg-[var(--subbackground)] rounded-lg shadow">
-                    <p className="text-lg sm:text-xl font-semibold text-[var(--secondary)]">
+                  <li className="flex flex-col justify-center items-center text-center mt-10 sm:mt-16 gap-8 sm:gap-14 h-full w-full p-4  rounded-lg ">
+                    <p className="text-lg sm:text-xl font-semibold text-[var(--text)]">
                       {errorMessage ? errorMessage : "Bora organizar sua vida!"}
                     </p>
                     {!errorMessage && (
