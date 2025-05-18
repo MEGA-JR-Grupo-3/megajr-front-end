@@ -92,6 +92,56 @@ function Dashboard() {
     fetchUserData();
   }, [fetchUserData]);
 
+  const saveTaskOrderToBackend = useCallback(
+    async (tasksToSave) => {
+      if (!currentUser?.email) {
+        console.error(
+          "Usuário não autenticado. Não é possível salvar a ordem."
+        );
+        setErrorMessage(
+          "Você precisa estar logado para salvar a ordem das tarefas."
+        );
+        return;
+      }
+
+      setLoadingTasks(true);
+      try {
+        // Cria um array com apenas o id_tarefa e a nova ordem
+        const orderData = tasksToSave.map((task) => ({
+          id_tarefa: task.id_tarefa,
+          ordem: task.ordem,
+        }));
+
+        const response = await fetch(`${backendUrl}/tasks/reorder`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: currentUser.email, tasks: orderData }),
+        });
+
+        if (response.ok) {
+          console.log("Ordem das tarefas salva com sucesso!");
+          setErrorMessage("");
+        } else {
+          const errorData = await response.json();
+          console.error("Erro ao salvar a ordem das tarefas:", errorData);
+          setErrorMessage(
+            `Erro ao salvar a nova ordem: ${
+              errorData.message || response.statusText
+            }`
+          );
+        }
+      } catch (error) {
+        console.error("Erro de conexão ao salvar a ordem das tarefas:", error);
+        setErrorMessage("Erro de conexão ao salvar a nova ordem das tarefas.");
+      } finally {
+        setLoadingTasks(false);
+      }
+    },
+    [currentUser, backendUrl]
+  );
+
   const fetchAllTasks = useCallback(async () => {
     if (currentUser?.email) {
       setLoadingTasks(true);
@@ -103,6 +153,9 @@ function Dashboard() {
         });
         if (response.ok) {
           const data = await response.json();
+          const sortedData = data.sort(
+            (a, b) => (a.ordem || 0) - (b.ordem || 0)
+          );
           setAllTasks(data);
           setFilteredTasks(data);
         } else {
@@ -193,7 +246,16 @@ function Dashboard() {
         );
         const newIndex = items.findIndex((item) => item.id_tarefa === over.id);
 
-        return arrayMove(items, oldIndex, newIndex);
+        const newOrderedItems = arrayMove(items, oldIndex, newIndex);
+
+        const updatedOrdertasks = newOrderedItems.map((task, index) => ({
+          ...task,
+          ordem: index,
+        }));
+
+        saveTaskOrderToBackend(updatedOrdertasks);
+
+        return updatedOrdertasks;
       });
     }
   }
