@@ -205,10 +205,11 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // Use uma classe condicional para a transição
       className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer 
       ${isExpanded ? "flex-col items-start" : "items-center"}
-      ${isDragging ? "" : "transition-all duration-300"}`}
+      ${isDragging ? "" : "transition-all duration-300"} ${
+        isDraggable ? "touch-action-none" : ""
+      }`}
     >
       <div className="flex w-full">
         {isDraggable && (
