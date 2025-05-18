@@ -26,8 +26,14 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   // dnd-kit integration
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
