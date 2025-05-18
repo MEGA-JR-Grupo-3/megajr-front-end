@@ -104,7 +104,6 @@ function Dashboard() {
         return;
       }
 
-      setLoadingTasks(true);
       try {
         // Cria um array com apenas o id_tarefa e a nova ordem
         const orderData = tasksToSave.map((task) => ({
@@ -135,8 +134,6 @@ function Dashboard() {
       } catch (error) {
         console.error("Erro de conexão ao salvar a ordem das tarefas:", error);
         setErrorMessage("Erro de conexão ao salvar a nova ordem das tarefas.");
-      } finally {
-        setLoadingTasks(false);
       }
     },
     [currentUser, backendUrl]
