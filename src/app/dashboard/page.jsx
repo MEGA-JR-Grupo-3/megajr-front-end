@@ -1,4 +1,3 @@
-// pages/dashboard.js (ou onde seu Dashboard estiver)
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -9,7 +8,7 @@ import Button from "../../components/Button";
 import { LineSpinner } from "ldrs/react";
 import "ldrs/react/LineSpinner.css";
 import InputSearch from "../../components/InputSearch";
-import TaskCard from "../../components/TaskCard"; // O TaskCard atualizado
+import TaskCard from "../../components/TaskCard";
 import AddTaskForm from "../../components/AddTaskForm";
 import Logo from "../../../public/assets/splashPato.png";
 import Image from "next/image";
@@ -31,8 +30,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 
-const backendUrl =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 function Dashboard() {
   const [currentUser, setCurrentUser] = useState(null);

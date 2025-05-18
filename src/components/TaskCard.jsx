@@ -1,4 +1,4 @@
-// components/TaskCard.js
+// components/TaskCard.jsx
 import React, { useState } from "react";
 import { auth } from "../firebaseConfig";
 import { useSortable } from "@dnd-kit/sortable";
@@ -194,8 +194,8 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       style={style}
       {...attributes}
       className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer transition-all duration-300
-      ${isExpanded ? "flex-col items-start" : "items-center"}`}
-      onClick={() => !isEditing && setIsExpanded(!isExpanded)} // Só expande/colapsa se não estiver editando
+  ${isExpanded ? "flex-col items-start" : "items-center"}`}
+      // onClick={() => !isEditing && setIsExpanded(!isExpanded)} // <-- COMENTE OU REMOVA ESTA LINHA PARA TESTAR
     >
       <div className="flex w-full">
         {isDraggable && (
