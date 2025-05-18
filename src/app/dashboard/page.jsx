@@ -21,6 +21,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -47,7 +48,12 @@ function Dashboard() {
   // Dnd-kit sensors: configura os sensores para detecção de arraste
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
   );
 
   useEffect(() => {
@@ -263,12 +269,13 @@ function Dashboard() {
                       className="flex flex-col justify-center items-center text-center w-full"
                     >
                       <TaskCard
-                        id={tarefa.id_tarefa} // O ID é crucial para o dnd-kit
+                        key={tarefa.id_tarefa}
+                        id={tarefa.id_tarefa}
                         tarefa={tarefa}
                         onTaskDeleted={handleTaskDeleted}
                         onTaskUpdated={handleTaskUpdated}
                         currentUser={currentUser}
-                        isDraggable={true} // Habilita o arraste para este card
+                        isDraggable={true}
                       />
                     </li>
                   ))
