@@ -124,19 +124,6 @@ function Login() {
     }
   };
 
-  const loginGoogle = async () => {
-    try {
-      console.log("Iniciando login com Google via Firebase...");
-      const result = await signInWithPopup(auth, googleAuthProvider);
-      const user = result.user;
-      console.log("Usuário logado no Firebase com sucesso:", user);
-      console.log("Chamando handleGoogleLoginSuccess com o usuário:", user);
-      handleGoogleLoginSuccess(user);
-    } catch (error) {
-      console.error("Erro ao fazer login com Google (Firebase):", error);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center gap-24 justify-center px-8 min-h-screen">
       <h2 className="text-[32px] font-[700] text-center pt-[30px]">
@@ -180,7 +167,7 @@ function Login() {
               disabled={!isEmailFilled || !isPasswordFilled}
             />
           </form>
-          <GoogleLoginButton onClick={loginGoogle} />
+          <GoogleLoginButton onSuccess={handleGoogleLoginSuccess} />
           <Link href="/register">
             <button className="mt-[20px] self-center underline text-[#676767]">
               cadastrar-se
