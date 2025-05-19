@@ -19,9 +19,7 @@ export default function RootLayoutClient({ children }) {
       const unsubscribe = auth.onAuthStateChanged((user) => {
         setIsAuthenticated(!!user);
         setIsLoading(false);
-        if (user) {
-          router.push("/dashboard");
-        } else {
+        if (!user) {
           router.push("/");
         }
       }, 1000);

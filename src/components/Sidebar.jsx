@@ -14,6 +14,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Variantes para animações do menu
 const sidebarVariants = {
@@ -177,6 +178,7 @@ const MenuHamburguer = () => {
                 <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
                 Editar Perfil
               </button>
+            <Link href="../src/app/jub-settings">
               <button
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
@@ -188,6 +190,7 @@ const MenuHamburguer = () => {
                 <FontAwesomeIcon icon={faCog} className="mr-2" />
                 Configurações
               </button>
+            </Link>
               <button
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import PatoImg from "../../public/assets/splashPato.png";
+import PatoImg from "../../public/assets/splash-pato.png";
 import Button from "../components/Button.jsx";
 import ThemeSwitch from "../components/ThemeSwitch";
 

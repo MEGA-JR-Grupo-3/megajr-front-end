@@ -10,7 +10,7 @@ import "ldrs/react/LineSpinner.css";
 import InputSearch from "../../components/InputSearch";
 import TaskCard from "../../components/TaskCard";
 import AddTaskForm from "../../components/AddTaskForm";
-import Logo from "../../../public/assets/splashPato.png";
+import Logo from "../../../public/assets/splash-pato.png";
 import Image from "next/image";
 import Sidebar from "../../components/Sidebar";
 
@@ -147,12 +147,6 @@ function Dashboard() {
   useEffect(() => {
     fetchTasks();
   }, [backendUrl, user]);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/");
-    }
-  }, [loading, user, router]);
 
   if (loading) {
     return (

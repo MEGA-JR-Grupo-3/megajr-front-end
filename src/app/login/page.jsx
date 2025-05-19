@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import Input from "../../components/Input";
 import InputPassword from "../../components/InputPassword";
 import GoogleLoginButton from "../../components/ButtonGoogle";
-import PatoImg from "../../../public/assets/splashPato.png";
+import PatoImg from "../../../public/assets/splash-pato.png";
 import Button from "../../components/Button";
 import { auth, googleAuthProvider } from "../../firebaseConfig";
 import { useRouter } from "next/navigation";
