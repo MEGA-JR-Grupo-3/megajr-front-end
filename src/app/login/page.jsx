@@ -107,12 +107,12 @@ function Login() {
           console.log(
             "Dados do usuário do Google enviados ao backend com sucesso."
           );
+          router.push("/dashboard");
         } else {
           console.error(
             "Erro na resposta do backend ao comunicar dados do Google:",
             response.status
           );
-          router.push("/dashboard");
         }
       } catch (error) {
         console.error(

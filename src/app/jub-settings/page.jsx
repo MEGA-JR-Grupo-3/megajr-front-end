@@ -2,8 +2,8 @@
 import "ldrs/react/LineSpinner.css";
 import Logo from "../../../public/assets/splash-pato.png";
 import Sidebar from "../../components/Sidebar";
-import Button from "../../components/Button";
 import Image from "next/image";
+import Button from "../../components/Button";
 
 function settings() {
   return (
@@ -59,7 +59,7 @@ function settings() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center w-screen">
+      <div className="flex w-screen item-center justify-center">
         <Button buttonText="Voltar" buttonLink="/dashboard" />
       </div>
     </div>

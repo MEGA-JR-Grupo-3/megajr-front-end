@@ -14,6 +14,13 @@ import Logo from "../../../public/assets/splash-pato.png";
 import Image from "next/image";
 import Sidebar from "../../components/Sidebar";
 
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,34 +33,34 @@ function Dashboard() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (user?.email) {
-        setLoadingTasks(true);
-        try {
-          const response = await fetch(`${backendUrl}/tasks`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: user.email }),
-          });
+  const fetchTasks = async () => {
+    if (user?.email) {
+      setLoadingTasks(true);
+      try {
+        const response = await fetch(`${backendUrl}/tasks`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
 
-          if (response.ok) {
-            const data = await response.json();
-            setAllTasks(data);
-            setFilteredTasks(data);
-          } else {
-            console.error("Erro ao buscar tarefas");
-          }
-        } catch (error) {
-          console.error("Erro ao comunicar com o backend:", error);
-        } finally {
-          setLoadingTasks(false);
+        if (response.ok) {
+          const data = await response.json();
+          setAllTasks(data);
+          setFilteredTasks(data);
+        } else {
+          console.error("Erro ao buscar tarefas");
         }
+      } catch (error) {
+        console.error("Erro ao comunicar com o backend:", error);
+      } finally {
+        setLoadingTasks(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchTasks();
   }, [backendUrl, user]);
 
@@ -73,14 +80,17 @@ function Dashboard() {
           setFilteredTasks(data);
         } else {
           console.error("Erro ao buscar tarefas com filtro");
+          setErrorMessage("Nenhuma task encontrada para sua busca.");
         }
       } catch (error) {
         console.error("Erro ao comunicar com o backend para pesquisa:", error);
-        setErrorMessage("Nenhuma task encontrada.");
+        setErrorMessage("Erro de conexão ao pesquisar.");
+      } finally {
+        setLoadingTasks(false);
       }
     } else {
-      // Se o termo de pesquisa estiver vazio, exibe todas as tarefas
       setFilteredTasks(allTasks);
+      setErrorMessage("");
     }
   };
 
@@ -118,35 +128,7 @@ function Dashboard() {
 
       fetchUserData();
     }
-  }, [user]);
-
-  const fetchTasks = async () => {
-    if (user?.email) {
-      try {
-        const response = await fetch(`${backendUrl}/tasks`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: user.email }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAllTasks(data);
-          setFilteredTasks(data);
-        } else {
-          console.error("Erro ao buscar tarefas");
-        }
-      } catch (error) {
-        console.error("Erro ao comunicar com o backend:", error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchTasks();
-  }, [backendUrl, user]);
+  }, [user, backendUrl]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -154,47 +136,50 @@ function Dashboard() {
     }
   }, [loading, user, router]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LineSpinner size="40" stroke="3" speed="1" color="black" />
-      </div>
-    );
-  }
-
   const handleTaskAdded = (newTaskId) => {
-    // Recarrega as tarefas para atualizar a lista
     fetchTasks();
   };
 
   const handleTaskDeleted = (deletedTaskId) => {
-    // Atualiza a lista de tarefas removendo a tarefa deletada
-    setAllTasks(allTasks.filter((task) => task.id_tarefa !== deletedTaskId));
-    setFilteredTasks(
-      filteredTasks.filter((task) => task.id_tarefa !== deletedTaskId)
+    setAllTasks((prev) =>
+      prev.filter((task) => task.id_tarefa !== deletedTaskId)
+    );
+    setFilteredTasks((prev) =>
+      prev.filter((task) => task.id_tarefa !== deletedTaskId)
     );
   };
 
   const handleTaskUpdated = (updatedTask) => {
-    // Atualiza o estado da tarefa na lista
-    const updatedAllTasks = allTasks.map((task) =>
-      task.id_tarefa === updatedTask.id_tarefa
-        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
-        : task
-    );
-    setAllTasks(updatedAllTasks);
-    const updatedFilteredTasks = filteredTasks.map((task) =>
-      task.id_tarefa === updatedTask.id_tarefa
-        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
-        : task
-    );
-    setFilteredTasks(updatedFilteredTasks);
+    const updateTaskInList = (list) =>
+      list.map((task) =>
+        task.id_tarefa === updatedTask.id_tarefa
+          ? { ...task, ...updatedTask }
+          : task
+      );
+    setAllTasks(updateTaskInList);
+    setFilteredTasks(updateTaskInList);
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = filteredTasks.findIndex(
+        (task) => task.id_tarefa === active.id
+      );
+      const newIndex = filteredTasks.findIndex(
+        (task) => task.id_tarefa === over.id
+      );
+
+      const newOrder = arrayMove(filteredTasks, oldIndex, newIndex);
+      setFilteredTasks(newOrder);
+    }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <LineSpinner size="40" stroke="3" speed="1" color="black" />;
+        <LineSpinner size="40" stroke="3" speed="1" color="black" />
       </div>
     );
   }
@@ -209,7 +194,7 @@ function Dashboard() {
           priority
         />
         <h2 className="lg:hidden text-xl font-bold">
-          Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
+          Olá, {registeredName || user?.displayName || "parceiro(a)!"}
         </h2>
         <Sidebar />
       </nav>
@@ -221,34 +206,46 @@ function Dashboard() {
             <LineSpinner size="30" stroke="3" speed="1" color="gray" />
           </div>
         ) : (
-          <ul className="flex flex-col justify-center text-center w-screen lg:w-full mt-[30px]">
-            {filteredTasks.length === 0 ? (
-              <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
-                <p className="text-[22px] font-[700] pt-[30px]">
-                  Bora organizar sua vida!
-                </p>
-                <Image
-                  src="/assets/pato-triste.png"
-                  alt="Sem Tarefas"
-                  width={250}
-                  height={250}
-                />
-              </li>
-            ) : (
-              filteredTasks.map((tarefa) => (
-                <li
-                  key={tarefa.id_tarefa}
-                  className="flex flex-col justify-center items-center text-center w-full"
-                >
-                  <TaskCard
-                    tarefa={tarefa}
-                    onTaskDeleted={handleTaskDeleted}
-                    onTaskUpdated={handleTaskUpdated}
-                  />
-                </li>
-              ))
-            )}
-          </ul>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={filteredTasks.map((t) => t.id_tarefa)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-[30px] w-full px-4 justify-items-center">
+                {filteredTasks.length === 0 ? (
+                  <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
+                    <p className="text-[22px] font-[700] pt-[30px]">
+                      Bora organizar sua vida!
+                    </p>
+                    <Image
+                      src="/assets/pato-triste.png"
+                      alt="Sem Tarefas"
+                      width={250}
+                      height={250}
+                    />
+                  </li>
+                ) : (
+                  filteredTasks.map((tarefa) => (
+                    <li
+                      key={tarefa.id_tarefa}
+                      className="w-full flex justify-center"
+                    >
+                      <TaskCard
+                        tarefa={tarefa}
+                        onTaskDeleted={handleTaskDeleted}
+                        onTaskUpdated={handleTaskUpdated}
+                        isDraggable={true}
+                        id={tarefa.id_tarefa}
+                      />
+                    </li>
+                  ))
+                )}
+              </ul>
+            </SortableContext>
+          </DndContext>
         )}
         {errorMessage && (
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
