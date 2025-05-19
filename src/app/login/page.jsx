@@ -67,16 +67,24 @@ function Login() {
   };
 
   const handleGoogleLoginSuccess = async (user) => {
-    console.log("Login com Google Sucesso:", user);
+    console.log(
+      "Login com Google Sucesso: Iniciando handleGoogleLoginSuccess",
+      user
+    );
     if (user) {
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
 
-      // Pegando os dados do usuário (nome e e-mail)
       const userName = user.displayName;
       const userEmail = user.email;
 
+      console.log("Dados do usuário Firebase para envio:", {
+        name: userName,
+        email: userEmail,
+      });
+
       try {
+        console.log("Tentando enviar dados para o backend /cadastro-google...");
         const response = await fetch(
           "https://megajr-back-end.onrender.com/cadastro-google",
           {
@@ -90,32 +98,25 @@ function Login() {
             }),
           }
         );
+        console.log(
+          "Requisição /cadastro-google finalizada. Resposta:",
+          response
+        );
 
         if (response.ok) {
-          console.log("Dados do usuário do Google enviados ao backend");
-
-          // Verifica se já tem o provedor 'password' vinculado
-          const providers = user.providerData.map((p) => p.providerId);
-          const hasPasswordProvider = providers.includes("password");
-          console.log("Provedores:", providers);
-          console.log("hasPasswordProvider:", hasPasswordProvider);
-
-          if (!hasPasswordProvider) {
-            console.log("Não tem provedor de senha, exibindo prompt...");
-            const password = prompt(
-              "Para maior segurança, crie uma senha para sua conta (será usada para logins futuros com e-mail/senha):"
-            );
-          } else {
-            console.log("Usuário já tem login por senha vinculado.");
-            router.push("/dashboard");
-          }
+          console.log(
+            "Dados do usuário do Google enviados ao backend com sucesso."
+          );
         } else {
-          console.error("Erro ao comunicar dados do Google com o backend");
+          console.error(
+            "Erro na resposta do backend ao comunicar dados do Google:",
+            response.status
+          );
           router.push("/dashboard");
         }
       } catch (error) {
         console.error(
-          "Erro ao fazer requisição para cadastro/verificação do Google:",
+          "Erro ao fazer requisição para cadastro/verificação do Google (CATCH):",
           error
         );
         router.push("/dashboard");
@@ -125,12 +126,13 @@ function Login() {
 
   const loginGoogle = async () => {
     try {
+      console.log("Iniciando login com Google via Firebase...");
       const result = await signInWithPopup(auth, googleAuthProvider);
       const user = result.user;
-      console.log("Usuário logado:", result.user);
-      handleGoogleLoginSuccess(result.user);
+      console.log("Usuário logado no Firebase com sucesso:", user);
+      handleGoogleLoginSuccess(user);
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
+      console.error("Erro ao fazer login com Google (Firebase):", error);
     }
   };
 
