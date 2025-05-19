@@ -17,7 +17,7 @@ import Sidebar from "../../components/Sidebar";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
 
@@ -212,7 +212,7 @@ function Dashboard() {
           >
             <SortableContext
               items={filteredTasks.map((t) => t.id_tarefa)}
-              strategy={verticalListSortingStrategy}
+              strategy={rectSortingStrategy}
             >
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-[30px] w-full px-4 justify-items-center">
                 {filteredTasks.length === 0 ? (
