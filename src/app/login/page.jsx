@@ -23,7 +23,6 @@ function Login() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        router.push("/dashboard");
       }
     });
 
@@ -47,7 +46,7 @@ function Login() {
   // Função para fazer o login com e-mail e senha
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage(""); // Limpa qualquer mensagem de erro anterior
+    setErrorMessage("");
 
     try {
       // Verificar se o usuário existe no banco de dados
@@ -55,7 +54,7 @@ function Login() {
       if (!userExists) {
         console.log("Usuário não encontrado:", email);
         setErrorMessage("Erro ao fazer login. Usuário não encontrado.");
-        return; // Interrompe a tentativa de login
+        return;
       }
 
       // Se o usuário existir, continua com o login
@@ -107,15 +106,14 @@ function Login() {
           // Verifica se já tem o provedor 'password' vinculado
           const providers = user.providerData.map((p) => p.providerId);
           const hasPasswordProvider = providers.includes("password");
-          console.log("Provedores:", providers); // Adicione este log
-          console.log("hasPasswordProvider:", hasPasswordProvider); // Adicione este log
+          console.log("Provedores:", providers);
+          console.log("hasPasswordProvider:", hasPasswordProvider);
 
           if (!hasPasswordProvider) {
-            console.log("Não tem provedor de senha, exibindo prompt..."); // Adicione este log
+            console.log("Não tem provedor de senha, exibindo prompt...");
             const password = prompt(
               "Para maior segurança, crie uma senha para sua conta (será usada para logins futuros com e-mail/senha):"
             );
-            // ... (o restante do seu código)
           } else {
             console.log("Usuário já tem login por senha vinculado.");
             router.push("/dashboard");
