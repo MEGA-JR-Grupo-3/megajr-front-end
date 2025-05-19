@@ -12,8 +12,8 @@ import {
 function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false); // Novo estado para expansão do card
-  const [isEditing, setIsEditing] = useState(false); // Novo estado para modo de edição
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({
     titulo: tarefa.titulo,
     descricao: tarefa.descricao || "",
@@ -149,7 +149,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
 
     const payload = {
       ...editFormData,
-      data_prazo: editFormData.data_prazo || null, // Envia null se a data estiver vazia
+      data_prazo: editFormData.data_prazo || null,
       estado_tarefa: tarefa.estado_tarefa,
     };
 
@@ -189,7 +189,6 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
 
   const handleEditCancel = () => {
     setIsEditing(false);
-    // Reinicia os dados do formulário para os valores originais da tarefa
     setEditFormData({
       titulo: tarefa.titulo,
       descricao: tarefa.descricao || "",
@@ -206,7 +205,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       style={style}
       {...attributes}
       className={`bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex justify-between w-[360px] min-h-24 cursor-pointer 
-      ${isExpanded ? "flex-col items-start" : "items-center"}
+      ${isExpanded ? "flex-col justify-between w-[320px]" : "items-center"}
       ${isDragging ? "" : "transition-all duration-300"} ${
         isDraggable ? "touch-action-none" : ""
       }`}
@@ -214,7 +213,7 @@ function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated, isDraggable, id }) {
       <div className="flex w-full">
         {isDraggable && (
           <div
-            className="flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 mr-2"
+            className="flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 "
             {...listeners}
           >
             <MdOutlineDragIndicator size={24} />
