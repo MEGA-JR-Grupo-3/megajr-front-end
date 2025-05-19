@@ -20,15 +20,6 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState(""); // Novo estado para a mensagem de erro
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
   // Função para verificar se o usuário já existe no banco de dados
   const checkIfUserExists = async (email) => {
     try {
