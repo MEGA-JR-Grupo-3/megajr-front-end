@@ -130,6 +130,7 @@ function Login() {
       const result = await signInWithPopup(auth, googleAuthProvider);
       const user = result.user;
       console.log("Usuário logado no Firebase com sucesso:", user);
+      console.log("Chamando handleGoogleLoginSuccess com o usuário:", user);
       handleGoogleLoginSuccess(user);
     } catch (error) {
       console.error("Erro ao fazer login com Google (Firebase):", error);
