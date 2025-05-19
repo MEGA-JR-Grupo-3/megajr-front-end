@@ -118,7 +118,7 @@ const MenuHamburguer = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden text-[var(--primary)] hover:bg-gray-200  transition-colors"
+        className="lg:hidden text-[var(--primary)] hover:text-[#e1808d]  transition-colors"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />

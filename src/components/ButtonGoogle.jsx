@@ -1,25 +1,23 @@
+// No seu arquivo GoogleLoginButton.jsx
 "use client";
 
 import React from "react";
 import GoogleIcon from "../../public/assets/googleIcon.svg";
 import Image from "next/image";
 import { auth, googleAuthProvider, signInWithPopup } from "../firebaseConfig";
-import { useRouter } from "next/navigation";
 
 function GoogleLoginButton({ onSuccess, onError }) {
-  const router = useRouter();
-
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
-      // O usuário fez login com sucesso
-      //console.log("Login com Google bem-sucedido:", result.user);
       if (onSuccess) {
         onSuccess(result.user);
       }
-      router.push("/dashboard");
     } catch (error) {
-      console.error("Erro ao fazer login com o Google:", error);
+      console.error(
+        "Erro ao fazer login com o Google (componente GoogleLoginButton):",
+        error
+      );
       if (onError) {
         onError(error);
       }

@@ -10,8 +10,9 @@ body {
   --secondary: #796295;
   --background: #fff5ee;
   --subbackground: #cecece;
-  --bgcard: #ffffff;
+  --bgcard: #eee3e3;
   --text: #612f7a;
+  --subText: #474747;
 }
 
 /* Estilos para o tema escuro */
@@ -22,4 +23,9 @@ body {
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
   --text: #e9227b;
+  --subText: #6c6c6c;
+}
+
+.touch-action-none {
+  touch-action: none !important;
 }

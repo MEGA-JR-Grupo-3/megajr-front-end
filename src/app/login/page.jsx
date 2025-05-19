@@ -20,16 +20,6 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState(""); // Novo estado para a mensagem de erro
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        router.push("/dashboard");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
   // Função para verificar se o usuário já existe no banco de dados
   const checkIfUserExists = async (email) => {
     try {
@@ -47,7 +37,7 @@ function Login() {
   // Função para fazer o login com e-mail e senha
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage(""); // Limpa qualquer mensagem de erro anterior
+    setErrorMessage("");
 
     try {
       // Verificar se o usuário existe no banco de dados
@@ -55,7 +45,7 @@ function Login() {
       if (!userExists) {
         console.log("Usuário não encontrado:", email);
         setErrorMessage("Erro ao fazer login. Usuário não encontrado.");
-        return; // Interrompe a tentativa de login
+        return;
       }
 
       // Se o usuário existir, continua com o login
@@ -77,69 +67,60 @@ function Login() {
   };
 
   const handleGoogleLoginSuccess = async (user) => {
-    console.log("Login com Google Sucesso:", user);
+    console.log(
+      "Login com Google Sucesso: Iniciando handleGoogleLoginSuccess",
+      user
+    );
     if (user) {
       const token = await user.getIdToken();
       localStorage.setItem("authToken", token);
 
-      // Pegando os dados do usuário (nome e e-mail)
       const userName = user.displayName;
       const userEmail = user.email;
 
-      // Enviar esses dados para o backend para salvar/verificar no banco de dados
+      console.log("Dados do usuário Firebase para envio:", {
+        name: userName,
+        email: userEmail,
+      });
+
       try {
-        const response = await fetch("/cadastro-google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: userName,
-            email: userEmail,
-          }),
-        });
+        console.log("Tentando enviar dados para o backend /cadastro-google...");
+        const response = await fetch(
+          "https://megajr-back-end.onrender.com/cadastro-google",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: userName,
+              email: userEmail,
+            }),
+          }
+        );
+        console.log(
+          "Requisição /cadastro-google finalizada. Resposta:",
+          response
+        );
 
         if (response.ok) {
-          console.log("Dados do usuário do Google enviados ao backend");
-
-          // Verifica se já tem o provedor 'password' vinculado
-          const providers = user.providerData.map((p) => p.providerId);
-          const hasPasswordProvider = providers.includes("password");
-          console.log("Provedores:", providers); // Adicione este log
-          console.log("hasPasswordProvider:", hasPasswordProvider); // Adicione este log
-
-          if (!hasPasswordProvider) {
-            console.log("Não tem provedor de senha, exibindo prompt..."); // Adicione este log
-            const password = prompt(
-              "Para maior segurança, crie uma senha para sua conta (será usada para logins futuros com e-mail/senha):"
-            );
-            // ... (o restante do seu código)
-          } else {
-            console.log("Usuário já tem login por senha vinculado.");
-            router.push("/dashboard");
-          }
+          console.log(
+            "Dados do usuário do Google enviados ao backend com sucesso."
+          );
         } else {
-          console.error("Erro ao comunicar dados do Google com o backend");
+          console.error(
+            "Erro na resposta do backend ao comunicar dados do Google:",
+            response.status
+          );
           router.push("/dashboard");
         }
       } catch (error) {
         console.error(
-          "Erro ao fazer requisição para cadastro/verificação do Google:",
+          "Erro ao fazer requisição para cadastro/verificação do Google (CATCH):",
           error
         );
         router.push("/dashboard");
       }
-    }
-  };
-
-  const loginGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleAuthProvider);
-      const user = result.user;
-      console.log("Usuário logado:", result.user);
-      handleGoogleLoginSuccess(result.user);
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
     }
   };
 
@@ -186,7 +167,7 @@ function Login() {
               disabled={!isEmailFilled || !isPasswordFilled}
             />
           </form>
-          <GoogleLoginButton onClick={loginGoogle} />
+          <GoogleLoginButton onSuccess={handleGoogleLoginSuccess} />
           <Link href="/register">
             <button className="mt-[20px] self-center underline text-[#676767]">
               cadastrar-se

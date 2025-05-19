@@ -26,16 +26,9 @@ export default function Register() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("handleFormSubmit chamado");
 
     setIsLoading(true);
-    console.log("isLoading:", isLoading);
     try {
-      console.log("Chamando cadastrarUsuario com:", {
-        name,
-        email,
-        senha: password,
-      });
       const response = await cadastrarUsuario({
         name: name,
         email,
@@ -76,7 +69,6 @@ export default function Register() {
       console.error("Erro no cadastro:", error);
     } finally {
       setIsLoading(false);
-      console.log("isLoading:", isLoading);
     }
   };
 

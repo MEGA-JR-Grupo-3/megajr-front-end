@@ -1,128 +1,472 @@
-import React from "react";
-import { auth } from "../firebaseConfig";
-import { useState } from "react";
+// components/TaskCard.jsx
+import React, { useState, useCallback, useMemo } from "react";
+import { auth } from "../firebaseConfig"; // Garanta que este caminho está correto
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  MdOutlineDragIndicator,
+  MdExpandMore,
+  MdExpandLess,
+  MdDeleteOutline, // Usado um ícone para deletar
+} from "react-icons/md"; // ou outro ícone de sua preferência
 
-function TaskCard({ tarefa, onTaskDeleted, onTaskUpdated }) {
+// Funções auxiliares movidas para fora do componente
+const getPriorityColor = (priority) => {
+  switch (priority) {
+    case "Urgente":
+      return "bg-red-500 text-white";
+    case "Alta":
+      return "bg-orange-500 text-white";
+    case "Normal":
+      return "bg-green-300 text-gray-800";
+    case "Baixa":
+      return "bg-blue-400 text-white";
+    default:
+      return "bg-gray-200 text-gray-700";
+  }
+};
+
+const getDueDateStatus = (dueDate) => {
+  if (!dueDate)
+    return { text: "Indefinido", className: "text-gray-400 bg-gray-100" };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const taskDueDate = new Date(dueDate);
+  taskDueDate.setHours(0, 0, 0, 0); // Normaliza para o início do dia
+  const oneDay = 24 * 60 * 60 * 1000;
+  const daysDifference = Math.round(
+    (taskDueDate.getTime() - today.getTime()) / oneDay
+  ); // getTime() para garantir
+
+  if (daysDifference < 0)
+    return {
+      text: `Atrasada (${taskDueDate.toLocaleDateString("pt-BR")})`,
+      className: "bg-red-200 text-red-700 font-semibold",
+    };
+  if (daysDifference <= 3)
+    return {
+      text: `Próxima (${taskDueDate.toLocaleDateString("pt-BR")})`,
+      className: "bg-yellow-200 text-yellow-700",
+    };
+  return {
+    text: `Prazo: ${taskDueDate.toLocaleDateString("pt-BR")}`,
+    className: "bg-green-100 text-green-700",
+  };
+};
+
+function TaskCardComponent({
+  tarefa,
+  onTaskDeleted,
+  onTaskUpdated,
+  isDraggable,
+  id,
+}) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const handleDelete = async () => {
-    if (isDeleting) return;
-    setIsDeleting(true);
+  const initialFormData = useMemo(
+    () => ({
+      titulo: tarefa.titulo,
+      descricao: tarefa.descricao || "",
+      data_prazo: tarefa.data_prazo
+        ? new Date(tarefa.data_prazo).toISOString().split("T")[0]
+        : "",
+      prioridade: tarefa.prioridade,
+    }),
+    [tarefa.titulo, tarefa.descricao, tarefa.data_prazo, tarefa.prioridade]
+  );
 
-    const user = auth.currentUser;
-    if (!user?.email) {
-      console.error("Usuário não autenticado.");
-      setIsDeleting(false);
-      return;
-    }
+  const [editFormData, setEditFormData] = useState(initialFormData);
 
-    try {
-      const response = await fetch(`${backendUrl}/tasks/${tarefa.id_tarefa}`, {
-        method: "DELETE",
-      });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
-      if (response.ok) {
-        console.log("Tarefa deletada com sucesso:", tarefa.id_tarefa);
-        onTaskDeleted(tarefa.id_tarefa);
-      } else {
-        const errorData = await response.json();
-        console.error("Erro ao deletar tarefa:", errorData);
+  const style = useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.8 : 1,
+      boxShadow: isDragging ? "0px 4px 10px rgba(0, 0, 0, 0.2)" : "none",
+    }),
+    [transform, transition, isDragging]
+  );
+
+  const makeApiRequest = useCallback(
+    async (
+      endpoint,
+      method,
+      body,
+      successCallback,
+      errorMsgPrefix,
+      setLoadingState
+    ) => {
+      const user = auth.currentUser;
+      if (!user?.email) {
+        console.error("Usuário não autenticado.");
+        alert("Usuário não autenticado. Faça login novamente.");
+        return false;
       }
-    } catch (error) {
-      console.error("Erro ao comunicar com o backend:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleStatusChange = async (event) => {
-    if (isUpdating) return;
-    setIsUpdating(true);
-
-    const newStatus = event.target.checked ? "Finalizada" : "Pendente";
-
-    const user = auth.currentUser;
-    if (!user?.email) {
-      console.error("Usuário não autenticado.");
-      setIsUpdating(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/tasks/${tarefa.id_tarefa}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ estado_tarefa: newStatus }),
-      });
-
-      if (response.ok) {
-        console.log(
-          "Estado da tarefa atualizado:",
-          tarefa.id_tarefa,
-          newStatus
-        );
-        onTaskUpdated({
-          id_tarefa: tarefa.id_tarefa,
-          estado_tarefa: newStatus,
+      setLoadingState(true);
+      try {
+        const response = await fetch(`${backendUrl}${endpoint}`, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: body ? JSON.stringify(body) : undefined,
         });
-      } else {
-        const errorData = await response.json();
-        console.error("Erro ao atualizar estado da tarefa:", errorData);
+        if (response.ok) {
+          // Para DELETE, a resposta pode não ter corpo JSON ou ser vazia
+          const responseData =
+            method === "DELETE" || response.status === 204
+              ? {}
+              : await response.json().catch(() => ({}));
+          successCallback(responseData);
+          return true;
+        } else {
+          const errorData = await response
+            .json()
+            .catch(() => ({ message: response.statusText }));
+          console.error(`${errorMsgPrefix}:`, errorData);
+          alert(
+            `${errorMsgPrefix}: ${errorData.message || response.statusText}`
+          );
+          return false;
+        }
+      } catch (error) {
+        console.error("Erro ao comunicar com o backend:", error);
+        alert(`Erro de conexão: ${errorMsgPrefix.toLowerCase()}.`);
+        return false;
+      } finally {
+        setLoadingState(false);
       }
-    } catch (error) {
-      console.error("Erro ao comunicar com o backend:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
+    },
+    [backendUrl]
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (isDeleting) return;
+    await makeApiRequest(
+      `/tasks/${tarefa.id_tarefa}`,
+      "DELETE",
+      null,
+      () => {
+        onTaskDeleted(tarefa.id_tarefa);
+      },
+      "Erro ao deletar tarefa",
+      setIsDeleting
+    );
+  }, [isDeleting, makeApiRequest, tarefa.id_tarefa, onTaskDeleted]);
+
+  const handleStatusChange = useCallback(
+    async (event) => {
+      if (isUpdatingStatus) return;
+      const newStatus = event.target.checked ? "Finalizada" : "Pendente";
+      await makeApiRequest(
+        `/tasks/${tarefa.id_tarefa}/status`,
+        "PUT",
+        { estado_tarefa: newStatus },
+        () => {
+          onTaskUpdated({
+            id_tarefa: tarefa.id_tarefa,
+            estado_tarefa: newStatus,
+          });
+        },
+        "Erro ao atualizar estado",
+        setIsUpdatingStatus
+      );
+    },
+    [isUpdatingStatus, makeApiRequest, tarefa.id_tarefa, onTaskUpdated]
+  );
+
+  const handleEditSave = useCallback(async () => {
+    if (isSavingEdit) return;
+    const payload = {
+      ...editFormData,
+      data_prazo: editFormData.data_prazo || null,
+      estado_tarefa: tarefa.estado_tarefa, // Mantém o estado atual
+    };
+    const success = await makeApiRequest(
+      `/tasks/${tarefa.id_tarefa}`,
+      "PUT",
+      payload,
+      () => {
+        onTaskUpdated({ id_tarefa: tarefa.id_tarefa, ...payload });
+        setIsEditing(false);
+      },
+      "Erro ao atualizar tarefa",
+      setIsSavingEdit
+    );
+  }, [
+    isSavingEdit,
+    makeApiRequest,
+    tarefa.id_tarefa,
+    tarefa.estado_tarefa,
+    editFormData,
+    onTaskUpdated,
+  ]);
+
+  const handleEditChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const resetFormAndExitEdit = useCallback(() => {
+    setIsEditing(false);
+    setEditFormData(initialFormData);
+  }, [initialFormData]);
+
+  const handleEditCancel = useCallback(
+    (e) => {
+      e.stopPropagation();
+      resetFormAndExitEdit();
+    },
+    [resetFormAndExitEdit]
+  );
+
+  const toggleExpand = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setIsExpanded((prev) => !prev);
+      // Se estiver editando e colapsar, sair do modo de edição
+      if (isEditing && isExpanded) {
+        resetFormAndExitEdit();
+      }
+    },
+    [isEditing, isExpanded, resetFormAndExitEdit]
+  );
+
+  const openEditMode = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setEditFormData(initialFormData);
+      setIsEditing(true);
+      if (!isExpanded) setIsExpanded(true);
+    },
+    [initialFormData, isExpanded]
+  );
+
+  const dueDateInfo = useMemo(
+    () => getDueDateStatus(tarefa.data_prazo),
+    [tarefa.data_prazo]
+  );
+  const priorityClasses = useMemo(
+    () => getPriorityColor(tarefa.prioridade),
+    [tarefa.prioridade]
+  );
+  const isLoading = isDeleting || isUpdatingStatus || isSavingEdit;
+
+  const cardBaseClasses =
+    "flex flex-col items-start bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 w-[360px] min-h-[100px]";
+  const cardAnimationClasses = isDragging
+    ? ""
+    : "transition-shadow duration-300";
+  const cardDraggableClass = isDraggable
+    ? "touch-action-none"
+    : "cursor-pointer"; // Card é clicável se não for draggable
 
   return (
-    <div className="bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 flex items-center justify-between w-[360px]">
-      <div className="flex flex-col justify-start text-center gap-1">
-        <h3 className="text-lg font-semibold text-start">{tarefa.titulo}</h3>
-        {tarefa.descricao && (
-          <p className="text-gray-600 text-sm text-start">{tarefa.descricao}</p>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes} // Listeners são aplicados ao drag handle
+      className={`${cardBaseClasses} ${cardAnimationClasses} ${cardDraggableClass}`}
+      onClick={
+        !isDraggable && !isEditing && !isExpanded ? openEditMode : undefined
+      } // Abrir para editar/expandir se não for draggable
+    >
+      {/* Seção Superior: Título, Drag Handle, Ações Imediatas */}
+      <div className="flex flex-row w-full justify-between items-start gap-2">
+        {isDraggable && (
+          <div
+            className="flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 py-1 flex-shrink-0"
+            {...listeners}
+          >
+            <MdOutlineDragIndicator size={24} />
+          </div>
         )}
-        {tarefa.data_prazo ? (
-          <p className="text-gray-500 text-xs text-start">
-            Prazo:
-            {new Date(tarefa.data_prazo).toLocaleDateString("pt-BR")}
-          </p>
-        ) : (
-          <p className="text-gray-500 text-xs text-start">Prazo: Indefinido</p>
-        )}
-        <p className="text-var(--text) text-xs text-start">
-          Prioridade: {tarefa.prioridade}
-        </p>
-      </div>
-      <div className="flex items-center space-x-2">
-        <label className="flex items-center text-sm text-gray-700">
-          <input
-            type="checkbox"
-            className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
-            checked={tarefa.estado_tarefa === "Finalizada"}
-            onChange={handleStatusChange}
-            disabled={isUpdating}
-          />
-          <span className="ml-2">
-            {tarefa.estado_tarefa === "Finalizada" ? "Finalizada" : "Pendente"}
-          </span>
-        </label>
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded text-xs focus:outline-none focus:shadow-outline"
-          disabled={isDeleting}
+        {!isDraggable && <div className="w-[24px] mr-2 flex-shrink-0"></div>}
+
+        <div
+          className="flex-grow min-w-0"
+          onClick={!isDraggable && !isEditing ? openEditMode : undefined}
         >
-          Deletar
-        </button>
+          {isEditing ? (
+            <input
+              type="text"
+              name="titulo"
+              value={editFormData.titulo}
+              onChange={handleEditChange}
+              className="text-lg font-semibold text-[var(--text)] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full"
+              placeholder="Título da Tarefa"
+              disabled={isLoading}
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <h3 className="text-lg font-semibold text-[var(--text)] text-start break-words">
+              {tarefa.titulo}
+            </h3>
+          )}
+        </div>
+
+        {!isEditing && (
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <label
+              className="flex items-center cursor-pointer p-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <input
+                type="checkbox"
+                className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                checked={tarefa.estado_tarefa === "Finalizada"}
+                onChange={handleStatusChange}
+                disabled={isUpdatingStatus || isDeleting}
+              />
+            </label>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              className="p-1 text-red-500 hover:text-red-700 disabled:text-gray-400"
+              disabled={isLoading}
+            >
+              <MdDeleteOutline size={22} />
+            </button>
+            <button
+              onClick={toggleExpand}
+              className="p-1 text-gray-500 hover:text-gray-700"
+            >
+              {isExpanded ? (
+                <MdExpandLess size={24} />
+              ) : (
+                <MdExpandMore size={24} />
+              )}
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Seção Expandida/Edição */}
+      {(isExpanded || isEditing) && ( // Mostrar esta seção se estiver expandido OU editando
+        <div
+          className={`w-full mt-2 ${
+            isDraggable ? "pl-[calc(24px+0.5rem)]" : ""
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {isEditing ? (
+            <textarea
+              name="descricao"
+              value={editFormData.descricao}
+              onChange={handleEditChange}
+              className="text-[var(--text-secondary)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
+              rows={3}
+              placeholder="Descrição da Tarefa"
+              disabled={isLoading}
+            />
+          ) : (
+            tarefa.descricao && (
+              <p className="text-[var(--subText)] text-sm mt-1 break-words text-start whitespace-pre-wrap max-h-24 overflow-y-auto w-full">
+                {tarefa.descricao}
+              </p>
+            )
+          )}
+
+          <div className="flex gap-2 mt-2 items-center">
+            {isEditing ? (
+              <input
+                type="date"
+                name="data_prazo"
+                value={editFormData.data_prazo}
+                onChange={handleEditChange}
+                className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow"
+                disabled={isLoading}
+              />
+            ) : (
+              <p
+                className={`text-xs px-2 py-1 rounded-md inline-block flex-grow ${dueDateInfo.className}`}
+              >
+                {dueDateInfo.text}
+              </p>
+            )}
+            {isEditing ? (
+              <select
+                name="prioridade"
+                value={editFormData.prioridade}
+                onChange={handleEditChange}
+                className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5"
+                disabled={isLoading}
+              >
+                <option value="Baixa">Baixa</option>{" "}
+                <option value="Normal">Normal</option>
+                <option value="Alta">Alta</option>{" "}
+                <option value="Urgente">Urgente</option>
+              </select>
+            ) : (
+              <p
+                className={`text-xs px-2 py-1 rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses}`}
+              >
+                {tarefa.prioridade}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 mt-4">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditSave();
+                  }}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-xs focus:outline-none focus:shadow-outline disabled:bg-gray-400"
+                  disabled={isLoading}
+                >
+                  Salvar
+                </button>
+                <button
+                  onClick={handleEditCancel}
+                  className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-xs focus:outline-none focus:shadow-outline disabled:bg-gray-300"
+                  disabled={isLoading}
+                >
+                  Cancelar
+                </button>
+                {/* Botão para colapsar enquanto edita, se estiver expandido */}
+                {isExpanded && (
+                  <button
+                    onClick={toggleExpand}
+                    className="p-1 text-gray-500 hover:text-gray-700 ml-auto"
+                    title="Fechar detalhes"
+                  >
+                    <MdExpandLess size={24} />
+                  </button>
+                )}
+              </>
+            ) : (
+              isExpanded && ( // Botão Editar só aparece se expandido e não editando
+                <button
+                  onClick={openEditMode}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-xs focus:outline-none focus:shadow-outline"
+                >
+                  Editar Tarefa
+                </button>
+              )
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default TaskCard;
+export default React.memo(TaskCardComponent);

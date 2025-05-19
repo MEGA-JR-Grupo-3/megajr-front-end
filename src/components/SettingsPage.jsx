@@ -46,7 +46,7 @@ export default function SettingsPage() {
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
       {/* ... outras configurações ... */}
       <NotificationControl enabled={notificationsEnabled} onToggle={toggleNotifications} />
-      {/* ... */}
+
       {/* Em outras páginas/componentes onde você exibe notificações: */}
       { <NotificationDisplayer message={someNotificationMessage} enabled={notificationsEnabled} /> }
     </div>
@@ -57,8 +57,8 @@ export default function SettingsPage() {
 
   useEffect(() => {
     localStorage.setItem('taskSize', taskSize);
-    // Aqui você precisaria aplicar a classe CSS correspondente ao tamanho da tarefa
-    // em seus componentes de tarefa. Por exemplo, adicionar uma classe como
+    // aplicar a classe CSS correspondente ao tamanho da tarefa
+    // em seus componentes de tarefa. Adicionar uma classe como
     // `task-small`, `task-medium`, `task-large` dinamicamente.
     console.log('Tamanho da Tarefa:', taskSize);
   }, [taskSize]);
