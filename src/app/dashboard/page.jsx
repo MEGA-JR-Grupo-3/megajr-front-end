@@ -120,7 +120,6 @@ function Dashboard() {
         });
 
         if (response.ok) {
-          console.log("Ordem das tarefas salva com sucesso!");
           setErrorMessage("");
         } else {
           const errorData = await response.json();

@@ -28,14 +28,6 @@ function AddTaskForm({ onClose, onTaskAdded }) {
     };
 
     try {
-      console.log("Dados a serem enviados:", {
-        titulo,
-        descricao,
-        data_prazo: dataPrazo,
-        prioridade,
-        estado_tarefa: estadoTarefa,
-        email: user.email,
-      });
       const response = await fetch(`${backendUrl}/tasks/add`, {
         method: "POST",
         headers: {
@@ -46,7 +38,6 @@ function AddTaskForm({ onClose, onTaskAdded }) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Tarefa adicionada:", data);
         onTaskAdded(data.insertId);
         onClose();
       } else {
