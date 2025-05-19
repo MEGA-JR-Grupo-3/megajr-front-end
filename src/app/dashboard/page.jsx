@@ -210,57 +210,7 @@ function Dashboard() {
     setIsAddTaskFormVisible(false); // Fecha o formulário
   };
 
-<<<<<<< HEAD
   if (loading) {
-=======
-  // Callback quando uma tarefa é deletada
-  const handleTaskDeleted = (deletedTaskId) => {
-    setAllTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id_tarefa !== deletedTaskId)
-    );
-    setFilteredTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id_tarefa !== deletedTaskId)
-    );
-  };
-
-  // Callback quando uma tarefa é atualizada (status ou conteúdo)
-  const handleTaskUpdated = (updatedTask) => {
-    const updateLogic = (tasks) =>
-      tasks.map((task) =>
-        task.id_tarefa === updatedTask.id_tarefa
-          ? { ...task, ...updatedTask }
-          : task
-      );
-    setAllTasks(updateLogic);
-    setFilteredTasks(updateLogic);
-  };
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setFilteredTasks((items) => {
-        const oldIndex = items.findIndex(
-          (item) => item.id_tarefa === active.id
-        );
-        const newIndex = items.findIndex((item) => item.id_tarefa === over.id);
-
-        const newOrderedItems = arrayMove(items, oldIndex, newIndex);
-
-        const updatedOrdertasks = newOrderedItems.map((task, index) => ({
-          ...task,
-          ordem: index,
-        }));
-
-        saveTaskOrderToBackend(updatedOrdertasks);
-
-        return updatedOrdertasks;
-      });
-    }
-  }
-
-  if (loadingAuth) {
->>>>>>> 0b7c01f60fa91ed8e57b82ef105c4a01d920e176
     return (
       <div className="flex justify-center items-center h-screen bg-slate-100">
         <LineSpinner size="40" stroke="3" speed="1" color="black" />
