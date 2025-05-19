@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebaseConfig";
 import ButtonAddTask from "../../components/ButtonAddTask";
@@ -14,313 +14,262 @@ import Logo from "../../../public/assets/splash-pato.png";
 import Image from "next/image";
 import Sidebar from "../../components/Sidebar";
 
-// Dnd-kit imports
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 function Dashboard() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loadingAuth, setLoadingAuth] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [registeredName, setRegisteredName] = useState("");
   const [allTasks, setAllTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
 
-  // Dnd-kit sensors: configura os sensores para detecção de arraste
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    })
-  );
-
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
-      setLoadingAuth(false);
-      if (!user) {
-        router.push("/");
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    const fetchTasks = async () => {
+      if (user?.email) {
+        setLoadingTasks(true);
+        try {
+          const response = await fetch(`${backendUrl}/tasks`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: user.email }),
+          });
 
-  const fetchUserData = useCallback(async () => {
-    if (currentUser?.email) {
+          if (response.ok) {
+            const data = await response.json();
+            setAllTasks(data);
+            setFilteredTasks(data);
+          } else {
+            console.error("Erro ao buscar tarefas");
+          }
+        } catch (error) {
+          console.error("Erro ao comunicar com o backend:", error);
+        } finally {
+          setLoadingTasks(false);
+        }
+      }
+    };
+
+    fetchTasks();
+  }, [backendUrl, user]);
+
+  const handleSearch = async (searchTerm) => {
+    if (searchTerm) {
+      setLoadingTasks(true);
       try {
-        const response = await fetch(`${backendUrl}/user-data`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: currentUser.email }),
-        });
+        const response = await fetch(
+          `${backendUrl}/tasks/search?query=${searchTerm}`,
+          {
+            method: "GET",
+          }
+        );
+
         if (response.ok) {
           const data = await response.json();
-          setRegisteredName(data.name);
+          setFilteredTasks(data);
         } else {
-          console.error(
-            "Erro ao buscar dados do usuário:",
-            response.statusText
-          );
+          console.error("Erro ao buscar tarefas com filtro");
         }
       } catch (error) {
-        console.error("Erro ao comunicar com o backend (user-data):", error);
+        console.error("Erro ao comunicar com o backend para pesquisa:", error);
+        setErrorMessage("Nenhuma task encontrada.");
       }
+    } else {
+      // Se o termo de pesquisa estiver vazio, exibe todas as tarefas
+      setFilteredTasks(allTasks);
     }
-  }, [currentUser, backendUrl]);
+  };
 
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
 
-  const saveTaskOrderToBackend = useCallback(
-    async (tasksToSave) => {
-      if (!currentUser?.email) {
-        console.error(
-          "Usuário não autenticado. Não é possível salvar a ordem."
-        );
-        setErrorMessage(
-          "Você precisa estar logado para salvar a ordem das tarefas."
-        );
-        return;
-      }
+    return () => unsubscribe();
+  }, []);
 
-      try {
-        // Cria um array com apenas o id_tarefa e a nova ordem
-        const orderData = tasksToSave.map((task) => ({
-          id_tarefa: task.id_tarefa,
-          ordem: task.ordem,
-        }));
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`${backendUrl}/user-data`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: user.email }),
+          });
 
-        const response = await fetch(`${backendUrl}/tasks/reorder`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: currentUser.email, tasks: orderData }),
-        });
-
-        if (response.ok) {
-          setErrorMessage("");
-        } else {
-          const errorData = await response.json();
-          console.error("Erro ao salvar a ordem das tarefas:", errorData);
-          setErrorMessage(
-            `Erro ao salvar a nova ordem: ${
-              errorData.message || response.statusText
-            }`
-          );
+          if (response.ok) {
+            const data = await response.json();
+            setRegisteredName(data.name);
+          } else {
+            console.error("Erro ao buscar dados do usuário");
+          }
+        } catch (error) {
+          console.error("Erro ao comunicar com o backend:", error);
         }
-      } catch (error) {
-        console.error("Erro de conexão ao salvar a ordem das tarefas:", error);
-        setErrorMessage("Erro de conexão ao salvar a nova ordem das tarefas.");
-      }
-    },
-    [currentUser, backendUrl]
-  );
+      };
 
-  const fetchAllTasks = useCallback(async () => {
-    if (currentUser?.email) {
-      setLoadingTasks(true);
+      fetchUserData();
+    }
+  }, [user]);
+
+  const fetchTasks = async () => {
+    if (user?.email) {
       try {
         const response = await fetch(`${backendUrl}/tasks`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: currentUser.email }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: user.email }),
         });
+
         if (response.ok) {
           const data = await response.json();
-          const sortedData = data.sort(
-            (a, b) => (a.ordem || 0) - (b.ordem || 0)
-          );
           setAllTasks(data);
           setFilteredTasks(data);
         } else {
-          console.error("Erro ao buscar tarefas:", response.statusText);
-          setErrorMessage("Não foi possível carregar suas tarefas.");
+          console.error("Erro ao buscar tarefas");
         }
       } catch (error) {
-        console.error("Erro ao comunicar com o backend (tasks):", error);
-        setErrorMessage("Erro de conexão ao buscar tarefas.");
-      } finally {
-        setLoadingTasks(false);
+        console.error("Erro ao comunicar com o backend:", error);
       }
-    } else {
-      // Se não há usuário, limpa as tarefas
-      setAllTasks([]);
-      setFilteredTasks([]);
     }
-  }, [currentUser, backendUrl]);
+  };
 
   useEffect(() => {
-    fetchAllTasks();
-  }, [fetchAllTasks]);
+    fetchTasks();
+  }, [backendUrl, user]);
 
-  const handleSearch = async (searchTerm) => {
-    if (!searchTerm) {
-      setFilteredTasks(allTasks); // Se a busca estiver vazia, mostra todas as tarefas
-      setErrorMessage("");
-      return;
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/");
     }
-    setLoadingTasks(true);
-    try {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      const results = allTasks.filter(
-        (task) =>
-          task.titulo.toLowerCase().includes(lowerSearchTerm) ||
-          (task.descricao &&
-            task.descricao.toLowerCase().includes(lowerSearchTerm))
-      );
-      setFilteredTasks(results);
-      if (results.length === 0) {
-        setErrorMessage("Nenhuma tarefa encontrada com este termo.");
-      } else {
-        setErrorMessage("");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar tarefas com filtro:", error);
-      setErrorMessage("Erro ao tentar filtrar tarefas.");
-    } finally {
-      setLoadingTasks(false);
-    }
-  };
-
-  // Callback quando uma nova tarefa é adicionada
-  const handleTaskAdded = () => {
-    fetchAllTasks(); // Recarrega todas as tarefas
-    setIsAddTaskFormVisible(false); // Fecha o formulário
-  };
+  }, [loading, user, router]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-slate-100">
+      <div className="flex justify-center items-center h-screen">
         <LineSpinner size="40" stroke="3" speed="1" color="black" />
       </div>
     );
   }
 
+  const handleTaskAdded = (newTaskId) => {
+    // Recarrega as tarefas para atualizar a lista
+    fetchTasks();
+  };
+
+  const handleTaskDeleted = (deletedTaskId) => {
+    // Atualiza a lista de tarefas removendo a tarefa deletada
+    setAllTasks(allTasks.filter((task) => task.id_tarefa !== deletedTaskId));
+    setFilteredTasks(
+      filteredTasks.filter((task) => task.id_tarefa !== deletedTaskId)
+    );
+  };
+
+  const handleTaskUpdated = (updatedTask) => {
+    // Atualiza o estado da tarefa na lista
+    const updatedAllTasks = allTasks.map((task) =>
+      task.id_tarefa === updatedTask.id_tarefa
+        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
+        : task
+    );
+    setAllTasks(updatedAllTasks);
+    const updatedFilteredTasks = filteredTasks.map((task) =>
+      task.id_tarefa === updatedTask.id_tarefa
+        ? { ...task, estado_tarefa: updatedTask.estado_tarefa }
+        : task
+    );
+    setFilteredTasks(updatedFilteredTasks);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LineSpinner size="40" stroke="3" speed="1" color="black" />;
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 md:p-4 transition-all duration-300 text-[var(--text)] bg-[var(--background)]">
-      <nav className="w-full flex flex-row items-center justify-between pr-3 mb-4 md:mb-6">
+    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+      <nav className="w-full flex flex-row items-center justify-between pr-3">
         <Image
           src={Logo}
-          className="lg:hidden h-12 w-auto sm:h-14 cursor-pointer"
-          onClick={() => router.push("/dashboard")}
+          className="lg:hidden h-14 w-auto"
           alt="Logo Jubileu"
           priority
         />
-        <h2 className="lg:hidden text-lg sm:text-xl font-bold">
-          Olá, {registeredName || currentUser?.displayName || "parceiro(a)!"}
+        <h2 className="lg:hidden text-xl font-bold">
+          Olá, {registeredName || user?.displayName || "parceiro(a)!"}{" "}
         </h2>
         <Sidebar />
       </nav>
-      <InputSearch onSearch={handleSearch} />
-      <div className="flex flex-col items-center justify-start w-full h-full transition-all duration-300 px-2">
-        <h1 className="text-xl sm:text-2xl font-bold pt-6 pb-4 ">
-          Suas JubiTasks
-        </h1>
-
+      <InputSearch tarefas={allTasks} onSearch={handleSearch} />
+      <div className="flex flex-col items-center justify-start h-full transition-all duration-300">
+        <h1 className="text-[22px] font-[700] pt-[30px]">Suas JubiTasks</h1>
         {loadingTasks ? (
-          <div className="flex justify-center items-center mt-8">
+          <div className="flex justify-center items-center mt-[30px]">
             <LineSpinner size="30" stroke="3" speed="1" color="gray" />
           </div>
         ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={filteredTasks.map((task) => task.id_tarefa)}
-              strategy={verticalListSortingStrategy}
-            >
-              <ul className="flex flex-col justify-center text-center w-full max-w-2xl mt-2 mb-16 space-y-3">
-                {filteredTasks.length === 0 ? (
-                  <li className="flex flex-col justify-center items-center text-center mt-10 sm:mt-16 gap-8 sm:gap-14 h-full w-full p-4  rounded-lg ">
-                    <p className="text-lg sm:text-xl font-semibold text-[var(--text)]">
-                      {errorMessage ? errorMessage : "Bora organizar sua vida!"}
-                    </p>
-                    {!errorMessage && (
-                      <Image
-                        src="/assets/pato-triste.png"
-                        alt="Sem Tarefas"
-                        width={200}
-                        height={200}
-                        className="opacity-75"
-                      />
-                    )}
-                    <ButtonAddTask
-                      onClick={() => setIsAddTaskFormVisible(true)}
-                    />
-                  </li>
-                ) : (
-                  filteredTasks.map((tarefa) => (
-                    <li
-                      key={tarefa.id_tarefa}
-                      className="flex flex-col justify-center items-center text-center w-full"
-                    >
-                      <TaskCard
-                        key={tarefa.id_tarefa}
-                        id={tarefa.id_tarefa}
-                        tarefa={tarefa}
-                        onTaskDeleted={handleTaskDeleted}
-                        onTaskUpdated={handleTaskUpdated}
-                        currentUser={currentUser}
-                        isDraggable={true}
-                      />
-                    </li>
-                  ))
-                )}
-              </ul>
-            </SortableContext>
-          </DndContext>
+          <ul className="flex flex-col justify-center text-center w-screen lg:w-full mt-[30px]">
+            {filteredTasks.length === 0 ? (
+              <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
+                <p className="text-[22px] font-[700] pt-[30px]">
+                  Bora organizar sua vida!
+                </p>
+                <Image
+                  src="/assets/pato-triste.png"
+                  alt="Sem Tarefas"
+                  width={250}
+                  height={250}
+                />
+              </li>
+            ) : (
+              filteredTasks.map((tarefa) => (
+                <li
+                  key={tarefa.id_tarefa}
+                  className="flex flex-col justify-center items-center text-center w-full"
+                >
+                  <TaskCard
+                    tarefa={tarefa}
+                    onTaskDeleted={handleTaskDeleted}
+                    onTaskUpdated={handleTaskUpdated}
+                  />
+                </li>
+              ))
+            )}
+          </ul>
+        )}
+        {errorMessage && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">
+            <div className="h-[200px] w-[340px] bg-[var(--subbackground)] rounded-2xl border border-[#ffffff] p-4 flex flex-col justify-center text-center text-red-600">
+              <h3>{errorMessage}</h3>
+              <Button
+                buttonText="Fechar"
+                buttonStyle="mt-[20px] self-center"
+                onClick={() => setErrorMessage("")}
+              />
+            </div>
+          </div>
+        )}
+        <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
+        {isAddTaskFormVisible && (
+          <AddTaskForm
+            onClose={() => setIsAddTaskFormVisible(false)}
+            onTaskAdded={handleTaskAdded}
+          />
         )}
       </div>
-      {errorMessage && filteredTasks.length > 0 && (
-        <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="h-auto min-h-[150px] w-[90%] max-w-sm bg-white rounded-2xl border border-gray-300 p-6 flex flex-col justify-center text-center shadow-xl">
-            <h3 className="text-lg font-semibold text-red-600 mb-4">
-              {errorMessage}
-            </h3>
-            <Button
-              buttonText="Fechar"
-              buttonStyle="mt-4 self-center bg-red-500 hover:bg-red-600 text-white"
-              onClick={() => setErrorMessage("")}
-            />
-          </div>
-        </div>
-      )}
-      {!isAddTaskFormVisible && filteredTasks.length > 0 && (
-        <div className="fixed bottom-6 right-6 z-40">
-          <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
-        </div>
-      )}
-      {isAddTaskFormVisible && (
-        <AddTaskForm
-          onClose={() => setIsAddTaskFormVisible(false)}
-          onTaskAdded={handleTaskAdded}
-          currentUser={currentUser}
-        />
-      )}
     </div>
   );
 }

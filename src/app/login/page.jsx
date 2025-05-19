@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Input from "../../components/Input";
 import InputPassword from "../../components/InputPassword";
 import GoogleLoginButton from "../../components/ButtonGoogle";
 import PatoImg from "../../../public/assets/splash-pato.png";
 import Button from "../../components/Button";
-import { auth, googleAuthProvider } from "../../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 
 function Login() {

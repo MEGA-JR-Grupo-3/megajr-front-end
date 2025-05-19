@@ -10,16 +10,6 @@ export async function middleware(request) {
       if (!sessionCookie) {
         throw new Error("No session cookie");
       }
-      // Use Firebase Admin SDK para verificar a validade do cookie de sessão
-      // (Requer configuração do Firebase Admin SDK no seu backend)
-      // const decodedToken = await auth.verifySessionCookie(sessionCookie);
-      // if (decodedToken) {
-      //   return NextResponse.next();
-      // } else {
-      //   return NextResponse.redirect(new URL('/login', request.url));
-      // }
-
-      // Uma abordagem mais simples (se você confia no token no localStorage):
       const token = request.cookies.get("authToken")?.value;
       if (!token) {
         return NextResponse.redirect(new URL("/", request.url));
