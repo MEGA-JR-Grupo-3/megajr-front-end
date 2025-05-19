@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import Input from "../../components/Input";
-import PatoImg from "../../../public/assets/splashPato.png";
+import PatoImg from "../../../public/assets/splash-pato.png";
 import Button from "../../components/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
