@@ -192,7 +192,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
-                  router.push("/jub-settings");
+                  router.push("/about");
                   setIsOpen(false);
                 }}
               >

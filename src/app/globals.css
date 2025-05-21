@@ -6,23 +6,23 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #612f7a;
-  --secondary: #796295;
+  --primary: #491a61;
+  --secondary: #8b76a5;
   --background: #fff5ee;
   --subbackground: #cecece;
   --bgcard: #eee3e3;
-  --text: #612f7a;
+  --text: #491a61;
   --subText: #474747;
 }
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
-  --primary: #920055;
+  --primary: #ce0078;
   --secondary: #ac0000;
   --background: #1b1b1b;
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
-  --text: #ffffff;
+  --text: #ce0078;
   --subText: #6c6c6c;
 }
 

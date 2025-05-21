@@ -6,12 +6,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import patoDiferente from "../../../public/assets/pato-diferente.png"
 
 const originalTeamMembers = [
   {
     name: "Edilson Enzo",
     role: "Front-end Developer",
-    image: "/team/enzo.jpg",
+    Image: "/public/assets/enzo.jpg"
   },
   {
     name: "Nicolas",
@@ -75,12 +76,20 @@ export default function about(){
         <Sidebar />
       </nav>
 
-      <section className="text-center max-w-4xl">
-        <h1 className="text-5xl font-extrabold text-[var(--secundary)] mb-4">Sobre nós</h1>
+      <section className="flex flex-col justfy-center items-center text-center max-w-4xl">
+        <h1 className="text-5xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text mb-4 ">Sobre nós</h1>
         <h2 className="text-2xl font-semibold mb-10">
           O que acontece quando 6 programadores, motivados pelo Mega P.S., se juntam para encarar esse desafio?
         </h2>
+        <Image
+          src={patoDiferente}
+          className="h-auto w-40 mb-10 object-cover"
+          alt="pato"
+          priority
+        />
       </section>
+
+      <h1></h1>
 
       <section className="max-w-5xl w-full p-6 bg-white/70 backdrop-blur rounded-xl shadow-xl">
         <div className="flex items-center justify-between mb-4">
