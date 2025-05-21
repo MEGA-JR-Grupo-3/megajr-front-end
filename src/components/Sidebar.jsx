@@ -170,7 +170,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
                 onClick={() => {
-                  console.log("Ir para Editar Perfil");
+                  router.push("/about");
                   setIsOpen(false);
                 }}
               >
@@ -197,7 +197,7 @@ const MenuHamburguer = () => {
                 }}
               >
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
-                Sobre o App
+                Quem somos
               </button>
               <button
                 variant="ghost"
