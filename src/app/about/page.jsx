@@ -50,7 +50,7 @@ function shuffleArray(array) {
   return shuffled;
 }
 
-export default function about(){
+export default function about() {
   const [page, setPage] = useState(0);
   const [teamMembers] = useState(() => shuffleArray(originalTeamMembers));
   const totalPages = Math.ceil(teamMembers.length / 3);
@@ -64,7 +64,7 @@ export default function about(){
   const currentMembers = teamMembers.slice(page * 3, page * 3 + 3);
 
   return (
-<div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <nav className="w-full flex items-center justify-between pr-3 mb-6">
         <Image
           src={Logo}
@@ -79,7 +79,8 @@ export default function about(){
       <section className="flex flex-col justfy-center items-center text-center max-w-4xl">
         <h1 className="text-5xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text mb-4 ">Sobre nós</h1>
         <h2 className="text-2xl font-semibold mb-10">
-          O que acontece quando 6 programadores, motivados pelo Mega P.S., se juntam para encarar esse desafio?
+          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
+          juntam para encarar esse desafio?
         </h2>
         <Image
           src={patoDiferente}
@@ -128,7 +129,9 @@ export default function about(){
                   alt={member.name}
                   className="w-32 h-32 mx-auto rounded-full object-cover mb-4 border-4 border-[var(--secundary)]"
                 />
-                <h3 className="text-xl font-semibold text-gray-900">{member.name}</h3>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {member.name}
+                </h3>
                 <p className="text-gray-600">{member.role}</p>
               </motion.div>
             ))}
@@ -138,28 +141,48 @@ export default function about(){
 
       <section className="max-w-4xl w-full mt-16 bg-white/70 backdrop-blur rounded-xl p-6 shadow-md space-y-6">
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">📌 Descrição do Projeto</h3>
-          <p className="text-gray-700">[Adicione aqui a descrição do projeto de vocês]</p>
+          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">
+            📌 Descrição do Projeto
+          </h3>
+          <p className="text-gray-700">
+            [Adicione aqui a descrição do projeto de vocês]
+          </p>
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">🎯 Desafio</h3>
-          <p className="text-gray-700">[Explique o objetivo proposto pela Mega]</p>
+          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">
+            🎯 Desafio
+          </h3>
+          <p className="text-gray-700">
+            [Explique o objetivo proposto pela Mega]
+          </p>
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">🛠️ Processo</h3>
-          <p className="text-gray-700">[Conte como foi a organização, ferramentas usadas, etc]</p>
+          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">
+            🛠️ Processo
+          </h3>
+          <p className="text-gray-700">
+            [Conte como foi a organização, ferramentas usadas, etc]
+          </p>
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">📚 Aprendizados e desafios individuais</h3>
-          <p className="text-gray-700">[Relate os aprendizados de cada membro, ou divida em subitens]</p>
+          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">
+            📚 Aprendizados e desafios individuais
+          </h3>
+          <p className="text-gray-700">
+            [Relate os aprendizados de cada membro, ou divida em subitens]
+          </p>
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">🙏 Agradecimento</h3>
-          <p className="text-gray-700">[Mensagem final de agradecimento à Mega e à equipe]</p>
+          <h3 className="text-2xl font-bold text-[var(--secundary)] mb-2">
+            🙏 Agradecimento
+          </h3>
+          <p className="text-gray-700">
+            [Mensagem final de agradecimento à Mega e à equipe]
+          </p>
         </div>
       </section>
     </div>

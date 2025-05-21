@@ -1,22 +1,28 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 function InputSearch({ tarefas, onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Usamos um useEffect com debounce para chamar onSearch
+  // apenas depois que o usuário para de digitar por um tempo.
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      onSearch(searchTerm);
+    }, 100);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, onSearch]);
 
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const handleSearchClick = useCallback(() => {
-    const resultadosFiltrados = tarefas.filter((tarefa) =>
-      tarefa.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    onSearch(resultadosFiltrados);
-  }, [searchTerm, tarefas, onSearch]);
+    onSearch(searchTerm); // Garante que a pesquisa seja disparada imediatamente ao clique
+  }, [searchTerm, onSearch]);
 
   const handleClearClick = () => {
     setSearchTerm("");
-    onSearch(tarefas); // Exibe todas as tarefas novamente
   };
 
   return (
@@ -26,7 +32,7 @@ function InputSearch({ tarefas, onSearch }) {
         placeholder="Pesquisar tarefas..."
         value={searchTerm}
         onChange={handleInputChange}
-        className="bg-[#D9D9D9] w-[100%] px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10" // Espaço para os ícones
+        className="bg-[#D9D9D9] w-[100%] px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10"
       />
       <div className="absolute right-10 lg:right-[10px] top-[40px] transform -translate-y-1/2 flex items-center space-x-2">
         {searchTerm && (
@@ -43,18 +49,6 @@ function InputSearch({ tarefas, onSearch }) {
             </svg>
           </button>
         )}
-        <button
-          onClick={handleSearchClick}
-          className="text-var(--secondary) hover:text-var(--primary) focus:outline-none"
-        >
-          <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
       </div>
     </div>
   );

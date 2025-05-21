@@ -65,19 +65,31 @@ function Dashboard() {
   }, [backendUrl, user]);
 
   const handleSearch = async (searchTerm) => {
+    // Certifique-se de que temos o email do usuário antes de pesquisar
+    if (!user?.email) {
+      setErrorMessage("Usuário não autenticado para realizar a busca.");
+      return;
+    }
+
     if (searchTerm) {
-      setLoadingTasks(true);
       try {
-        const response = await fetch(
-          `${backendUrl}/tasks/search?query=${searchTerm}`,
-          {
-            method: "GET",
-          }
-        );
+        // Mude o método para POST e inclua o email no corpo da requisição
+        const response = await fetch(`${backendUrl}/tasks/search`, {
+          method: "POST", // Mudança aqui: de GET para POST
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Adicione o corpo da requisição com o email e o termo de busca
+            email: user.email,
+            query: searchTerm,
+          }),
+        });
 
         if (response.ok) {
           const data = await response.json();
           setFilteredTasks(data);
+          setErrorMessage(""); // Limpa a mensagem de erro se a busca for bem-sucedida
         } else {
           console.error("Erro ao buscar tarefas com filtro");
           setErrorMessage("Nenhuma task encontrada para sua busca.");
@@ -85,8 +97,6 @@ function Dashboard() {
       } catch (error) {
         console.error("Erro ao comunicar com o backend para pesquisa:", error);
         setErrorMessage("Erro de conexão ao pesquisar.");
-      } finally {
-        setLoadingTasks(false);
       }
     } else {
       setFilteredTasks(allTasks);
