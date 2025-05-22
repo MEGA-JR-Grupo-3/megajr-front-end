@@ -278,13 +278,12 @@ function TaskCardComponent({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes} // Listeners são aplicados ao drag handle
+      {...attributes}
       className={`${cardBaseClasses} ${cardAnimationClasses} ${cardDraggableClass}`}
       onClick={
         !isDraggable && !isEditing && !isExpanded ? openEditMode : undefined
-      } // Abrir para editar/expandir se não for draggable
+      }
     >
-      {/* Seção Superior: Título, Drag Handle, Ações Imediatas */}
       <div className="flex flex-row w-full justify-between items-start gap-2">
         {isDraggable && (
           <div
@@ -312,7 +311,11 @@ function TaskCardComponent({
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <h3 className="text-lg font-semibold text-[var(--text)] text-start break-words">
+            <h3
+              className={`text-lg font-semibold text-[var(--text)] text-start ${
+                !isExpanded ? "truncate-text" : ""
+              }`}
+            >
               {tarefa.titulo}
             </h3>
           )}
@@ -355,72 +358,73 @@ function TaskCardComponent({
           </div>
         )}
       </div>
-
-      {/* Seção Expandida/Edição */}
-      {(isExpanded || isEditing) && ( // Mostrar esta seção se estiver expandido OU editando
-        <div
-          className={`w-full mt-2 ${
-            isDraggable ? "pl-[calc(24px+0.5rem)]" : ""
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {isEditing ? (
-            <textarea
-              name="descricao"
-              value={editFormData.descricao}
-              onChange={handleEditChange}
-              className="text-[var(--text-secondary)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
-              rows={3}
-              placeholder="Descrição da Tarefa"
-              disabled={isLoading}
-            />
-          ) : (
-            tarefa.descricao && (
-              <p className="text-[var(--subText)] text-sm mt-1 break-words text-start whitespace-pre-wrap max-h-24 overflow-y-auto w-full">
-                {tarefa.descricao}
-              </p>
-            )
-          )}
-
-          <div className="flex gap-2 mt-2 items-center">
+      <div
+        className={`w-full mt-2 ${isDraggable ? "pl-[calc(24px+0.5rem)]" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Seção Expandida/Edição */}
+        {(isExpanded || isEditing) && (
+          <>
             {isEditing ? (
-              <input
-                type="date"
-                name="data_prazo"
-                value={editFormData.data_prazo}
+              <textarea
+                name="descricao"
+                value={editFormData.descricao}
                 onChange={handleEditChange}
-                className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow"
+                className="text-[var(--text-secondary)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
+                rows={3}
+                placeholder="Descrição da Tarefa"
                 disabled={isLoading}
               />
             ) : (
-              <p
-                className={`text-xs px-2 py-1 rounded-md inline-block flex-grow ${dueDateInfo.className}`}
-              >
-                {dueDateInfo.text}
-              </p>
+              tarefa.descricao && (
+                <p className="text-[var(--subText)] text-sm mt-1 break-words text-start whitespace-pre-wrap max-h-24 overflow-y-auto w-full">
+                  {tarefa.descricao}
+                </p>
+              )
             )}
-            {isEditing ? (
-              <select
-                name="prioridade"
-                value={editFormData.prioridade}
-                onChange={handleEditChange}
-                className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5"
-                disabled={isLoading}
-              >
-                <option value="Baixa">Baixa</option>{" "}
-                <option value="Normal">Normal</option>
-                <option value="Alta">Alta</option>{" "}
-                <option value="Urgente">Urgente</option>
-              </select>
-            ) : (
-              <p
-                className={`text-xs px-2 py-1 rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses}`}
-              >
-                {tarefa.prioridade}
-              </p>
-            )}
-          </div>
+          </>
+        )}
 
+        <div className="flex gap-2 mt-2 items-center">
+          {isEditing ? (
+            <input
+              type="date"
+              name="data_prazo"
+              value={editFormData.data_prazo}
+              onChange={handleEditChange}
+              className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow"
+              disabled={isLoading}
+            />
+          ) : (
+            <p
+              className={`text-xs px-2 py-1 rounded-md inline-block flex-grow ${dueDateInfo.className}`}
+            >
+              {dueDateInfo.text}
+            </p>
+          )}
+          {isEditing ? (
+            <select
+              name="prioridade"
+              value={editFormData.prioridade}
+              onChange={handleEditChange}
+              className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5"
+              disabled={isLoading}
+            >
+              <option value="Baixa">Baixa</option>{" "}
+              <option value="Normal">Normal</option>
+              <option value="Alta">Alta</option>{" "}
+              <option value="Urgente">Urgente</option>
+            </select>
+          ) : (
+            <p
+              className={`text-xs px-2 py-1 rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses}`}
+            >
+              {tarefa.prioridade}
+            </p>
+          )}
+        </div>
+
+        {(isExpanded || isEditing) && (
           <div className="flex items-center gap-2 mt-4">
             {isEditing ? (
               <>
@@ -463,8 +467,8 @@ function TaskCardComponent({
               )
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -3,8 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 function InputSearch({ tarefas, onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Usamos um useEffect com debounce para chamar onSearch
-  // apenas depois que o usuário para de digitar por um tempo.
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       onSearch(searchTerm);

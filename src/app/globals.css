@@ -7,7 +7,7 @@ body {
 /* Estilos para o tema claro (padrão) */
 :root {
   --primary: #491a61;
-  --secondary: #8b76a5;
+  --secondary: #6c538a;
   --background: #fff5ee;
   --subbackground: #cecece;
   --bgcard: #eee3e3;
@@ -18,8 +18,8 @@ body {
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
-  --primary: #ce0078;
-  --secondary: #ac0000;
+  --primary: #ac0000;
+  --secondary: #ce0078;
   --background: #1b1b1b;
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
@@ -30,4 +30,10 @@ body {
 
 .touch-action-none {
   touch-action: none !important;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
