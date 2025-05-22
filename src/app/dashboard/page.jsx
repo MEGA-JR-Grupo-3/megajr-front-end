@@ -375,8 +375,8 @@ function Dashboard() {
               items={filteredTasks.map((t) => t.id_tarefa)}
               strategy={rectSortingStrategy}
             >
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-[30px] w-full px-4 justify-items-center">
-                {filteredTasks.length === 0 && !errorMessage ? (
+              {filteredTasks.length === 0 && !errorMessage ? (
+                <ul className="flex justify-center items-center mt-[30px] w-full px-4 justify-items-center">
                   <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
                     <p className="text-[22px] font-[700] pt-[30px]">
                       Bora organizar sua vida!
@@ -388,8 +388,10 @@ function Dashboard() {
                       height={250}
                     />
                   </li>
-                ) : (
-                  filteredTasks.map((tarefa) => (
+                </ul>
+              ) : (
+                filteredTasks.map((tarefa) => (
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-[30px] w-full px-4 justify-items-center">
                     <li
                       key={tarefa.id_tarefa}
                       className="w-full flex justify-center"
@@ -402,9 +404,9 @@ function Dashboard() {
                         id={tarefa.id_tarefa}
                       />
                     </li>
-                  ))
-                )}
-              </ul>
+                  </ul>
+                ))
+              )}
             </SortableContext>
           </DndContext>
         )}
