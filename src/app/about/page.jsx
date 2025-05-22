@@ -38,7 +38,7 @@ const originalTeamMembers = [
     image: "/team/lucas.jpg",
   },
   {
-    name: "Jon",
+    name: "Jonathan",
     role: "Mobile Developer",
     image: "/team/jon.jpg",
   },
@@ -169,7 +169,7 @@ export default function about() {
             🎯 Desafio
           </h3>
           <p className="text-gray-700">
-            [Explique o objetivo proposto pela Mega]
+            [Explicar o projeto de forma geral e como entendemos que deveria ser feito]
           </p>
         </div>
 
@@ -187,7 +187,7 @@ export default function about() {
             📚 Aprendizados e desafios individuais
           </h3>
           <p className="text-gray-700">
-            [Relate os aprendizados de cada membro, ou divida em subitens]
+            [Relatar o quanto cada um de nós evoluímos]
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export default function about() {
             🙏 Agradecimento
           </h3>
           <p className="text-gray-700 ">
-            [Mensagem final de agradecimento à Mega e à equipe]
+            [Gratiluz]
           </p>
         </div>
       </section>
