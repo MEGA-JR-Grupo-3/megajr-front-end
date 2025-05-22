@@ -12,7 +12,8 @@ body {
   --subbackground: #cecece;
   --bgcard: #eee3e3;
   --text: #491a61;
-  --subText: #474747;
+  --subText: #313030;
+  --button: #392a33;
 }
 
 /* Estilos para o tema escuro */
@@ -24,6 +25,7 @@ body {
   --bgcard: #2b2b2b;
   --text: #ce0078;
   --subText: #6c6c6c;
+  --button: #ebcedb;
 }
 
 .touch-action-none {
