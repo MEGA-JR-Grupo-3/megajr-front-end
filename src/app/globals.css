@@ -6,24 +6,24 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #491a61;
-  --secondary: #6c538a;
+  --primary: #0083dd;
+  --secondary: #00c9b7;
   --background: #fff5ee;
   --subbackground: #cecece;
   --bgcard: #eee3e3;
-  --text: #491a61;
+  --text: #0083dd;
   --subText: #313030;
   --button: #392a33;
 }
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
-  --primary: #ac0000;
-  --secondary: #ce0078;
+  --primary: #491a61;
+  --secondary: #6c538a;
   --background: #1b1b1b;
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
-  --text: #ce0078;
+  --text: #e0d5ee;
   --subText: #6c6c6c;
   --button: #ebcedb;
 }

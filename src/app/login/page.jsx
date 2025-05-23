@@ -107,11 +107,13 @@ function Login() {
           console.log(
             "Dados do usuário do Google enviados ao backend com sucesso."
           );
+          // Apenas redireciona se a resposta do backend for bem-sucedida
           router.push("/dashboard");
         } else {
           console.error(
             "Erro na resposta do backend ao comunicar dados do Google:",
-            response.status
+            response.status,
+            await response.text()
           );
         }
       } catch (error) {
@@ -119,7 +121,6 @@ function Login() {
           "Erro ao fazer requisição para cadastro/verificação do Google (CATCH):",
           error
         );
-        router.push("/dashboard");
       }
     }
   };
