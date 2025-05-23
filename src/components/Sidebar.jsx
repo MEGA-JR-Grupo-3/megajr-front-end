@@ -116,7 +116,7 @@ const MenuHamburguer = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden text-[var(--primary)] hover:text-[#e1808d]  transition-colors"
+        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b]  transition-colors cursor-pointer"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -142,7 +142,7 @@ const MenuHamburguer = () => {
                   </h3>
                 )}
                 {creationDate && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-300">
                     Conta criada em: {creationDate}
                   </p>
                 )}
@@ -151,7 +151,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsOpen(false)}
-                className="lg:hidden text-gray-700 dark:text-gray-300 hover:text-gray-300 dark:hover:text-white transition-colors"
+                className="lg:hidden text-gray-700 dark:text-gray-300 transition-colors"
                 aria-label="Fechar Menu"
               >
                 <FontAwesomeIcon icon={faTimes} size="lg" />
@@ -167,7 +167,7 @@ const MenuHamburguer = () => {
             <div className="space-y-6">
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/about");
                   setIsOpen(false);
@@ -178,7 +178,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/jub-settings");
                   setIsOpen(false);
@@ -189,7 +189,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/about");
                   setIsOpen(false);
@@ -200,7 +200,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Ajuda");
                   setIsOpen(false);
@@ -215,7 +215,7 @@ const MenuHamburguer = () => {
             <div className="mt-auto">
               <button
                 variant="ghost"
-                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:opacity-70"
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />

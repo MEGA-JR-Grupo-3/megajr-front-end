@@ -55,20 +55,17 @@ function AddTaskForm({ onClose, onTaskAdded }) {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-[#000000a5] bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-md p-6 w-[330px]">
+      <div className="bg-[var(--subbackground)] text-[var(--subText)] rounded-md p-6 w-[330px]">
         <h2 className="text-xl font-semibold mb-4">Adicionar Nova Tarefa</h2>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
           <div>
-            <label
-              htmlFor="titulo"
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
+            <label htmlFor="titulo" className="block  text-sm font-bold mb-2">
               Título:
             </label>
             <input
               type="text"
               id="titulo"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               required
@@ -77,13 +74,13 @@ function AddTaskForm({ onClose, onTaskAdded }) {
           <div>
             <label
               htmlFor="descricao"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block  text-sm font-bold mb-2"
             >
               Descrição:
             </label>
             <textarea
               id="descricao"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
             />
@@ -91,14 +88,14 @@ function AddTaskForm({ onClose, onTaskAdded }) {
           <div>
             <label
               htmlFor="dataPrazo"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block  text-sm font-bold mb-2"
             >
               Data Prazo:
             </label>
             <input
               type="date"
               id="dataPrazo"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
               value={dataPrazo}
               onChange={(e) => setDataPrazo(e.target.value)}
             />
@@ -106,13 +103,13 @@ function AddTaskForm({ onClose, onTaskAdded }) {
           <div>
             <label
               htmlFor="prioridade"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block  text-sm font-bold mb-2"
             >
               Prioridade:
             </label>
             <select
               id="prioridade"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
               value={prioridade}
               onChange={(e) => setPrioridade(e.target.value)}
               required

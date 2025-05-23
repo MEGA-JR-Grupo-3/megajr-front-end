@@ -18,12 +18,12 @@ body {
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
-  --primary: #491a61;
-  --secondary: #6c538a;
+  --primary: #727272;
+  --secondary: #cccccc;
   --background: #1b1b1b;
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
-  --text: #e0d5ee;
+  --text: #dcdcdc;
   --subText: #6c6c6c;
   --button: #ebcedb;
 }

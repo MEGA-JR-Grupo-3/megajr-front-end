@@ -370,7 +370,7 @@ function TaskCardComponent({
                 name="descricao"
                 value={editFormData.descricao}
                 onChange={handleEditChange}
-                className="text-[var(--text-secondary)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
+                className="text-[var(--subText)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
                 rows={3}
                 placeholder="Descrição da Tarefa"
                 disabled={isLoading}
