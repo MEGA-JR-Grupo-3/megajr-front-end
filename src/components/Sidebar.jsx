@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ThemeSwitch from "./ThemeSwitch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -117,7 +116,7 @@ const MenuHamburguer = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden text-[var(--primary)] hover:text-[#e1808d]  transition-colors"
+        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b]  transition-colors cursor-pointer"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -132,7 +131,7 @@ const MenuHamburguer = () => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-t from-[var(--secondary)] via-[var(--primary)] via-[var(--primary)] to-[var(--secondary)] overflow-hidden"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--primary)] via-[var(--primary)] to-[var(--secondary)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
             <div className="flex flex-row items-start justify-between mb-4">
@@ -143,7 +142,7 @@ const MenuHamburguer = () => {
                   </h3>
                 )}
                 {creationDate && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-300">
                     Conta criada em: {creationDate}
                   </p>
                 )}
@@ -152,7 +151,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsOpen(false)}
-                className="lg:hidden text-gray-700 dark:text-gray-300 hover:text-gray-300 dark:hover:text-white transition-colors"
+                className="lg:hidden text-gray-700 dark:text-gray-300 transition-colors"
                 aria-label="Fechar Menu"
               >
                 <FontAwesomeIcon icon={faTimes} size="lg" />
@@ -168,7 +167,7 @@ const MenuHamburguer = () => {
             <div className="space-y-6">
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/about");
                   setIsOpen(false);
@@ -179,7 +178,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/jub-settings");
                   setIsOpen(false);
@@ -190,7 +189,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   router.push("/about");
                   setIsOpen(false);
@@ -201,7 +200,7 @@ const MenuHamburguer = () => {
               </button>
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 cursor-pointer"
+                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
                   console.log("Ir para Ajuda");
                   setIsOpen(false);
@@ -212,19 +211,11 @@ const MenuHamburguer = () => {
               </button>
             </div>
 
-            {/*Botão switch*/}
-            <div className="flex items-center justify-between">
-              <ThemeSwitch
-                style="flex items-center justify-center text-gray-700 dark:text-gray-300 gap-2 cursor-pointer"
-                content="Tema"
-              ></ThemeSwitch>
-            </div>
-
             {/* Botão de Logout */}
             <div className="mt-auto">
               <button
                 variant="ghost"
-                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:opacity-70"
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />

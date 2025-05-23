@@ -6,28 +6,34 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #491a61;
-  --secondary: #8b76a5;
+  --primary: #0083dd;
+  --secondary: #00c9b7;
   --background: #fff5ee;
   --subbackground: #cecece;
   --bgcard: #eee3e3;
-  --text: #491a61;
+  --text: #0083dd;
   --subText: #313030;
   --button: #392a33;
 }
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
-  --primary: #ce0078;
-  --secondary: #ac0000;
+  --primary: #727272;
+  --secondary: #cccccc;
   --background: #1b1b1b;
   --subbackground: #2b2b2b;
   --bgcard: #2b2b2b;
-  --text: #ce0078;
+  --text: #dcdcdc;
   --subText: #6c6c6c;
   --button: #ebcedb;
 }
 
 .touch-action-none {
   touch-action: none !important;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

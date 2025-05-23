@@ -3,8 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 function InputSearch({ tarefas, onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Usamos um useEffect com debounce para chamar onSearch
-  // apenas depois que o usuário para de digitar por um tempo.
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       onSearch(searchTerm);
@@ -18,7 +16,7 @@ function InputSearch({ tarefas, onSearch }) {
   };
 
   const handleSearchClick = useCallback(() => {
-    onSearch(searchTerm); // Garante que a pesquisa seja disparada imediatamente ao clique
+    onSearch(searchTerm);
   }, [searchTerm, onSearch]);
 
   const handleClearClick = () => {
@@ -32,7 +30,7 @@ function InputSearch({ tarefas, onSearch }) {
         placeholder="Pesquisar tarefas..."
         value={searchTerm}
         onChange={handleInputChange}
-        className="bg-[#D9D9D9] w-[100%] px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10"
+        className="bg-[#D9D9D9] w-full text-gray-700 px-4 py-2 border rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10"
       />
       <div className="absolute right-10 lg:right-[10px] top-[40px] transform -translate-y-1/2 flex items-center space-x-2">
         {searchTerm && (
