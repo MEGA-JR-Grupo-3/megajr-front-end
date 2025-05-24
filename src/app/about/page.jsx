@@ -1,7 +1,5 @@
 "use client";
 import "ldrs/react/LineSpinner.css";
-import Logo from "../../../public/assets/splash-pato.png";
-import Sidebar from "../../components/Sidebar";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +8,6 @@ import patoDiferente from "../../../public/assets/pato-diferente.png";
 import BackButton from "../../components/BackButton";
 import enzoImg from "../../../public/assets/enzo.png";
 import jeanImg from "../../../public/assets/jean.png";
-import laraImg from "../../../public/assets/lara.png";
 import jonImg from "../../../public/assets/jon.png";
 
 const originalTeamMembers = [
@@ -22,7 +19,7 @@ const originalTeamMembers = [
   {
     name: "Nicolas",
     role: "Designer Developer",
-    image: "/team/nicolas.jpg",
+    image: "",
   },
   {
     name: "Jean Flávio",
@@ -32,7 +29,7 @@ const originalTeamMembers = [
   {
     name: "Lara Eridan",
     role: "Back-end Developer",
-    image: laraImg,
+    image: "",
   },
   {
     name: "Jonathan Amaral",

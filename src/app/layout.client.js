@@ -35,6 +35,7 @@ export default function RootLayoutClient({ children }) {
     });
     return () => unsubscribe();
   }, [router, pathname, publicPaths]);
+
   useEffect(() => {
     if (user && isAuthenticated) {
       const fetchUserData = async () => {

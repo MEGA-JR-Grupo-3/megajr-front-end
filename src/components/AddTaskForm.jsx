@@ -6,7 +6,6 @@ function AddTaskForm({ onClose, onTaskAdded }) {
   const [descricao, setDescricao] = useState("");
   const [dataPrazo, setDataPrazo] = useState("");
   const [prioridade, setPrioridade] = useState("");
-  const [estadoTarefa, setEstadoTarefa] = useState("");
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleSubmit = async (event) => {
@@ -23,7 +22,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
       descricao,
       data_prazo: dataPrazo === "" ? null : dataPrazo,
       prioridade,
-      estado_tarefa: "Pendente",
+      estado_tarefa,
       email: user.email,
     };
 

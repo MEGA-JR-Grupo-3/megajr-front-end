@@ -10,9 +10,7 @@ import "ldrs/react/LineSpinner.css";
 import InputSearch from "../../components/InputSearch";
 import TaskCard from "../../components/TaskCard";
 import AddTaskForm from "../../components/AddTaskForm";
-import Logo from "../../../public/assets/splash-pato.png";
 import Image from "next/image";
-import Sidebar from "../../components/Sidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 
@@ -27,20 +25,19 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingTasks, setLoadingTasks] = useState(false);
-  const [registeredName, setRegisteredName] = useState("");
   const [allTasks, setAllTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
+  const [completedTasksCount, setCompletedTasksCount] = useState(0);
 
   // ESTADOS PARA OS FILTROS
-  const [filterType, setFilterType] = useState(null); // 'priority', 'date', 'title', 'description'
-  const [sortOrder, setSortOrder] = useState("asc"); // 'asc' ou 'desc'
+  const [filterType, setFilterType] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
   const [currentSearchTerm, setCurrentSearchTerm] = useState("");
 
-  // NOVO ESTADO para controlar a visibilidade das opções de filtro
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
   const priorityOrder = {
@@ -51,6 +48,7 @@ function Dashboard() {
   };
 
   // FUNÇÃO DE APLICAÇÃO DE FILTROS E ORDENAÇÃO
+
   const applyFiltersAndSort = useCallback(() => {
     let tasksToFilter = [...allTasks];
 
@@ -63,58 +61,80 @@ function Dashboard() {
       );
     }
 
+    let pendingTasks = tasksToFilter.filter(
+      (task) => task.estado_tarefa === "Pendente"
+    );
+    let completedTasks = tasksToFilter.filter(
+      (task) => task.estado_tarefa === "Finalizada"
+    );
+
+    setCompletedTasksCount(completedTasks.length);
+
     if (filterType) {
       switch (filterType) {
         case "priority":
-          tasksToFilter.sort((a, b) => {
+          pendingTasks.sort((a, b) => {
             const valA = priorityOrder[a.prioridade];
             const valB = priorityOrder[b.prioridade];
-
-            if (sortOrder === "asc") {
-              return valA - valB;
-            } else {
-              return valB - valA;
-            }
+            return sortOrder === "asc" ? valA - valB : valB - valA;
           });
           break;
         case "date":
-          tasksToFilter.sort((a, b) => {
+          pendingTasks.sort((a, b) => {
             const dateA = new Date(a.data_prazo);
             const dateB = new Date(b.data_prazo);
-            if (sortOrder === "asc") {
-              return dateA.getTime() - dateB.getTime();
-            } else {
-              return dateB.getTime() - dateA.getTime();
-            }
+            if (!a.data_prazo && !b.data_prazo) return 0;
+            if (!a.data_prazo) return sortOrder === "asc" ? 1 : -1;
+            if (!b.data_prazo) return sortOrder === "asc" ? -1 : 1;
+            return sortOrder === "asc"
+              ? dateA.getTime() - dateB.getTime()
+              : dateB.getTime() - dateA.getTime();
           });
           break;
         case "title":
-          tasksToFilter.sort((a, b) => {
+          pendingTasks.sort((a, b) => {
             const titleA = a.titulo.toLowerCase();
             const titleB = b.titulo.toLowerCase();
-            if (sortOrder === "asc") {
-              return titleA.localeCompare(titleB);
-            } else {
-              return titleB.localeCompare(a.titulo); // Correção aqui: deve ser titleB.localeCompare(titleA)
-            }
+            return sortOrder === "asc"
+              ? titleA.localeCompare(titleB)
+              : titleB.localeCompare(titleA);
           });
           break;
         case "description":
-          tasksToFilter.sort((a, b) => {
-            const descA = a.descricao.toLowerCase();
-            const descB = b.descricao.toLowerCase();
-            if (sortOrder === "asc") {
-              return descA.localeCompare(descB);
-            } else {
-              return descB.localeCompare(descA);
-            }
+          pendingTasks.sort((a, b) => {
+            const descA = (a.descricao || "").toLowerCase();
+            const descB = (b.descricao || "").toLowerCase();
+            return sortOrder === "asc"
+              ? descA.localeCompare(descB)
+              : descB.localeCompare(descA);
           });
           break;
         default:
           break;
       }
+    } else {
+      pendingTasks.sort((a, b) => {
+        const priorityA = priorityOrder[a.prioridade];
+        const priorityB = priorityOrder[b.prioridade];
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+        const dateA = new Date(a.data_prazo);
+        const dateB = new Date(b.data_prazo);
+
+        if (!a.data_prazo && !b.data_prazo) return 0;
+        if (!a.data_prazo) return 1;
+        if (!b.data_prazo) return -1;
+
+        return dateA.getTime() - dateB.getTime();
+      });
     }
-    setFilteredTasks(tasksToFilter);
+    completedTasks.sort(() => {
+      return 0;
+    });
+
+    setFilteredTasks([...pendingTasks, ...completedTasks]);
   }, [allTasks, filterType, sortOrder, currentSearchTerm]);
 
   useEffect(() => {
@@ -148,7 +168,9 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchTasks();
+    if (user) {
+      fetchTasks();
+    }
   }, [backendUrl, user]);
 
   const handleSearch = (searchTerm) => {
@@ -165,33 +187,6 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(`${backendUrl}/user-data`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: user.email }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setRegisteredName(data.name);
-          } else {
-            console.error("Erro ao buscar dados do usuário");
-          }
-        } catch (error) {
-          console.error("Erro ao comunicar com o backend:", error);
-        }
-      };
-
-      fetchUserData();
-    }
-  }, [user, backendUrl]);
-
-  useEffect(() => {
     if (!loading && !user) {
       router.push("/");
     }
@@ -199,6 +194,7 @@ function Dashboard() {
 
   const handleTaskAdded = (newTaskId) => {
     fetchTasks();
+    setIsAddTaskFormVisible(false);
   };
 
   const handleTaskDeleted = (deletedTaskId) => {
@@ -220,6 +216,8 @@ function Dashboard() {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
+    if (!over) return;
+
     if (active.id !== over.id) {
       const oldIndex = filteredTasks.findIndex(
         (task) => task.id_tarefa === active.id
@@ -230,6 +228,45 @@ function Dashboard() {
 
       const newOrder = arrayMove(filteredTasks, oldIndex, newIndex);
       setFilteredTasks(newOrder);
+    }
+  };
+
+  const handleDeleteAllCompleted = async () => {
+    if (!user?.email) {
+      setErrorMessage("Voce precisa estar logado para deletar tarefas.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja deletar todas as tarefas concluidas?"
+    );
+    if (!confirmDelete) {
+      return;
+    }
+
+    setLoadingTasks(true);
+    try {
+      const response = await fetch(`${backendUrl}/tasks/delete-completed`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email }),
+      });
+
+      if (response.ok) {
+        fetchTasks();
+        setErrorMessage("Sucesso ao deletar tarefas concluidas.");
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(
+          `Erro ao deletar tarefas concluidas: ${errorData.message}`
+        );
+      }
+    } catch (error) {
+      setErrorMessage("Erro ao comunicar com o backend:");
+    } finally {
+      setLoadingTasks(false);
     }
   };
 
@@ -293,22 +330,22 @@ function Dashboard() {
             </h4>
             <Button
               buttonText="Prioridade"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
               onClick={() => handleApplyFilter("priority")}
             />
             <Button
               buttonText="Data"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
               onClick={() => handleApplyFilter("date")}
             />
             <Button
               buttonText="Título"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
               onClick={() => handleApplyFilter("title")}
             />
             <Button
               buttonText="Descrição"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
               onClick={() => handleApplyFilter("description")}
             />
           </div>
@@ -355,48 +392,60 @@ function Dashboard() {
             <LineSpinner size="30" stroke="3" speed="1" color="gray" />
           </div>
         ) : (
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={filteredTasks.map((t) => t.id_tarefa)}
-              strategy={rectSortingStrategy}
+          <>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {filteredTasks.length === 0 && !errorMessage ? (
-                <ul className="flex justify-center items-center mt-[30px] w-full px-4 justify-items-center">
-                  <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
-                    <p className="text-[22px] font-[700] pt-[30px]">
-                      Bora organizar sua vida!
-                    </p>
-                    <Image
-                      src="/assets/pato-triste.png"
-                      alt="Sem Tarefas"
-                      width={250}
-                      height={250}
-                    />
-                  </li>
-                </ul>
-              ) : (
-                filteredTasks.map((tarefa) => (
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-[30px] w-full px-4 justify-items-center">
-                    <li
-                      key={tarefa.id_tarefa}
-                      className="w-full flex justify-center"
+              <SortableContext
+                items={filteredTasks.map((t) => t.id_tarefa)}
+                strategy={rectSortingStrategy}
+              >
+                {completedTasksCount > 1 && (
+                  <div className="flex justify-end items-center mt-[30px] w-full px-4">
+                    <button
+                      className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-3xl focus:outline-none focus:shadow-outline mb-2 transition-all duration-300"
+                      onClick={handleDeleteAllCompleted}
                     >
-                      <TaskCard
-                        tarefa={tarefa}
-                        onTaskDeleted={handleTaskDeleted}
-                        onTaskUpdated={handleTaskUpdated}
-                        isDraggable={true}
-                        id={tarefa.id_tarefa}
+                      Deletar Todas as Concluídas
+                    </button>
+                  </div>
+                )}
+                {filteredTasks.length === 0 && !errorMessage ? (
+                  <ul className="flex justify-center items-center mt-[30px] w-full px-4 justify-items-center">
+                    <li className="flex flex-col justify-center items-center text-center mt-[100px] gap-14 h-full w-full">
+                      <p className="text-[22px] font-[700] pt-[30px]">
+                        Bora organizar sua vida!
+                      </p>
+                      <Image
+                        src="/assets/pato-triste.png"
+                        alt="Sem Tarefas"
+                        width={250}
+                        height={250}
                       />
                     </li>
                   </ul>
-                ))
-              )}
-            </SortableContext>
-          </DndContext>
+                ) : (
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 pt-[30px] pb-[80px] w-full px-4 justify-items-center">
+                    {filteredTasks.map((tarefa) => (
+                      <li
+                        key={tarefa.id_tarefa}
+                        className=" flex justify-center"
+                      >
+                        <TaskCard
+                          tarefa={tarefa}
+                          onTaskDeleted={handleTaskDeleted}
+                          onTaskUpdated={handleTaskUpdated}
+                          isDraggable={true}
+                          id={tarefa.id_tarefa}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </SortableContext>
+            </DndContext>
+          </>
         )}
         {errorMessage && (
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]">

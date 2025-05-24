@@ -1,16 +1,15 @@
 // components/TaskCard.jsx
 import React, { useState, useCallback, useMemo } from "react";
-import { auth } from "../firebaseConfig"; // Garanta que este caminho está correto
+import { auth } from "../firebaseConfig";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   MdOutlineDragIndicator,
   MdExpandMore,
   MdExpandLess,
-  MdDeleteOutline, // Usado um ícone para deletar
-} from "react-icons/md"; // ou outro ícone de sua preferência
+  MdDeleteOutline,
+} from "react-icons/md";
 
-// Funções auxiliares movidas para fora do componente
 const getPriorityColor = (priority) => {
   switch (priority) {
     case "Urgente":
@@ -32,11 +31,11 @@ const getDueDateStatus = (dueDate) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const taskDueDate = new Date(dueDate);
-  taskDueDate.setHours(0, 0, 0, 0); // Normaliza para o início do dia
+  taskDueDate.setHours(0, 0, 0, 0);
   const oneDay = 24 * 60 * 60 * 1000;
   const daysDifference = Math.round(
     (taskDueDate.getTime() - today.getTime()) / oneDay
-  ); // getTime() para garantir
+  );
 
   if (daysDifference < 0)
     return {
@@ -125,7 +124,6 @@ function TaskCardComponent({
           body: body ? JSON.stringify(body) : undefined,
         });
         if (response.ok) {
-          // Para DELETE, a resposta pode não ter corpo JSON ou ser vazia
           const responseData =
             method === "DELETE" || response.status === 204
               ? {}
@@ -237,7 +235,6 @@ function TaskCardComponent({
     (e) => {
       e.stopPropagation();
       setIsExpanded((prev) => !prev);
-      // Se estiver editando e colapsar, sair do modo de edição
       if (isEditing && isExpanded) {
         resetFormAndExitEdit();
       }
@@ -266,7 +263,7 @@ function TaskCardComponent({
   const isLoading = isDeleting || isUpdatingStatus || isSavingEdit;
 
   const cardBaseClasses =
-    "flex flex-col items-start bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 w-[360px] min-h-[100px]";
+    "flex flex-col items-start bg-[var(--bgcard)] shadow-md rounded-md p-4 mb-2 w-[335px] sm:w-[340px] xl:w-[300px] min-h-[100px]";
   const cardAnimationClasses = isDragging
     ? ""
     : "transition-shadow duration-300";

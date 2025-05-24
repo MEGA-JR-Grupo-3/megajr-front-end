@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 function Button({ buttonText, buttonStyle, buttonLink, disabled, onClick }) {
-  const buttonClasses = `${buttonStyle} bg-[radial-gradient(circle_at_center,var(--primary)_0%,var(--secondary)_70%)] rounded-4xl p-2 text-[#ffffff] font-[600] w-[312px] ${
+  const buttonClasses = `${buttonStyle} bg-[radial-gradient(circle_at_center,var(--primary),var(--secondary))] rounded-4xl p-2 text-[#ffffff] font-[600] w-[312px] ${
     disabled
       ? "opacity-50 cursor-not-allowed"
       : "cursor-pointer hover:brightness-110"
