@@ -20,7 +20,7 @@ const originalTeamMembers = [
   {
     name: "Nicolas",
     role: "Designer Developer",
-    image: "/team/nicolas.jpg",
+    image: "",
   },
   {
     name: "Jean Flávio",
