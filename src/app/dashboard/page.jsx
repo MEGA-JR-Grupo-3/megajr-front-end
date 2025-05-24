@@ -237,7 +237,7 @@ function Dashboard() {
       return;
     }
 
-    const confirmDelete = setErrorMessage(
+    const confirmDelete = window.confirm(
       "Tem certeza que deseja deletar todas as tarefas concluidas?"
     );
     if (!confirmDelete) {
