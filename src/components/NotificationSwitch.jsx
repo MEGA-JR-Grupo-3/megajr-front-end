@@ -1,22 +1,26 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 
-export default function NotificationSwitch() {
-  const [enabled, setEnabled] = useState(false);
+export default function NotificationSwitch({ checked, onChange }) {
+  // The 'enabled' state in NotificationSwitch now reflects the 'checked' prop
+  // It's still useful internally for visual updates that might debounce
+  // but the primary source of truth is the 'checked' prop from the parent.
+  const [internalEnabled, setInternalEnabled] = useState(checked);
 
   useEffect(() => {
-    // Carrega o estado salvo do localStorage quando o componente é montado
-    const saved = localStorage.getItem("notificationsEnabled");
-    if (saved !== null) {
-      setEnabled(saved === "true"); // O localStorage salva como string, converte para booleano
-    }
-  }, []);
+    setInternalEnabled(checked); // Keep internal state in sync with prop
+  }, [checked]);
 
-  // Esta função será chamada quando o checkbox for alterado
   const handleToggle = () => {
-    const newValue = !enabled; // Inverte o valor atual
-    setEnabled(newValue); // Atualiza o estado
-    localStorage.setItem("notificationsEnabled", newValue.toString()); // Salva no localStorage como string
-    console.log("Notificações:", newValue ? "Ativadas" : "Desativadas"); // Log para depuração
+    const newValue = !internalEnabled;
+    setInternalEnabled(newValue); // Optimistic update for UI
+
+    // Call the onChange prop to communicate the new value to the parent
+    if (onChange) {
+      onChange(newValue);
+    }
+    // localStorage will be handled by the parent based on this onChange event
   };
 
   return (
@@ -26,13 +30,13 @@ export default function NotificationSwitch() {
       <input
         className="peer sr-only"
         type="checkbox"
-        checked={enabled} // Usando 'enabled' aqui
-        onChange={handleToggle} // Chamando a função de toggle
+        checked={internalEnabled} // Use internal state for visual representation
+        onChange={handleToggle}
       />
       <span
         className="mr-4 text-xl font-semibold tracking-wider text-[var(--primary)] transition-all duration-300 group-hover:text-[var(--primary)] peer-checked:text-[var(--primary)]"
       >
-        {enabled ? "Permitir" : "Não permitir"}
+        {internalEnabled ? "Permitir" : "Não permitir"}
       </span>
       <div
         className="relative h-6 w-12 rounded-full bg-[var(--primary)] shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500
@@ -49,4 +53,5 @@ export default function NotificationSwitch() {
         ></span>
       </div>
     </label>
-  );}
+  );
+}

@@ -1,132 +1,102 @@
-"use client"
+"use client";
+
 import BackButton from '../../components/BackButton';
+import NotificationSwitch from '../../components/NotificationSwitch'; // Import the refined component
+import ThemeButton from '../../components/ThemeSwitch2';
 import React, { useState, useEffect } from 'react';
 
-// O componente NotificationSwitch que você forneceu, AGORA ACEITA A PROP 'onChange'
-function NotificationSwitch({ onChange }) { // Adicionada a prop 'onChange'
-  const [enabled, setEnabled] = useState(false);
+export default function SettingsPage() {
+  const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] = useState(false);
+  const [browserNotificationPermission, setBrowserNotificationPermission] = useState('default');
+  const [notificationStatusMessage, setNotificationStatusMessage] = useState('');
 
   useEffect(() => {
-    // Carrega o estado salvo do localStorage quando o componente é montado
-    const saved = localStorage.getItem("notificationsEnabled");
-    if (saved !== null) {
-      setEnabled(saved === "true"); // O localStorage salva como string, converte para booleano
+    // Load user's preference from localStorage
+    const savedPreference = localStorage.getItem("notificationsEnabled");
+    if (savedPreference !== null) {
+      setIsNotificationAllowedByUser(savedPreference === "true");
     }
+
+    // Check current browser notification permission
+    if ("Notification" in window) {
+      setBrowserNotificationPermission(Notification.permission);
+    } else {
+      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
+    }
+
+    // Add a listener for the 'storage' event to react to changes in other tabs/windows
+    const handleStorageChange = () => {
+      const updatedPreference = localStorage.getItem("notificationsEnabled");
+      setIsNotificationAllowedByUser(updatedPreference === "true");
+      if ("Notification" in window) {
+        setBrowserNotificationPermission(Notification.permission);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
-  // Esta função será chamada quando o checkbox for alterado
-  const handleToggle = () => {
-    const newValue = !enabled; // Inverte o valor atual
-    setEnabled(newValue); // Atualiza o estado
-    localStorage.setItem("notificationsEnabled", newValue.toString()); // Salva no localStorage como string
-    console.log("Notificações:", newValue ? "Ativadas" : "Desativadas"); // Log para depuração
+  // Function to handle the toggle change from NotificationSwitch
+  const handleNotificationToggle = async (newValue) => {
+    setIsNotificationAllowedByUser(newValue);
+    localStorage.setItem("notificationsEnabled", newValue.toString());
+    console.log("Notificações (User Preference):", newValue ? "Ativadas" : "Desativadas");
 
-    // Chama a função onChange passada como prop, se ela existir
-    if (onChange && typeof onChange === 'function') {
-      onChange(newValue);
+    if (newValue) {
+      // If user is enabling notifications, request browser permission
+      if ("Notification" in window) {
+        const permission = await Notification.requestPermission();
+        setBrowserNotificationPermission(permission);
+
+        if (permission === "granted") {
+          setNotificationStatusMessage("Permissão de notificação concedida pelo navegador.");
+          // Optionally send a test notification immediately after granting permission
+          showTestNotification();
+        } else if (permission === "denied") {
+          setNotificationStatusMessage("Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador.");
+        } else if (permission === "default") {
+          setNotificationStatusMessage("Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador.");
+        }
+      }
+    } else {
+      // If user is disabling notifications, clear status and don't prompt
+      setNotificationStatusMessage("Notificações desativadas pelo botão.");
     }
   };
 
-  return (
-    <label
-      className="group relative inline-flex cursor-pointer items-center justify-start"
-    >
-      <input
-        className="peer sr-only"
-        type="checkbox"
-        checked={enabled} // Usando 'enabled' aqui
-        onChange={handleToggle} // Chamando a função de toggle
-      />
-      <span
-        className="mr-4 text-xl font-semibold tracking-wider text-[var(--primary)] transition-all duration-300 group-hover:text-[var(--primary)] peer-checked:text-[var(--primary)]"
-      >
-        {enabled ? "Permitir" : "Não permitir"}
-      </span>
-      <div
-        className="relative h-6 w-12 rounded-full bg-[var(--primary)] shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)] transition-all duration-500
-                after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-[2px_2px_8px_rgba(0,0,0,0.3)] after:transition-all after:duration-500
-                peer-checked:bg-gradient-to-r peer-checked:from-[var(--primary)] peer-checked:to-[var(--secondary)] peer-checked:after:translate-x-6 peer-checked:after:from-white peer-checked:after:to-[var(--primary)]
-                hover:after:scale-95 active:after:scale-90"
-      >
-        <span
-          className="absolute inset-0.5 rounded-full bg-gradient-to-tr from-white/20 via-transparent to-transparent"
-        ></span>
-
-        <span
-          className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 peer-checked:animate-glow peer-checked:opacity-100 [box-shadow:0_0_15px_var(--primary)]"
-        ></span>
-      </div>
-    </label>
-  );
-}
-import ThemeButton from '../../components/ThemeSwitch2';
-
-// Componente principal da sua aplicação (ex: App.js ou page.js no Next.js)
-export default function App() {
-  const [notificationStatus, setNotificationStatus] = useState('');
-  const [isNotificationAllowed, setIsNotificationAllowed] = useState(false);
-
-  useEffect(() => {
-    // Função para verificar o estado atual das notificações no localStorage
-    const checkNotificationPreference = () => {
-      const saved = localStorage.getItem("notificationsEnabled");
-      setIsNotificationAllowed(saved === "true");
-    };
-
-    // Verifica o estado inicial
-    checkNotificationPreference();
-
-    // Adiciona um listener para o evento 'storage' para reagir a mudanças em outras abas/janelas
-    // ou para reagir a mudanças feitas pelo próprio NotificationSwitch se ele não for um filho direto
-    window.addEventListener('storage', checkNotificationPreference);
-
-    // Limpa o listener quando o componente é desmontado
-    return () => {
-      window.removeEventListener('storage', checkNotificationPreference);
-    };
-  }, []);
-
-  // Função para solicitar permissão e mostrar uma notificação
+  // Function to request permission and show a notification
   const showTestNotification = () => {
-    // Primeiro, verifica se as notificações estão permitidas pelo usuário no localStorage
-    const notificationsEnabledByToggle = localStorage.getItem("notificationsEnabled") === "true";
-
-    if (!notificationsEnabledByToggle) {
-      setNotificationStatus("Notificações desativadas pelo botão.");
+    // First, check if notifications are allowed by the user's toggle switch
+    if (!isNotificationAllowedByUser) {
+      setNotificationStatusMessage("Notificações desativadas pelo botão.");
       return;
     }
 
-    // Verifica se a API de Notificações é suportada pelo navegador
+    // Check browser Notification API support
     if (!("Notification" in window)) {
-      setNotificationStatus("Este navegador não suporta notificações de desktop.");
+      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
       return;
     }
 
-    // Solicita permissão se ainda não foi concedida ou negada
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          new Notification("Notificação de Teste!", {
-            body: "Esta é uma notificação de exemplo do seu aplicativo.",
-            icon: "https://placehold.co/64x64/3b82f6/ffffff?text=N", // Ícone de exemplo
-          });
-          setNotificationStatus("Notificação de teste enviada!");
-        } else {
-          setNotificationStatus("Permissão de notificação negada pelo navegador.");
-        }
-      });
-    } else if (Notification.permission === "granted") {
-      // Se a permissão já foi concedida, pode enviar a notificação diretamente
+    // Proceed based on current browser permission state
+    if (browserNotificationPermission === "granted") {
       new Notification("Notificação de Teste!", {
         body: "Esta é uma notificação de exemplo do seu aplicativo.",
-        icon: "https://placehold.co/64x64/3b82f6/ffffff?text=N", // Ícone de exemplo
+        icon: "https://placehold.co/64x64/3b82f6/ffffff?text=N", // Example icon
+        vibrate: [200, 100, 200] // Example vibration pattern for mobile
       });
-      setNotificationStatus("Notificação de teste enviada!");
-    } else {
-      // Se a permissão foi negada (e não é 'default'), o usuário precisa reativar manualmente nas configurações do navegador
-      setNotificationStatus("Permissão de notificação bloqueada. Por favor, ative nas configurações do seu navegador.");
+      setNotificationStatusMessage("Notificação de teste enviada!");
+    } else if (browserNotificationPermission === "denied") {
+      setNotificationStatusMessage("Permissão de notificação bloqueada. Por favor, ative nas configurações do seu navegador.");
+    } else if (browserNotificationPermission === "default") {
+      setNotificationStatusMessage("Permissão de notificação pendente. Ative no pop-up do navegador.");
     }
   };
+
 
   return (
     <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
@@ -151,9 +121,25 @@ export default function App() {
         <div className="mb-14">
           <div className="flex items-center justify-between">
             <span className="text-2xl font-semibold">Notificações</span>
-            <NotificationSwitch />
+            <NotificationSwitch
+              checked={isNotificationAllowedByUser}
+              onChange={handleNotificationToggle}
+            />
           </div>
+          {/* Display notification status */}
+          {notificationStatusMessage && (
+            <p className="mt-4 text-sm text-[var(--text-secondary)]">
+              {notificationStatusMessage}
+            </p>
+          )}
+          <button
+            onClick={showTestNotification}
+            className="mt-6 py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out"
+          >
+            Testar Notificação
+          </button>
         </div>
+
 
         <div>
           <div className="flex items-center justify-between">
@@ -175,4 +161,5 @@ export default function App() {
         </div>
       </div>
     </div>
-  );}
+  );
+}
