@@ -8,7 +8,6 @@ import patoDiferente from "../../../public/assets/pato-diferente.png";
 import BackButton from "../../components/BackButton";
 import enzoImg from "../../../public/assets/enzo.png";
 import jeanImg from "../../../public/assets/jean.png";
-import laraImg from "../../../public/assets/lara.png";
 import jonImg from "../../../public/assets/jon.png";
 
 const originalTeamMembers = [
@@ -30,7 +29,7 @@ const originalTeamMembers = [
   {
     name: "Lara Eridan",
     role: "Back-end Developer",
-    image: laraImg,
+    image: "",
   },
   {
     name: "Jonathan Amaral",
