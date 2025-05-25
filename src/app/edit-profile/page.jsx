@@ -283,7 +283,7 @@ export default function EditarPerfil({
 
   return (
     <div className="flex flex-col w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
-      <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flex-col gap-4 justify-center items-center">
+      <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flex-row gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
       <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-8">

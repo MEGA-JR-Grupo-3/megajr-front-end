@@ -1,6 +1,6 @@
 // components/TaskCard.jsx
 import React, { useState, useCallback, useMemo } from "react";
-import { useSortable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   MdOutlineDragIndicator,
