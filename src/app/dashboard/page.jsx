@@ -13,7 +13,7 @@ import AddTaskForm from "../../components/AddTaskForm";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
-
+import ConfirmModal from "../../components/ConfirmModal";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -30,6 +30,7 @@ function Dashboard() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
+  const [confirmModal, setConfirmModal] = useState(null);
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
 
@@ -237,37 +238,39 @@ function Dashboard() {
       return;
     }
 
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja deletar todas as tarefas concluidas?"
-    );
-    if (!confirmDelete) {
-      return;
-    }
+    setConfirmModal({
+      isVisible: true,
+      message: "Tem certeza que deseja deletar todas as tarefas concluídas?",
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setLoadingTasks(true);
+        try {
+          const response = await fetch(
+            `${backendUrl}/tasks/delete-completed?email=${user.email}`,
+            {
+              method: "DELETE",
+            }
+          );
 
-    setLoadingTasks(true);
-    try {
-      const response = await fetch(`${backendUrl}/tasks/delete-completed`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: user.email }),
-      });
-
-      if (response.ok) {
-        fetchTasks();
-        setErrorMessage("Sucesso ao deletar tarefas concluidas.");
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(
-          `Erro ao deletar tarefas concluidas: ${errorData.message}`
-        );
-      }
-    } catch (error) {
-      setErrorMessage("Erro ao comunicar com o backend:");
-    } finally {
-      setLoadingTasks(false);
-    }
+          if (response.ok) {
+            fetchTasks();
+            setErrorMessage("Sucesso ao deletar tarefas concluidas.");
+          } else {
+            const errorData = await response.json();
+            setErrorMessage(
+              `Erro ao deletar tarefas concluidas: ${errorData.message}`
+            );
+          }
+        } catch (error) {
+          setErrorMessage("Erro ao comunicar com o backend:");
+        } finally {
+          setLoadingTasks(false);
+        }
+      },
+      onCancel: () => {
+        setConfirmModal(null);
+      },
+    });
   };
 
   const handleApplyFilter = (type) => {
@@ -309,7 +312,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="flex flex-row items-center w-full gap-2 px-4 relative justify-center">
         <InputSearch tarefas={allTasks} onSearch={handleSearch} />
 
@@ -458,6 +461,13 @@ function Dashboard() {
               />
             </div>
           </div>
+        )}
+        {confirmModal && confirmModal.isVisible && (
+          <ConfirmModal
+            message={confirmModal.message}
+            onConfirm={confirmModal.onConfirm}
+            onCancel={confirmModal.onCancel}
+          />
         )}
         <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
         {isAddTaskFormVisible && (

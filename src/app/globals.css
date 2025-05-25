@@ -14,6 +14,8 @@ body {
   --text: #0083dd;
   --subText: #313030;
   --button: #392a33;
+  --buttonRed: #ff0000;
+  --buttonLightRed: #f64848;
 }
 
 /* Estilos para o tema escuro */
