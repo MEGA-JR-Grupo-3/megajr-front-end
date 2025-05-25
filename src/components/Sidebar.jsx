@@ -169,7 +169,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
-                  router.push("/about");
+                  router.push("/edit-profile");
                   setIsOpen(false);
                 }}
               >

@@ -1,7 +1,6 @@
 // components/TaskCard.jsx
 import React, { useState, useCallback, useMemo } from "react";
-import { auth } from "../firebaseConfig";
-import { useSortable } from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import {
   MdOutlineDragIndicator,
@@ -59,6 +58,7 @@ function TaskCardComponent({
   onTaskUpdated,
   isDraggable,
   id,
+  firebaseIdToken,
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -110,17 +110,22 @@ function TaskCardComponent({
       errorMsgPrefix,
       setLoadingState
     ) => {
-      const user = auth.currentUser;
-      if (!user?.email) {
-        console.error("Usuário não autenticado.");
-        alert("Usuário não autenticado. Faça login novamente.");
+      if (!firebaseIdToken) {
+        console.error(
+          "Firebase ID Token não disponível. Não é possível completar a ação."
+        );
+        alert("Sessão expirada ou não autenticada. Faça login novamente.");
         return false;
       }
+
       setLoadingState(true);
       try {
         const response = await fetch(`${backendUrl}${endpoint}`, {
           method,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${firebaseIdToken}`,
+          },
           body: body ? JSON.stringify(body) : undefined,
         });
         if (response.ok) {
@@ -138,6 +143,9 @@ function TaskCardComponent({
           alert(
             `${errorMsgPrefix}: ${errorData.message || response.statusText}`
           );
+          if (response.status === 401 || response.status === 403) {
+            alert("Sessão expirada ou não autorizada. Faça login novamente.");
+          }
           return false;
         }
       } catch (error) {
@@ -148,7 +156,7 @@ function TaskCardComponent({
         setLoadingState(false);
       }
     },
-    [backendUrl]
+    [backendUr, firebaseIdToken]
   );
 
   const handleDelete = useCallback(async () => {
@@ -191,7 +199,7 @@ function TaskCardComponent({
     const payload = {
       ...editFormData,
       data_prazo: editFormData.data_prazo || null,
-      estado_tarefa: tarefa.estado_tarefa, // Mantém o estado atual
+      estado_tarefa: tarefa.estado_tarefa,
     };
     const success = await makeApiRequest(
       `/tasks/${tarefa.id_tarefa}`,
@@ -269,7 +277,7 @@ function TaskCardComponent({
     : "transition-shadow duration-300";
   const cardDraggableClass = isDraggable
     ? "touch-action-none"
-    : "cursor-pointer"; // Card é clicável se não for draggable
+    : "cursor-pointer";
 
   return (
     <div
