@@ -17,20 +17,19 @@ function Login() {
   const [password, setPassword] = useState("");
   const [isEmailFilled, setIsEmailFilled] = useState(false);
   const [isPasswordFilled, setIsPasswordFilled] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // Novo estado para a mensagem de erro
+  const [errorMessage, setErrorMessage] = useState("");
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
 
   // Função para verificar se o usuário já existe no banco de dados
   const checkIfUserExists = async (email) => {
     try {
-      const response = await fetch(
-        `https://megajr-back-end.onrender.com/check-user?email=${email}`
-      );
+      const response = await fetch(`${backendUrl}/check-user?email=${email}`);
       const data = await response.json();
-      return data.exists; // Retorna o valor da propriedade 'exists' do JSON
+      return data.exists;
     } catch (error) {
       console.error("Erro ao verificar usuário:", error);
-      return false; // Em caso de erro na requisição, considera que o usuário não existe
+      return false;
     }
   };
 
@@ -40,7 +39,6 @@ function Login() {
     setErrorMessage("");
 
     try {
-      // Verificar se o usuário existe no banco de dados
       const userExists = await checkIfUserExists(email);
       if (!userExists) {
         console.log("Usuário não encontrado:", email);
@@ -48,7 +46,6 @@ function Login() {
         return;
       }
 
-      // Se o usuário existir, continua com o login
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -85,19 +82,16 @@ function Login() {
 
       try {
         console.log("Tentando enviar dados para o backend /cadastro-google...");
-        const response = await fetch(
-          "https://megajr-back-end.onrender.com/cadastro-google",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: userName,
-              email: userEmail,
-            }),
-          }
-        );
+        const response = await fetch(`${backendUrl}/cadastro-google`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: userName,
+            email: userEmail,
+          }),
+        });
         console.log(
           "Requisição /cadastro-google finalizada. Resposta:",
           response
