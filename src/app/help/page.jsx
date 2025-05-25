@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import BackButton from '../../components/BackButton'; // Assuming you have this component
+import React, { useState } from "react";
+import BackButton from "../../components/BackButton";
+import patoDiferente from "../../../public/assets/pato-diferente.png";
+import Image from "next/image";
 
 export default function HelpPage() {
   const [activeQuestion, setActiveQuestion] = useState(null);
@@ -9,28 +11,34 @@ export default function HelpPage() {
   const faqItems = [
     {
       question: "Como faço para criar uma nova tarefa?",
-      answer: "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante 'Adicionar Nova Tarefa' (geralmente um '+' no canto inferior direito) e preencha os detalhes como título, descrição e prazo."
+      answer:
+        "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante 'Adicionar Nova Tarefa' (geralmente um '+' no canto inferior direito) e preencha os detalhes como título, descrição e prazo.",
     },
     {
       question: "Como ativo as notificações?",
-      answer: "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações' e ligar o interruptor. O navegador pode pedir permissão, por favor, aceite para receber os alertas."
+      answer:
+        "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações' e ligar o interruptor. O navegador pode pedir permissão, por favor, aceite para receber os alertas.",
     },
     {
       question: "Posso alterar o tema do aplicativo?",
-      answer: "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro, ou outros temas disponíveis."
+      answer:
+        "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro, ou outros temas disponíveis.",
     },
     {
       question: "Onde minhas tarefas são salvas?",
-      answer: "Suas tarefas são salvas localmente no seu navegador. Isso significa que elas são acessíveis mesmo offline e privadas para o seu dispositivo. Lembre-se que se você limpar os dados do navegador, suas tarefas podem ser perdidas."
+      answer:
+        "Suas tarefas são salvas localmente no seu navegador. Isso significa que elas são acessíveis mesmo offline e privadas para o seu dispositivo. Lembre-se que se você limpar os dados do navegador, suas tarefas podem ser perdidas.",
     },
     {
       question: "Existe um limite para o número de tarefas?",
-      answer: "Não há um limite estrito imposto pelo aplicativo, mas o desempenho pode variar dependendo da quantidade de tarefas e da capacidade do seu dispositivo."
+      answer:
+        "Não há um limite estrito imposto pelo aplicativo, mas o desempenho pode variar dependendo da quantidade de tarefas e da capacidade do seu dispositivo.",
     },
     {
       question: "Como entrar em contato com o suporte?",
-      answer: "Atualmente, o suporte é feito através de nossa documentação e seções de ajuda. Se tiver uma dúvida específica que não encontrou aqui, por favor, verifique futuras atualizações para opções de contato direto."
-    }
+      answer:
+        "Atualmente, o suporte é feito através de nossa documentação e seções de ajuda. Se tiver uma dúvida específica que não encontrou aqui, por favor, verifique futuras atualizações para opções de contato direto.",
+    },
   ];
 
   const toggleQuestion = (index) => {
@@ -38,7 +46,7 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col  h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flew-col gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
@@ -46,9 +54,17 @@ export default function HelpPage() {
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Central de Ajuda
         </h1>
-
+        <div className="flex flex-col justify-center items-center">
+          <Image
+            src={patoDiferente}
+            className="h-auto w-40 mb-10 object-cover" /* Removido o 'flex flex-col justify-center' daqui, pois já está no div pai */
+            alt="pato"
+            priority
+          />
+        </div>
         <p className="text-lg mb-8">
-          Encontre respostas para as perguntas mais frequentes sobre como usar nosso aplicativo.
+          Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma
+          olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
         </p>
 
         {/* --- */}
@@ -70,7 +86,11 @@ export default function HelpPage() {
                   <span className="font-semibold text-lg text-[var(--primary)]">
                     {item.question}
                   </span>
-                  <span className={`text-xl transition-transform duration-300 ${activeQuestion === index ? 'rotate-90' : ''}`}>
+                  <span
+                    className={`text-xl transition-transform duration-300 ${
+                      activeQuestion === index ? "rotate-90" : ""
+                    }`}
+                  >
                     ▶
                   </span>
                 </button>
@@ -91,10 +111,16 @@ export default function HelpPage() {
             Dicas Rápidas
           </h2>
           <ul className="list-disc list-inside space-y-2 text-[var(--text-secondary)]">
-            <li>Mantenha o aplicativo atualizado para as últimas funcionalidades.</li>
-            <li>Use a função de pesquisa para encontrar tarefas rapidamente.</li>
+            <li>
+              Mantenha o aplicativo atualizado para as últimas funcionalidades.
+            </li>
+            <li>
+              Use a função de pesquisa para encontrar tarefas rapidamente.
+            </li>
             <li>Organize suas tarefas com prazos para melhor gestão.</li>
-            <li>Explore as **Configurações** para personalizar sua experiência.</li>
+            <li>
+              Explore as **Configurações** para personalizar sua experiência.
+            </li>
           </ul>
         </section>
 
@@ -105,7 +131,9 @@ export default function HelpPage() {
             Ainda Precisa de Ajuda?
           </h2>
           <p className="text-lg text-[var(--text-secondary)]">
-            Se você não encontrou a resposta para sua pergunta, considere verificar a documentação completa do aplicativo (se disponível) ou aguarde futuras atualizações para mais opções de suporte.
+            Se você não encontrou a resposta para sua pergunta, considere
+            verificar a documentação completa do aplicativo (se disponível) ou
+            aguarde futuras atualizações para mais opções de suporte.
           </p>
           {/* You can add a link to a contact form or email here if you set one up */}
           {/* <a href="mailto:support@example.com" className="mt-4 inline-block py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
