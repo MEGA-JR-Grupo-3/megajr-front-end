@@ -202,7 +202,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
-                  console.log("Ir para Ajuda");
+                  router.push("/help")
                   setIsOpen(false);
                 }}
               >

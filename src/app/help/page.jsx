@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import BackButton from '../../components/BackButton'; // Assuming you have this component
+import patoDiferente from "../../../public/assets/pato-diferente.png";
+import Image from 'next/image';
 
 export default function HelpPage() {
   const [activeQuestion, setActiveQuestion] = useState(null);
@@ -38,7 +40,7 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col  h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flew-col gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
@@ -46,9 +48,16 @@ export default function HelpPage() {
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Central de Ajuda
         </h1>
-
+        <div className="flex flex-col justify-center items-center">
+        <Image
+          src={patoDiferente}
+          className="h-auto w-40 mb-10 object-cover" /* Removido o 'flex flex-col justify-center' daqui, pois já está no div pai */
+          alt="pato"
+          priority
+        />
+        </div>
         <p className="text-lg mb-8">
-          Encontre respostas para as perguntas mais frequentes sobre como usar nosso aplicativo.
+          Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
         </p>
 
         {/* --- */}
