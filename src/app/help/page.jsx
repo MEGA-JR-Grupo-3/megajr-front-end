@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import BackButton from '../../components/BackButton'; // Assuming you have this component
-import patoDiferente from "../../../public/assets/pato-diferente.png";
+import patofaq from "../../../public/assets/pato-faq.png";
 import Image from 'next/image';
 
 export default function HelpPage() {
@@ -11,15 +11,19 @@ export default function HelpPage() {
   const faqItems = [
     {
       question: "Como faço para criar uma nova tarefa?",
-      answer: "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante 'Adicionar Nova Tarefa' (geralmente um '+' no canto inferior direito) e preencha os detalhes como título, descrição e prazo."
+      answer: "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante '+' no canto inferior direito e preencha os detalhes como título, descrição e prazo."
     },
     {
       question: "Como ativo as notificações?",
-      answer: "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações' e ligar o interruptor. O navegador pode pedir permissão, por favor, aceite para receber os alertas."
+      answer: "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações', se as notificações estiverem como 'não permitidas' clique no interruptor para permitir. O navegador pode pedir permissão, por favor, aceite para receber os alertas."
     },
     {
       question: "Posso alterar o tema do aplicativo?",
-      answer: "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro, ou outros temas disponíveis."
+      answer: "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro."
+    },
+    {
+      question: "Como altero o tamanho das tarefas na tela inicial?",
+      answer: "Para isso, basta ir em **Configurações**, em 'tamanho da tarefa' terá o tamanho que está configurado. Você pode escolher aquele que fica melhor para você: 'Pequeno', 'Médio' ou 'Grande'."
     },
     {
       question: "Onde minhas tarefas são salvas?",
@@ -50,17 +54,15 @@ export default function HelpPage() {
         </h1>
         <div className="flex flex-col justify-center items-center">
         <Image
-          src={patoDiferente}
+          src={patofaq}
           className="h-auto w-40 mb-10 object-cover" /* Removido o 'flex flex-col justify-center' daqui, pois já está no div pai */
           alt="pato"
           priority
         />
         </div>
-        <p className="text-lg mb-8">
+        <p className="text-lg mb-10 font-semibold">
           Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
         </p>
-
-        {/* --- */}
 
         <section className="mb-14 text-left">
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
@@ -75,16 +77,17 @@ export default function HelpPage() {
                 <button
                   className="flex justify-between items-center w-full p-4 text-left focus:outline-none"
                   onClick={() => toggleQuestion(index)}
+                  style={{ backgroundColor: '#ffff' }}
                 >
                   <span className="font-semibold text-lg text-[var(--primary)]">
                     {item.question}
                   </span>
                   <span className={`text-xl transition-transform duration-300 ${activeQuestion === index ? 'rotate-90' : ''}`}>
-                    ▶
+                    ➤
                   </span>
                 </button>
                 {activeQuestion === index && (
-                  <div className="p-4 pt-0 text-[var(--text-secondary)]">
+                  <div className="p-4 pt-0 text-[var(--text-secondary)]" style={{ backgroundColor: '#ffff' }}>
                     <p>{item.answer}</p>
                   </div>
                 )}
@@ -107,19 +110,13 @@ export default function HelpPage() {
           </ul>
         </section>
 
-        {/* --- */}
-
         <section className="text-left">
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
             Ainda Precisa de Ajuda?
           </h2>
           <p className="text-lg text-[var(--text-secondary)]">
-            Se você não encontrou a resposta para sua pergunta, considere verificar a documentação completa do aplicativo (se disponível) ou aguarde futuras atualizações para mais opções de suporte.
+            Se você não encontrou a resposta para sua pergunta, considere verificar a documentação completa do aplicativo ou aguarde futuras atualizações para mais opções de suporte.
           </p>
-          {/* You can add a link to a contact form or email here if you set one up */}
-          {/* <a href="mailto:support@example.com" className="mt-4 inline-block py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
-            Enviar um E-mail
-          </a> */}
         </section>
       </div>
     </div>

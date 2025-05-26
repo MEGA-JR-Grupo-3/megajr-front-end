@@ -1,6 +1,7 @@
+
 import { Dosis } from "next/font/google";
 import "./globals.css";
-import RootLayoutClient from "./layout.client";
+import RootLayoutClient from "../components/RootLayoutClient";
 
 const dosis = Dosis({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link
@@ -40,11 +41,7 @@ export default function RootLayout({ children }) {
           sizes="<generated>"
         />
       </head>
-      <body
-        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)] min-h-screen`}
-      >
-        <RootLayoutClient dosis={dosis}>{children}</RootLayoutClient>
-      </body>
+      <RootLayoutClient dosis={dosis}>{children}</RootLayoutClient>
     </html>
   );
 }

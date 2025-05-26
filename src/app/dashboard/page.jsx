@@ -33,6 +33,7 @@ function Dashboard() {
   const [confirmModal, setConfirmModal] = useState(null);
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
+  const [taskDisplaySize, setTaskDisplaySize] = useState('medium'); // Novo estado para o tamanho de exibição da tarefa
 
   // ESTADOS PARA OS FILTROS
   const [filterType, setFilterType] = useState(null);
@@ -141,6 +142,25 @@ function Dashboard() {
   useEffect(() => {
     applyFiltersAndSort();
   }, [allTasks, filterType, sortOrder, currentSearchTerm, applyFiltersAndSort]);
+
+  //Carregar o taskSise
+  useEffect(() => {
+    const savedTaskSize = localStorage.getItem("taskSize");
+    if (savedTaskSize) {
+      setTaskDisplaySize(savedTaskSize);
+    }
+
+    //Listener se for alterado
+    const handleStorageChange = (event) => {
+      if (event.key === "taskSize") {
+        setTaskDisplaySize(event.newValue || 'medium');
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const fetchTasks = async () => {
     if (user?.email) {
@@ -441,6 +461,7 @@ function Dashboard() {
                           onTaskUpdated={handleTaskUpdated}
                           isDraggable={true}
                           id={tarefa.id_tarefa}
+                          taskSize={taskDisplaySize}
                         />
                       </li>
                     ))}

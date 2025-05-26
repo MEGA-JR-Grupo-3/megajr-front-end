@@ -72,7 +72,7 @@ export default function about() {
           Sobre nós
         </h1>
         <h2 className="text-xl font-semibold mb-10">
-          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
+          O que acontece quando 6 programadores motivados pelo Mega P.S. se
           juntam para encarar esse desafio?
         </h2>
         <Image
@@ -88,19 +88,19 @@ export default function about() {
           <button
             onClick={() => paginate(-1)}
             disabled={page === 0}
-            className="disabled:opacity-30 [var(--subText)] hover:text-black transition"
+            className="w-12 h-12 rounded-full bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center disabled:opacity-30 transition hover:scale-110"
           >
-            <ArrowLeft size={32} />
+            <ArrowLeft size={24} className="text-white" />
           </button>
           <h2 className="text-3xl font-bold text-center flex-1 text-[var(--text)]">
-            Nome da equipe
+            Time CodeQuack
           </h2>
           <button
             onClick={() => paginate(1)}
             disabled={page >= totalPages - 1}
-            className="disabled:opacity-30 [var(--subText)] hover:text-black transition"
+            className="w-12 h-12 rounded-full bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center disabled:opacity-30 transition hover:scale-110"
           >
-            <ArrowRight size={32} />
+            <ArrowRight size={24} className="text-white" />
           </button>
         </div>
 

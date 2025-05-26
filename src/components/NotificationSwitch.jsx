@@ -3,24 +3,21 @@
 import React, { useState, useEffect } from 'react';
 
 export default function NotificationSwitch({ checked, onChange }) {
-  // The 'enabled' state in NotificationSwitch now reflects the 'checked' prop
-  // It's still useful internally for visual updates that might debounce
-  // but the primary source of truth is the 'checked' prop from the parent.
+
   const [internalEnabled, setInternalEnabled] = useState(checked);
 
   useEffect(() => {
-    setInternalEnabled(checked); // Keep internal state in sync with prop
+    setInternalEnabled(checked); 
   }, [checked]);
 
   const handleToggle = () => {
     const newValue = !internalEnabled;
-    setInternalEnabled(newValue); // Optimistic update for UI
+    setInternalEnabled(newValue); 
 
-    // Call the onChange prop to communicate the new value to the parent
     if (onChange) {
       onChange(newValue);
     }
-    // localStorage will be handled by the parent based on this onChange event
+ 
   };
 
   return (
@@ -30,7 +27,7 @@ export default function NotificationSwitch({ checked, onChange }) {
       <input
         className="peer sr-only"
         type="checkbox"
-        checked={internalEnabled} // Use internal state for visual representation
+        checked={internalEnabled} 
         onChange={handleToggle}
       />
       <span
