@@ -33,6 +33,7 @@ export default function EditarPerfil() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -51,8 +52,7 @@ export default function EditarPerfil() {
         try {
           setLoading(true);
           const idToken = await user.getIdToken();
-          const response = await fetch("/user-data", {
-            // Rota do seu backend
+          const response = await fetch(`${backendUrl}/user-data`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export default function EditarPerfil() {
       setSelectedFile(null);
 
       const idToken = await userData.getIdToken();
-      const response = await fetch("/api/update-profile-photo", {
+      const response = await fetch(`${backendUrl}/update-profile-photo`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -191,7 +191,7 @@ export default function EditarPerfil() {
       await updateEmail(userData, email);
 
       const idToken = await userData.getIdToken();
-      const response = await fetch("/api/update-email", {
+      const response = await fetch(`${backendUrl}/update-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -309,7 +309,7 @@ export default function EditarPerfil() {
 
         try {
           const idToken = await userData.getIdToken();
-          const response = await fetch("/api/delete-user-data", {
+          const response = await fetch(`${backendUrl}/delete-user-data`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
