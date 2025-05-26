@@ -131,7 +131,7 @@ const MenuHamburguer = () => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--primary)] via-[var(--primary)] to-[var(--secondary)] overflow-hidden"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--sidebar-primary)] via-[var(--sidebar-primary)] to-[var(--sidebar-secondary)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
             <div className="flex flex-row items-start justify-between mb-4">
@@ -169,7 +169,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
-                  router.push("/about");
+                  router.push("/edit-profile");
                   setIsOpen(false);
                 }}
               >
@@ -191,7 +191,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
-                  router.push("/about");
+                  router.push("/about-us");
                   setIsOpen(false);
                 }}
               >
@@ -202,7 +202,7 @@ const MenuHamburguer = () => {
                 variant="ghost"
                 className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
                 onClick={() => {
-                  router.push("/help")
+                  router.push("/help");
                   setIsOpen(false);
                 }}
               >

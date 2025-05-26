@@ -29,6 +29,7 @@ function Dashboard() {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
+  const [firebaseIdToken, setFirebaseIdToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmModal, setConfirmModal] = useState(null);
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
@@ -69,7 +70,6 @@ function Dashboard() {
     let completedTasks = tasksToFilter.filter(
       (task) => task.estado_tarefa === "Finalizada"
     );
-
     setCompletedTasksCount(completedTasks.length);
 
     if (filterType) {
@@ -135,9 +135,8 @@ function Dashboard() {
     completedTasks.sort(() => {
       return 0;
     });
-
     setFilteredTasks([...pendingTasks, ...completedTasks]);
-  }, [allTasks, filterType, sortOrder, currentSearchTerm]);
+  }, [allTasks, filterType, sortOrder, currentSearchTerm, priorityOrder]);
 
   useEffect(() => {
     applyFiltersAndSort();
@@ -163,44 +162,78 @@ function Dashboard() {
   }, []);
 
   const fetchTasks = async () => {
-    if (user?.email) {
+    if (user?.email && firebaseIdToken) {
       setLoadingTasks(true);
       try {
         const response = await fetch(`${backendUrl}/tasks`, {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${firebaseIdToken}`,
           },
-          body: JSON.stringify({ email: user.email }),
         });
 
         if (response.ok) {
           const data = await response.json();
           setAllTasks(data);
         } else {
-          console.error("Erro ao buscar tarefas");
+          console.error(
+            "Erro ao buscar tarefas:",
+            response.status,
+            await response.text()
+          );
+          if (response.status === 401 || response.status === 403) {
+            setErrorMessage(
+              "Sessão expirada ou não autorizada. Faça login novamente."
+            );
+            auth.signOut();
+            router.push("/");
+          } else {
+            setErrorMessage("Erro ao buscar tarefas.");
+          }
         }
       } catch (error) {
         console.error("Erro ao comunicar com o backend:", error);
+        setErrorMessage("Erro de rede ao buscar tarefas.");
       } finally {
         setLoadingTasks(false);
       }
+    } else if (!user?.email) {
+      console.warn("Usuário não logado, não buscando tarefas.");
+    } else if (!firebaseIdToken) {
+      console.warn(
+        "Firebase ID Token não disponível, aguardando para buscar tarefas."
+      );
     }
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && firebaseIdToken) {
       fetchTasks();
     }
-  }, [backendUrl, user]);
+  }, [backendUrl, user, firebaseIdToken]);
 
   const handleSearch = (searchTerm) => {
     setCurrentSearchTerm(searchTerm);
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        try {
+          const idToken = await currentUser.getIdToken();
+          setFirebaseIdToken(idToken);
+          localStorage.setItem("jwt_token", idToken);
+        } catch (error) {
+          console.error("Erro ao obter Firebase ID Token:", error);
+          setErrorMessage("Erro ao autenticar. Faça login novamente.");
+          auth.signOut();
+        }
+      } else {
+        setFirebaseIdToken(null);
+        localStorage.removeItem("jwt_token");
+      }
       setLoading(false);
     });
 
@@ -237,24 +270,58 @@ function Dashboard() {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    if (!over) return;
+    if (!over || active.id === over.id || !firebaseIdToken) return;
 
-    if (active.id !== over.id) {
-      const oldIndex = filteredTasks.findIndex(
-        (task) => task.id_tarefa === active.id
-      );
-      const newIndex = filteredTasks.findIndex(
-        (task) => task.id_tarefa === over.id
-      );
+    // Atualiza a ordem visualmente imediatamente
+    const oldIndex = filteredTasks.findIndex(
+      (task) => task.id_tarefa === active.id
+    );
+    const newIndex = filteredTasks.findIndex(
+      (task) => task.id_tarefa === over.id
+    );
 
-      const newOrder = arrayMove(filteredTasks, oldIndex, newIndex);
-      setFilteredTasks(newOrder);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const newOrderedFilteredTasks = arrayMove(
+      filteredTasks,
+      oldIndex,
+      newIndex
+    );
+    setFilteredTasks(newOrderedFilteredTasks);
+    const updatedTaskOrder = newOrderedFilteredTasks
+      .filter((task) => task.estado_tarefa === "Pendente")
+      .map((task) => task.id_tarefa);
+
+    try {
+      const response = await fetch(`${backendUrl}/tasks/reorder`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${firebaseIdToken}`,
+        },
+        body: JSON.stringify({ taskIds: updatedTaskOrder }),
+      });
+
+      if (!response.ok) {
+        console.error(
+          "Erro ao reordenar tarefas no backend:",
+          response.status,
+          await response.text()
+        );
+        setErrorMessage("Erro ao salvar a nova ordem das tarefas.");
+        fetchTasks();
+      } else {
+        fetchTasks();
+      }
+    } catch (error) {
+      console.error("Erro de rede ao reordenar tarefas:", error);
+      setErrorMessage("Erro de rede ao salvar nova ordem das tarefas.");
+      fetchTasks();
     }
   };
 
   const handleDeleteAllCompleted = async () => {
-    if (!user?.email) {
-      setErrorMessage("Voce precisa estar logado para deletar tarefas.");
+    if (!user?.email || !firebaseIdToken) {
+      setErrorMessage("Você precisa estar logado para deletar tarefas.");
       return;
     }
 
@@ -265,24 +332,29 @@ function Dashboard() {
         setConfirmModal(null);
         setLoadingTasks(true);
         try {
-          const response = await fetch(
-            `${backendUrl}/tasks/delete-completed?email=${user.email}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const response = await fetch(`${backendUrl}/tasks/delete-completed`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${firebaseIdToken}`,
+            },
+          });
 
           if (response.ok) {
             fetchTasks();
-            setErrorMessage("Sucesso ao deletar tarefas concluidas.");
+            setErrorMessage("Sucesso ao deletar tarefas concluídas.");
           } else {
             const errorData = await response.json();
             setErrorMessage(
-              `Erro ao deletar tarefas concluidas: ${errorData.message}`
+              `Erro ao deletar tarefas concluídas: ${errorData.message}`
             );
+            if (response.status === 401 || response.status === 403) {
+              auth.signOut();
+              router.push("/");
+            }
           }
         } catch (error) {
-          setErrorMessage("Erro ao comunicar com o backend:");
+          setErrorMessage("Erro ao comunicar com o backend.");
         } finally {
           setLoadingTasks(false);
         }
@@ -495,6 +567,7 @@ function Dashboard() {
           <AddTaskForm
             onClose={() => setIsAddTaskFormVisible(false)}
             onTaskAdded={handleTaskAdded}
+            firebaseIdToken={firebaseIdToken}
           />
         )}
       </div>

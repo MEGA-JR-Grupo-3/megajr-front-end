@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import BackButton from '../../components/BackButton'; // Assuming you have this component
+import BackButton from '../../components/BackButton';
 import patofaq from "../../../public/assets/pato-faq.png";
 import Image from 'next/image';
 
@@ -27,16 +27,19 @@ export default function HelpPage() {
     },
     {
       question: "Onde minhas tarefas são salvas?",
-      answer: "Suas tarefas são salvas localmente no seu navegador. Isso significa que elas são acessíveis mesmo offline e privadas para o seu dispositivo. Lembre-se que se você limpar os dados do navegador, suas tarefas podem ser perdidas."
+      answer:
+        "Suas tarefas são salvas localmente no seu navegador. Isso significa que elas são acessíveis mesmo offline e privadas para o seu dispositivo. Lembre-se que se você limpar os dados do navegador, suas tarefas podem ser perdidas.",
     },
     {
       question: "Existe um limite para o número de tarefas?",
-      answer: "Não há um limite estrito imposto pelo aplicativo, mas o desempenho pode variar dependendo da quantidade de tarefas e da capacidade do seu dispositivo."
+      answer:
+        "Não há um limite estrito imposto pelo aplicativo, mas o desempenho pode variar dependendo da quantidade de tarefas e da capacidade do seu dispositivo.",
     },
     {
       question: "Como entrar em contato com o suporte?",
-      answer: "Atualmente, o suporte é feito através de nossa documentação e seções de ajuda. Se tiver uma dúvida específica que não encontrou aqui, por favor, verifique futuras atualizações para opções de contato direto."
-    }
+      answer:
+        "Atualmente, o suporte é feito através de nossa documentação e seções de ajuda. Se tiver uma dúvida específica que não encontrou aqui, por favor, verifique futuras atualizações para opções de contato direto.",
+    },
   ];
 
   const toggleQuestion = (index) => {
@@ -44,11 +47,11 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="flex flex-col  h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flew-col gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
-      <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-12">
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Central de Ajuda
         </h1>
@@ -65,21 +68,21 @@ export default function HelpPage() {
         </p>
 
         <section className="mb-14 text-left">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Perguntas Frequentes (FAQ)
           </h2>
           <div className="space-y-4">
             {faqItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-[var(--background-secondary)] rounded-lg shadow-md overflow-hidden"
+                className="bg-[var(--subbackground)] rounded-lg shadow-md overflow-hidden"
               >
                 <button
                   className="flex justify-between items-center w-full p-4 text-left focus:outline-none"
                   onClick={() => toggleQuestion(index)}
                   style={{ backgroundColor: '#ffff' }}
                 >
-                  <span className="font-semibold text-lg text-[var(--primary)]">
+                  <span className="font-semibold text-lg text-[var(--secondary)]">
                     {item.question}
                   </span>
                   <span className={`text-xl transition-transform duration-300 ${activeQuestion === index ? 'rotate-90' : ''}`}>
@@ -98,15 +101,21 @@ export default function HelpPage() {
 
         {/* --- */}
 
-        <section className="text-left mb-14">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
+        <section className="text-left mb-14 ">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Dicas Rápidas
           </h2>
-          <ul className="list-disc list-inside space-y-2 text-[var(--text-secondary)]">
-            <li>Mantenha o aplicativo atualizado para as últimas funcionalidades.</li>
-            <li>Use a função de pesquisa para encontrar tarefas rapidamente.</li>
+          <ul className="list-disc list-inside space-y-2 text-[var(--secondary)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
+            <li>
+              Mantenha o aplicativo atualizado para as últimas funcionalidades.
+            </li>
+            <li>
+              Use a função de pesquisa para encontrar tarefas rapidamente.
+            </li>
             <li>Organize suas tarefas com prazos para melhor gestão.</li>
-            <li>Explore as **Configurações** para personalizar sua experiência.</li>
+            <li>
+              Explore as **Configurações** para personalizar sua experiência.
+            </li>
           </ul>
         </section>
 

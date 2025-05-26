@@ -31,7 +31,9 @@ export default function SettingsPage() {
     if ("Notification" in window) {
       setBrowserNotificationPermission(Notification.permission);
     } else {
-      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
+      setNotificationStatusMessage(
+        "Este navegador não suporta notificações de desktop."
+      );
     }
 
     // Carrega as tarefas (EXEMPLO: Supondo que você as tenha no localStorage como JSON)
@@ -60,10 +62,10 @@ export default function SettingsPage() {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -82,9 +84,13 @@ export default function SettingsPage() {
         if (permission === "granted") {
           setNotificationStatusMessage("Permissão de notificação concedida pelo navegador.");
         } else if (permission === "denied") {
-          setNotificationStatusMessage("Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador.");
+          setNotificationStatusMessage(
+            "Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador."
+          );
         } else if (permission === "default") {
-          setNotificationStatusMessage("Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador.");
+          setNotificationStatusMessage(
+            "Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador."
+          );
         }
       }
     } else {
@@ -115,7 +121,9 @@ export default function SettingsPage() {
     }
 
     if (!("Notification" in window)) {
-      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
+      setNotificationStatusMessage(
+        "Este navegador não suporta notificações de desktop."
+      );
       return;
     }
 
@@ -172,7 +180,6 @@ export default function SettingsPage() {
     }
   };
 
-
   return (
     <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flew-col gap-4 justify-center items-center">
@@ -183,8 +190,8 @@ export default function SettingsPage() {
           Configurações
         </h1>
 
-        <div className="mb-14">
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-center w-full gap-14 mb-14 bg-[var(--subbackground)] rounded-lg shadow-md p-2 py-4">
+          <div className="w-full flex items-center justify-between">
             <div className="flex items-center">
               <span className="text-2xl font-semibold">Tema</span>
             </div>
@@ -192,9 +199,8 @@ export default function SettingsPage() {
               <ThemeButton />
             </div>
           </div>
-        </div>
-        <div className="mb-14">
-          <div className="flex items-center justify-between">
+
+          <div className="w-full flex items-center justify-between">
             <span className="text-2xl font-semibold">Notificações</span>
             <NotificationSwitch
               checked={isNotificationAllowedByUser}
@@ -214,11 +220,12 @@ export default function SettingsPage() {
           </button>
         </div>
 
-
-        <div>
+        <div className="bg-[var(--subbackground)] rounded-lg shadow-md p-2 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="text-2xl font-semibold">Tamanho das Tarefas</span>
+              <span className="text-2xl font-semibold">
+                Tamanho das Tarefas
+              </span>
             </div>
             <select
               className="text-1xl shadow appearance-none border-none rounded w-auto py-2 px-3 text-white text-center bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] focus:outline-none focus:shadow-outline"

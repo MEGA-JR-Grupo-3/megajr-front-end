@@ -1,3 +1,4 @@
+// src/app/login/page.js
 "use client";
 
 import Image from "next/image";
@@ -20,101 +21,99 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const router = useRouter();
-
-  // Função para verificar se o usuário já existe no banco de dados
-  const checkIfUserExists = async (email) => {
-    try {
-      const response = await fetch(`${backendUrl}/check-user?email=${email}`);
-      const data = await response.json();
-      return data.exists;
-    } catch (error) {
-      console.error("Erro ao verificar usuário:", error);
-      return false;
-    }
-  };
-
-  // Função para fazer o login com e-mail e senha
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage("");
 
     try {
-      const userExists = await checkIfUserExists(email);
-      if (!userExists) {
-        console.log("Usuário não encontrado:", email);
-        setErrorMessage("Erro ao fazer login. Usuário não encontrado.");
-        return;
-      }
-
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
       const user = userCredential.user;
+
       if (user) {
-        const token = await user.getIdToken();
-        localStorage.setItem("authToken", token);
-        router.push("/dashboard");
+        const firebaseIdToken = await user.getIdToken();
+        const backendResponse = await fetch(`${backendUrl}/user-data`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${firebaseIdToken}`,
+          },
+        });
+
+        if (backendResponse.ok) {
+          const backendData = await backendResponse.json();
+          localStorage.setItem("jwt_token", firebaseIdToken);
+          localStorage.setItem("loggedInUserEmail", backendData.email);
+
+          router.push("/dashboard");
+        } else {
+          const errorText = await backendResponse.text();
+          console.error(
+            "Erro do backend após login Firebase:",
+            backendResponse.status,
+            errorText
+          );
+          setErrorMessage(
+            "Erro ao obter dados do usuário no backend. Tente novamente."
+          );
+        }
       }
     } catch (error) {
-      console.error("Erro ao fazer login com e-mail/senha:", error);
-      setErrorMessage("Erro ao fazer login. Verifique seu e-mail e senha.");
+      console.error("Erro ao fazer login com e-mail/senha (Firebase):", error);
+      if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password"
+      ) {
+        setErrorMessage("E-mail ou senha inválidos.");
+      } else if (error.code === "auth/too-many-requests") {
+        setErrorMessage(
+          "Muitas tentativas de login. Tente novamente mais tarde."
+        );
+      } else {
+        setErrorMessage("Erro ao fazer login. Verifique seu e-mail e senha.");
+      }
     }
   };
 
   const handleGoogleLoginSuccess = async (user) => {
-    console.log(
-      "Login com Google Sucesso: Iniciando handleGoogleLoginSuccess",
-      user
-    );
     if (user) {
-      const token = await user.getIdToken();
-      localStorage.setItem("authToken", token);
-
-      const userName = user.displayName;
-      const userEmail = user.email;
-
-      console.log("Dados do usuário Firebase para envio:", {
-        name: userName,
-        email: userEmail,
-      });
-
+      const firebaseIdToken = await user.getIdToken();
       try {
-        console.log("Tentando enviar dados para o backend /cadastro-google...");
-        const response = await fetch(`${backendUrl}/cadastro-google`, {
+        const response = await fetch(`${backendUrl}/google-login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${firebaseIdToken}`,
           },
           body: JSON.stringify({
-            name: userName,
-            email: userEmail,
+            name: user.displayName,
+            email: user.email,
           }),
         });
-        console.log(
-          "Requisição /cadastro-google finalizada. Resposta:",
-          response
-        );
 
         if (response.ok) {
-          console.log(
-            "Dados do usuário do Google enviados ao backend com sucesso."
-          );
-          // Apenas redireciona se a resposta do backend for bem-sucedida
+          localStorage.setItem("jwt_token", firebaseIdToken);
+          localStorage.setItem("loggedInUserEmail", user.email);
           router.push("/dashboard");
         } else {
           console.error(
-            "Erro na resposta do backend ao comunicar dados do Google:",
+            "Erro na resposta do backend ao sincronizar dados do Google:",
             response.status,
             await response.text()
+          );
+          setErrorMessage(
+            "Erro ao sincronizar dados do Google com o servidor."
           );
         }
       } catch (error) {
         console.error(
-          "Erro ao fazer requisição para cadastro/verificação do Google (CATCH):",
+          "Erro ao fazer requisição para sincronização do Google (CATCH):",
           error
         );
+        setErrorMessage("Erro de conexão ao sincronizar com o servidor.");
       }
     }
   };

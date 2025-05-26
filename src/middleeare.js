@@ -14,7 +14,6 @@ export async function middleware(request) {
       if (!token) {
         return NextResponse.redirect(new URL("/", request.url));
       }
-      // Você pode adicionar uma chamada para verificar a validade do token no seu backend aqui
       return NextResponse.next();
     } catch (error) {
       console.error("Erro ao verificar autenticação no middleware:", error);

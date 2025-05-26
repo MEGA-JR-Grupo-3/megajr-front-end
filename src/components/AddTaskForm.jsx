@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import { auth } from "../firebaseConfig";
 
-function AddTaskForm({ onClose, onTaskAdded }) {
+function AddTaskForm({ onClose, onTaskAdded, firebaseIdToken }) {
+  console.log("Firebase ID Token no AddTaskForm:", firebaseIdToken);
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [dataPrazo, setDataPrazo] = useState("");
-  const [prioridade, setPrioridade] = useState("");
+  const [prioridade, setPrioridade] = useState("Normal");
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const user = auth.currentUser;
-    if (!user?.email) {
-      console.error("Usuário não autenticado.");
+    if (!firebaseIdToken) {
+      console.error(
+        "Firebase ID Token não disponível. Não é possível adicionar tarefa."
+      );
       return;
     }
 
@@ -22,8 +22,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
       descricao,
       data_prazo: dataPrazo === "" ? null : dataPrazo,
       prioridade,
-      estado_tarefa,
-      email: user.email,
+      estado_tarefa: "Pendente",
     };
 
     try {
@@ -31,6 +30,7 @@ function AddTaskForm({ onClose, onTaskAdded }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${firebaseIdToken}`,
         },
         body: JSON.stringify(newTask),
       });
