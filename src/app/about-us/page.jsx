@@ -70,17 +70,16 @@ export default function about() {
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4  mt-18">
           Sobre nós
         </h1>
-
+        <p className="text-lg mb-10 font-semibold">
+          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
+          juntam para encarar esse desafio?
+        </p>
         <Image
           src={patoDiferente}
           className="h-auto w-40 mb-10 object-cover"
           alt="pato"
           priority
         />
-        <h2 className="text-xl text-[var(--subText)] font-semibold mb-10">
-          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
-          juntam para encarar esse desafio?
-        </h2>
       </section>
 
       <section className="w-full p-6 bg-[var(--subbackground)] /70 backdrop-blur rounded-xl shadow-xl">
@@ -88,19 +87,19 @@ export default function about() {
           <button
             onClick={() => paginate(-1)}
             disabled={page === 0}
-            className="disabled:opacity-30 [var(--subText)] hover:text-black transition"
+            className="w-12 h-12 rounded-full bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center disabled:opacity-30 transition hover:scale-110"
           >
-            <ArrowLeft size={32} />
+            <ArrowLeft size={24} className="text-white" />
           </button>
           <h2 className="text-3xl font-bold text-center flex-1 text-[var(--text)]">
-            Nome da equipe
+            Time CodeQuack
           </h2>
           <button
             onClick={() => paginate(1)}
             disabled={page >= totalPages - 1}
-            className="disabled:opacity-30 [var(--subText)] hover:text-black transition"
+            className="w-12 h-12 rounded-full bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] flex items-center justify-center disabled:opacity-30 transition hover:scale-110"
           >
-            <ArrowRight size={32} />
+            <ArrowRight size={24} className="text-white" />
           </button>
         </div>
 
@@ -113,7 +112,7 @@ export default function about() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-2xl transition-shadow"
+                className="bg-[var(--background-2)] rounded-2xl shadow-lg p-6 text-center hover:shadow-2xl transition-shadow"
               >
                 <div className="w-36 h-36 rounded-full p-1 mx-auto mb-6 bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)]">
                   <div className="w-full h-full bg-white rounded-full flex items-center justify-center">

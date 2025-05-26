@@ -7,10 +7,11 @@ body {
 /* Estilos para o tema claro (padrão) */
 :root {
   --primary: #916902;
-  --secondary: #e2aa5b;
+  --secondary: #b98e55;
   --sidebar-primary: #c1af6d;
   --sidebar-secondary: #bcae78;
   --background: #fff5d2;
+  --background-2: #fff5d2;
   --subbackground: #fdf1b9;
   --bgcard: #feeec8;
   --text: #b17600;
@@ -27,6 +28,7 @@ body {
   --sidebar-primary: #00375c;
   --sidebar-secondary: #0a4e89;
   --background: #1e2939;
+  --background-2: #e1e1e1;
   --subbackground: #121b2a;
   --bgcard: #121b2a;
   --text: #dcdcdc;

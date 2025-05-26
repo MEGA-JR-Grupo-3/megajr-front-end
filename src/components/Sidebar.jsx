@@ -196,7 +196,7 @@ const MenuHamburguer = () => {
                 }}
               >
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
-                Quem somos
+                Sobre Nós
               </button>
               <button
                 variant="ghost"
@@ -207,7 +207,7 @@ const MenuHamburguer = () => {
                 }}
               >
                 <FontAwesomeIcon icon={faQuestionCircle} className="mr-2" />
-                Ajuda
+                Central de Ajuda
               </button>
             </div>
 

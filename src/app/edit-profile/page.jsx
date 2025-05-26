@@ -14,6 +14,8 @@ import {
   deleteUser,
 } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Image from "next/image";
+import patoConfig from "../../../public/assets/pato-config.png";
 
 export default function EditarPerfil() {
   const [userData, setUserData] = useState(null);
@@ -353,6 +355,18 @@ export default function EditarPerfil() {
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Editar Perfil
         </h1>
+        <p className="text-lg mb-10 font-semibold ">
+          Opa! O jubileu está aqui para te ajudar com a costumização do seu
+          perfil. Vamos la?
+        </p>
+        <div className="flex flex-col justify-center items-center">
+          <Image
+            src={patoConfig}
+            className="h-auto w-40 mb-10 object-cover"
+            alt="pato"
+            priority
+          />
+        </div>
 
         {/* Mensagens de Feedback */}
         {loading && <div className="text-blue-500 mb-4">Carregando...</div>}

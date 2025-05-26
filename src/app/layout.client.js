@@ -108,6 +108,7 @@ export default function RootLayoutClient({ children }) {
   return (
     <Providers>
       <ToastContainer autoClose={3000} position="bottom-left" />
+
       {isAuthenticated && (
         <nav className="w-full flex flex-row items-center justify-between pr-5 px-3.5 ">
           <Image

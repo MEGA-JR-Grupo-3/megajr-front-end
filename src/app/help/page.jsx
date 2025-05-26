@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import BackButton from "../../components/BackButton";
-import patoDiferente from "../../../public/assets/pato-diferente.png";
+import patofaq from "../../../public/assets/pato-faq.png";
 import Image from "next/image";
 
 export default function HelpPage() {
@@ -12,17 +12,22 @@ export default function HelpPage() {
     {
       question: "Como faço para criar uma nova tarefa?",
       answer:
-        "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante 'Adicionar Nova Tarefa' (geralmente um '+' no canto inferior direito) e preencha os detalhes como título, descrição e prazo.",
+        "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante '+' no canto inferior direito e preencha os detalhes como título, descrição e prazo.",
     },
     {
       question: "Como ativo as notificações?",
       answer:
-        "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações' e ligar o interruptor. O navegador pode pedir permissão, por favor, aceite para receber os alertas.",
+        "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações', se as notificações estiverem como 'não permitidas' clique no interruptor para permitir. O navegador pode pedir permissão, por favor, aceite para receber os alertas.",
     },
     {
       question: "Posso alterar o tema do aplicativo?",
       answer:
-        "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro, ou outros temas disponíveis.",
+        "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro.",
+    },
+    {
+      question: "Como altero o tamanho das tarefas na tela inicial?",
+      answer:
+        "Para isso, basta ir em **Configurações**, em 'tamanho da tarefa' terá o tamanho que está configurado. Você pode escolher aquele que fica melhor para você: 'Pequeno', 'Médio' ou 'Grande'.",
     },
     {
       question: "Onde minhas tarefas são salvas?",
@@ -54,20 +59,18 @@ export default function HelpPage() {
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Central de Ajuda
         </h1>
+        <p className="text-lg mb-10 font-semibold ">
+          Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma
+          olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
+        </p>
         <div className="flex flex-col justify-center items-center">
           <Image
-            src={patoDiferente}
-            className="h-auto w-40 mb-10 object-cover" /* Removido o 'flex flex-col justify-center' daqui, pois já está no div pai */
+            src={patofaq}
+            className="h-auto w-40 mb-10 object-cover"
             alt="pato"
             priority
           />
         </div>
-        <p className="text-xl text-[var(--subText)] font-semibold mb-10">
-          Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma
-          olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
-        </p>
-
-        {/* --- */}
 
         <section className="mb-14 text-left">
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
@@ -80,10 +83,10 @@ export default function HelpPage() {
                 className="bg-[var(--subbackground)] rounded-lg shadow-md overflow-hidden"
               >
                 <button
-                  className="flex justify-between items-center w-full p-4 text-left focus:outline-none"
+                  className="flex justify-between items-center w-full p-4 text-left focus:outline-none bg-[var(--subbackground)]"
                   onClick={() => toggleQuestion(index)}
                 >
-                  <span className="font-semibold text-lg text-[var(--secondary)]">
+                  <span className="font-semibold text-lg text-[var(--text)]">
                     {item.question}
                   </span>
                   <span
@@ -91,11 +94,14 @@ export default function HelpPage() {
                       activeQuestion === index ? "rotate-90" : ""
                     }`}
                   >
-                    ▶
+                    ➤
                   </span>
                 </button>
                 {activeQuestion === index && (
-                  <div className="p-4 pt-0 text-[var(--text-secondary)]">
+                  <div
+                    className="p-4 pt-0 text-[var(--text-secondary)]"
+                    style={{ backgroundColor: "#ffff" }}
+                  >
                     <p>{item.answer}</p>
                   </div>
                 )}
@@ -110,7 +116,7 @@ export default function HelpPage() {
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Dicas Rápidas
           </h2>
-          <ul className="list-disc list-inside space-y-2 text-[var(--secondary)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
+          <ul className="list-disc list-inside space-y-2 text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
             <li>
               Mantenha o aplicativo atualizado para as últimas funcionalidades.
             </li>
@@ -124,16 +130,14 @@ export default function HelpPage() {
           </ul>
         </section>
 
-        {/* --- */}
-
-        <section className="text-left ">
+        <section className="text-left">
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Ainda Precisa de Ajuda?
           </h2>
-          <p className="text-lg text-[var(--secondary)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
+          <p className="text-lg text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
             Se você não encontrou a resposta para sua pergunta, considere
-            verificar a documentação completa do aplicativo (se disponível) ou
-            aguarde futuras atualizações para mais opções de suporte.
+            verificar a documentação completa do aplicativo ou aguarde futuras
+            atualizações para mais opções de suporte.
           </p>
         </section>
       </div>

@@ -14,7 +14,13 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import ConfirmModal from "../../components/ConfirmModal";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from "@dnd-kit/core";
 import {
   SortableContext,
   rectSortingStrategy,
@@ -34,6 +40,7 @@ function Dashboard() {
   const [confirmModal, setConfirmModal] = useState(null);
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
+  const [taskDisplaySize, setTaskDisplaySize] = useState("medium");
 
   // ESTADOS PARA OS FILTROS
   const [filterType, setFilterType] = useState(null);
@@ -48,6 +55,14 @@ function Dashboard() {
     Normal: 3,
     Baixa: 4,
   };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // FUNÇÃO DE APLICAÇÃO DE FILTROS E ORDENAÇÃO
 
@@ -115,6 +130,10 @@ function Dashboard() {
       }
     } else {
       pendingTasks.sort((a, b) => {
+        if (typeof a.ordem === "number" && typeof b.ordem === "number") {
+          return a.ordem - b.ordem;
+        }
+
         const priorityA = priorityOrder[a.prioridade];
         const priorityB = priorityOrder[b.prioridade];
 
@@ -140,6 +159,25 @@ function Dashboard() {
   useEffect(() => {
     applyFiltersAndSort();
   }, [allTasks, filterType, sortOrder, currentSearchTerm]);
+
+  //Carregar o taskSise
+  useEffect(() => {
+    const savedTaskSize = localStorage.getItem("taskSize");
+    if (savedTaskSize) {
+      setTaskDisplaySize(savedTaskSize);
+    }
+
+    //Listener se for alterado
+    const handleStorageChange = (event) => {
+      if (event.key === "taskSize") {
+        setTaskDisplaySize(event.newValue || "medium");
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const fetchTasks = async () => {
     if (user?.email && firebaseIdToken) {
@@ -250,9 +288,32 @@ function Dashboard() {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    if (!over || active.id === over.id || !firebaseIdToken) return;
+    if (!over || active.id === over.id || !firebaseIdToken) {
+      return;
+    }
 
-    // Atualiza a ordem visualmente imediatamente
+    const activeTask = filteredTasks.find(
+      (task) => task.id_tarefa === active.id
+    );
+    const overTask = filteredTasks.find((task) => task.id_tarefa === over.id);
+
+    if (!activeTask || !overTask) {
+      console.warn(
+        "Tarefa ativa ou de destino não encontrada no filteredTasks."
+      );
+      return;
+    }
+
+    if (
+      activeTask.estado_tarefa !== "Pendente" ||
+      overTask.estado_tarefa !== "Pendente"
+    ) {
+      console.warn(
+        "Tentativa de reordenar tarefa não-pendente. A ordem visual será revertida."
+      );
+      return;
+    }
+
     const oldIndex = filteredTasks.findIndex(
       (task) => task.id_tarefa === active.id
     );
@@ -260,16 +321,44 @@ function Dashboard() {
       (task) => task.id_tarefa === over.id
     );
 
-    if (oldIndex === -1 || newIndex === -1) return;
+    if (oldIndex === -1 || newIndex === -1) {
+      console.error("Índices não encontrados para reordenação.");
+      return;
+    }
+
     const newOrderedFilteredTasks = arrayMove(
       filteredTasks,
       oldIndex,
       newIndex
     );
+
     setFilteredTasks(newOrderedFilteredTasks);
-    const updatedTaskOrder = newOrderedFilteredTasks
+    const updatedAllTasksBasedOnFiltered = allTasks.map((task) => {
+      const foundInFiltered = newOrderedFilteredTasks.find(
+        (ft) => ft.id_tarefa === task.id_tarefa
+      );
+      if (foundInFiltered) {
+        return {
+          ...task,
+          ordem: newOrderedFilteredTasks.indexOf(foundInFiltered),
+        };
+      }
+      return task;
+    });
+    setAllTasks(updatedAllTasksBasedOnFiltered);
+
+    const updatedTaskOrderForBackend = newOrderedFilteredTasks
       .filter((task) => task.estado_tarefa === "Pendente")
-      .map((task) => task.id_tarefa);
+      .map((task, index) => ({
+        id_tarefa: task.id_tarefa,
+        ordem: index,
+      }));
+    if (updatedTaskOrderForBackend.length === 0) {
+      console.log(
+        "Nenhuma tarefa pendente para enviar ao backend para reordenação."
+      );
+      return;
+    }
 
     try {
       const response = await fetch(`${backendUrl}/tasks/reorder`, {
@@ -278,7 +367,7 @@ function Dashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${firebaseIdToken}`,
         },
-        body: JSON.stringify({ taskIds: updatedTaskOrder }),
+        body: JSON.stringify({ tasks: updatedTaskOrderForBackend }),
       });
 
       if (!response.ok) {
@@ -288,8 +377,6 @@ function Dashboard() {
           await response.text()
         );
         setErrorMessage("Erro ao salvar a nova ordem das tarefas.");
-        fetchTasks();
-      } else {
         fetchTasks();
       }
     } catch (error) {
@@ -471,9 +558,12 @@ function Dashboard() {
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
+              sensors={sensors}
             >
               <SortableContext
-                items={filteredTasks.map((t) => t.id_tarefa)}
+                items={filteredTasks
+                  .filter((task) => task.estado_tarefa === "Pendente")
+                  .map((t) => t.id_tarefa)}
                 strategy={rectSortingStrategy}
               >
                 {completedTasksCount > 1 && (
@@ -501,7 +591,25 @@ function Dashboard() {
                     </li>
                   </ul>
                 ) : (
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 pt-[30px] pb-[80px] w-full px-4 justify-items-center">
+                  <ul
+                    className={`grid gap-4 pt-[30px] pb-[80px] w-full px-4 justify-items-center
+  ${
+    taskDisplaySize === "small"
+      ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 w-"
+      : ""
+  }
+  ${
+    taskDisplaySize === "medium"
+      ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+      : ""
+  }
+  ${
+    taskDisplaySize === "large"
+      ? "grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2"
+      : ""
+  }
+`}
+                  >
                     {filteredTasks.map((tarefa) => (
                       <li
                         key={tarefa.id_tarefa}
@@ -514,6 +622,7 @@ function Dashboard() {
                           isDraggable={true}
                           id={tarefa.id_tarefa}
                           firebaseIdToken={firebaseIdToken}
+                          taskSize={taskDisplaySize}
                         />
                       </li>
                     ))}

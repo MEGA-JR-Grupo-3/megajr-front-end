@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 function AddTaskForm({ onClose, onTaskAdded, firebaseIdToken }) {
-  console.log("Firebase ID Token no AddTaskForm:", firebaseIdToken);
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [dataPrazo, setDataPrazo] = useState("");

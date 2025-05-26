@@ -59,6 +59,7 @@ function TaskCardComponent({
   isDraggable,
   id,
   firebaseIdToken,
+  taskSize,
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -100,6 +101,57 @@ function TaskCardComponent({
     }),
     [transform, transition, isDragging]
   );
+
+  // --- Funções para aplicar classes de tamanho --------------------------------------------------------
+  const getCardSizeClasses = useCallback(() => {
+    switch (taskSize) {
+      case "small":
+        return "w-[235px] min-h-[120px] p-3"; // Menor largura e altura mínima, menos padding
+      case "medium":
+      default:
+        return "w-[335px] sm:w-[340px] xl:w-[300px] min-h-[100px] p-4"; // Padrão
+      case "large":
+        return "w-[400px] min-h-[220px] p-6"; // Maior largura e altura mínima, mais padding
+    }
+  }, [taskSize]);
+
+  const getTitleSizeClasses = useCallback(() => {
+    switch (taskSize) {
+      case "small":
+        return "text-base"; // Título menor
+      case "large":
+        return "text-2xl"; // Título maior
+      case "medium":
+      default:
+        return "text-lg"; // Título padrão
+    }
+  }, [taskSize]);
+
+  const getDescriptionSizeClasses = useCallback(() => {
+    switch (taskSize) {
+      case "small":
+        return "text-xs"; // Descrição menor
+      case "large":
+        return "text-base"; // Descrição maior
+      case "medium":
+      default:
+        return "text-sm"; // Descrição padrão
+    }
+  }, [taskSize]);
+
+  const getDatePrioritySizeClasses = useCallback(() => {
+    switch (taskSize) {
+      case "small":
+        return "text-xs px-1.5 py-0.5"; // Texto menor, padding menor
+      case "large":
+        return "text-base px-3 py-1.5"; // Texto maior, padding maior
+      case "medium":
+      default:
+        return "text-xs px-2 py-1"; // Padrão
+    }
+  }, [taskSize]);
+
+  // --- Fim das funções para aplicar classes de tamanho ---
 
   const makeApiRequest = useCallback(
     async (
@@ -284,7 +336,12 @@ function TaskCardComponent({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`${cardBaseClasses} ${cardAnimationClasses} ${cardDraggableClass}`}
+      // Combina as classes dinâmicas para o tamanho do card
+      className={`relative rounded-lg shadow-lg flex flex-col justify-between transition-all duration-300 ease-in-out ${getCardSizeClasses()} ${
+        tarefa.estado_tarefa === "Finalizada"
+          ? "bg-gray-300 opacity-60"
+          : "bg-[var(--subbackground)]"
+      } border border-[var(--details)] ${cardAnimationClasses} ${cardDraggableClass}`}
       onClick={
         !isDraggable && !isEditing && !isExpanded ? openEditMode : undefined
       }
@@ -310,14 +367,14 @@ function TaskCardComponent({
               name="titulo"
               value={editFormData.titulo}
               onChange={handleEditChange}
-              className="text-lg font-semibold text-[var(--text)] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full"
+              className={`font-semibold text-[var(--text)] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-full ${getTitleSizeClasses()}`}
               placeholder="Título da Tarefa"
               disabled={isLoading}
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <h3
-              className={`text-lg font-semibold text-[var(--text)] text-start ${
+              className={`font-semibold text-[var(--text)] text-start ${getTitleSizeClasses()} ${
                 !isExpanded ? "truncate-text" : ""
               }`}
             >
@@ -375,14 +432,16 @@ function TaskCardComponent({
                 name="descricao"
                 value={editFormData.descricao}
                 onChange={handleEditChange}
-                className="text-[var(--subText)] text-sm w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent"
+                className={`text-[var(--subText)] w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 mt-1 resize-y max-h-40 min-h-[60px] overflow-y-auto bg-transparent ${getDescriptionSizeClasses()}`}
                 rows={3}
                 placeholder="Descrição da Tarefa"
                 disabled={isLoading}
               />
             ) : (
               tarefa.descricao && (
-                <p className="text-[var(--subText)] text-sm mt-1 break-words text-start whitespace-pre-wrap max-h-24 overflow-y-auto w-full">
+                <p
+                  className={`text-[var(--subText)] mt-1 break-words text-start whitespace-pre-wrap max-h-24 overflow-y-auto w-full ${getDescriptionSizeClasses()}`}
+                >
                   {tarefa.descricao}
                 </p>
               )
@@ -397,22 +456,25 @@ function TaskCardComponent({
               name="data_prazo"
               value={editFormData.data_prazo}
               onChange={handleEditChange}
-              className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow"
+              className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow ${getDatePrioritySizeClasses()}`}
               disabled={isLoading}
             />
           ) : (
             <p
-              className={`text-xs px-2 py-1 rounded-md inline-block flex-grow ${dueDateInfo.className}`}
+              className={`rounded-md inline-block flex-grow ${
+                dueDateInfo.className
+              } ${getDatePrioritySizeClasses()}`}
             >
               {dueDateInfo.text}
             </p>
           )}
+
           {isEditing ? (
             <select
               name="prioridade"
               value={editFormData.prioridade}
               onChange={handleEditChange}
-              className="text-gray-500 text-xs border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5"
+              className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5 ${getDatePrioritySizeClasses()}`}
               disabled={isLoading}
             >
               <option value="Baixa">Baixa</option>{" "}
@@ -422,7 +484,7 @@ function TaskCardComponent({
             </select>
           ) : (
             <p
-              className={`text-xs px-2 py-1 rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses}`}
+              className={`rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses} ${getDatePrioritySizeClasses()}`}
             >
               {tarefa.prioridade}
             </p>
