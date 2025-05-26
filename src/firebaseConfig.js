@@ -1,8 +1,17 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Importe signInWithPopup
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  EmailAuthProvider,
+  deleteUser,
+  reauthenticateWithCredential,
+  updateEmail,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyC7H1ELWrRKwX72DlBiPyph55OXu63icqo",
   authDomain: "autenticacao-mega.firebaseapp.com",
@@ -17,4 +26,14 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const googleAuthProvider = new GoogleAuthProvider();
-export { signInWithPopup };
+export const storage = getStorage(app);
+
+export {
+  signInWithPopup,
+  EmailAuthProvider,
+  deleteUser,
+  reauthenticateWithCredential,
+  updateEmail,
+  updatePassword,
+  updateProfile,
+};

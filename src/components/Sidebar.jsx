@@ -137,7 +137,7 @@ const MenuHamburguer = () => {
             <div className="flex flex-row items-start justify-between mb-4">
               <div>
                 {userName && (
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semiboldtext-white">
                     {userName}
                   </h3>
                 )}

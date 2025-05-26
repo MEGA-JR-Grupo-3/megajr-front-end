@@ -3,6 +3,18 @@
 import React, { useState, useEffect } from "react";
 import BackButton from "../../components/BackButton";
 import ConfirmModal from "../../components/ConfirmModal";
+import {
+  auth,
+  storage,
+  updateProfile,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword,
+  deleteUser,
+} from "../../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 export default function EditarPerfil() {
   const [userData, setUserData] = useState(null);
   const [currentProfilePhoto, setCurrentProfilePhoto] = useState(
@@ -10,6 +22,7 @@ export default function EditarPerfil() {
   );
   const [newProfilePhotoPreview, setNewProfilePhotoPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [creationDate, setCreationDate] = useState(null);
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -19,7 +32,317 @@ export default function EditarPerfil() {
   const [loading, setLoading] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUserData(user);
+        setEmail(user.email || "");
+        setCurrentProfilePhoto(user.photoURL || "/assets/default-avatar.png");
+
+        const creationTime = user.metadata?.creationTime;
+        if (creationTime) {
+          const date = new Date(creationTime);
+          const formattedDate = date.toLocaleDateString("pt-BR");
+          setCreationDate(formattedDate);
+        }
+
+        try {
+          setLoading(true);
+          const idToken = await user.getIdToken();
+          const response = await fetch("/user-data", {
+            // Rota do seu backend
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+          const data = await response.json();
+          if (response.ok) {
+            if (data.foto_perfil) {
+              setCurrentProfilePhoto(data.foto_perfil);
+            }
+          } else {
+            console.error(
+              "Erro ao buscar dados do usuário no backend:",
+              data.message
+            );
+            setErrorMessage(
+              `Erro ao carregar dados do perfil: ${data.message}`
+            );
+          }
+        } catch (error) {
+          console.error("Erro na requisição de dados do usuário:", error);
+          setErrorMessage("Erro de rede ao carregar dados do perfil.");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // Usuário deslogado
+        setUserData(null);
+        setEmail("");
+        setCreationDate(null);
+        setCurrentProfilePhoto("/assets/default-avatar.png");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const displayPhoto = newProfilePhotoPreview || currentProfilePhoto;
+
+  // Lida com a seleção de arquivo para a foto de perfil
+  const handleFileChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      setNewProfilePhotoPreview(URL.createObjectURL(file));
+    } else {
+      setSelectedFile(null);
+      setNewProfilePhotoPreview(null);
+    }
+  };
+
+  // Lida com o upload da foto de perfil para o Firebase Storage e atualização no DB
+  const handlePhotoUpload = async () => {
+    if (!selectedFile || !userData) {
+      setErrorMessage("Nenhuma foto selecionada ou usuário não logado.");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const storageRef = ref(
+        storage,
+        `profile_photos/${userData.uid}/${selectedFile.name}`
+      );
+      await uploadBytes(storageRef, selectedFile);
+      const photoURL = await getDownloadURL(storageRef);
+
+      await updateProfile(userData, { photoURL });
+      setCurrentProfilePhoto(photoURL);
+      setNewProfilePhotoPreview(null);
+      setSelectedFile(null);
+
+      const idToken = await userData.getIdToken();
+      const response = await fetch("/api/update-profile-photo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ photoURL }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Erro ao sincronizar foto com o backend."
+        );
+      }
+
+      setSuccessMessage("Foto de perfil atualizada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar foto de perfil:", error);
+      setErrorMessage(
+        `Erro ao atualizar foto de perfil: ${
+          error.message || "Tente novamente."
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lida com a atualização do email do usuário
+  const handleUpdateEmail = async (e) => {
+    e.preventDefault();
+    if (!userData) {
+      setErrorMessage("Usuário não logado.");
+      return;
+    }
+    if (!email || email === userData.email) {
+      setErrorMessage("Por favor, insira um novo email diferente do atual.");
+      return;
+    }
+    if (!currentPassword) {
+      setErrorMessage(
+        "Por favor, digite sua senha atual para confirmar a mudança de email."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        userData.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(userData, credential);
+
+      await updateEmail(userData, email);
+
+      const idToken = await userData.getIdToken();
+      const response = await fetch("/api/update-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ newEmail: email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Erro ao sincronizar email com o backend."
+        );
+      }
+
+      setSuccessMessage("Email atualizado com sucesso!");
+      setCurrentPassword("");
+    } catch (error) {
+      console.error("Erro ao atualizar email:", error);
+      if (error.code === "auth/requires-recent-login") {
+        setErrorMessage(
+          "Sua sessão expirou. Por favor, faça login novamente para atualizar seu email."
+        );
+      } else if (error.code === "auth/invalid-credential") {
+        setErrorMessage(
+          "Senha atual incorreta. Por favor, digite sua senha atual para confirmar."
+        );
+      } else if (error.code === "auth/email-already-in-use") {
+        setErrorMessage("Este email já está em uso por outra conta.");
+      } else {
+        setErrorMessage(
+          `Erro ao atualizar email: ${error.message || "Tente novamente."}`
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lida com a mudança de senha do usuário
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!userData) {
+      setErrorMessage("Usuário não logado.");
+      return;
+    }
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setErrorMessage("Por favor, preencha todos os campos de senha.");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage("A nova senha e a confirmação não coincidem.");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setErrorMessage("A nova senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        userData.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(userData, credential);
+
+      await updatePassword(userData, newPassword);
+
+      setSuccessMessage("Senha atualizada com sucesso!");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setCurrentPassword("");
+    } catch (error) {
+      console.error("Erro ao mudar senha:", error);
+      if (error.code === "auth/requires-recent-login") {
+        setErrorMessage(
+          "Sua sessão expirou. Por favor, faça login novamente para mudar sua senha."
+        );
+      } else if (error.code === "auth/invalid-credential") {
+        setErrorMessage("Senha atual incorreta.");
+      } else if (error.code === "auth/weak-password") {
+        setErrorMessage(
+          "A nova senha é muito fraca. Ela deve ter pelo menos 6 caracteres."
+        );
+      } else {
+        setErrorMessage(
+          `Erro ao mudar senha: ${error.message || "Tente novamente."}`
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lida com a exclusão da conta do usuário
+  const handleDeleteAccount = () => {
+    if (!userData) {
+      setErrorMessage("Usuário não logado.");
+      return;
+    }
+
+    setConfirmModal({
+      isVisible: true,
+      message:
+        "Tem certeza que deseja deletar sua conta? Esta ação é irreversível e deletará todos os seus dados.",
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setLoading(true);
+        setErrorMessage(null);
+        setSuccessMessage(null);
+
+        try {
+          const idToken = await userData.getIdToken();
+          const response = await fetch("/api/delete-user-data", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(
+              data.message || "Erro ao deletar dados no backend."
+            );
+          }
+
+          await deleteUser(userData);
+
+          setSuccessMessage("Conta deletada com sucesso!");
+        } catch (error) {
+          console.error("Erro ao deletar conta:", error);
+          if (error.code === "auth/requires-recent-login") {
+            setErrorMessage(
+              "Sua sessão expirou. Por favor, faça login novamente para deletar sua conta."
+            );
+          } else {
+            setErrorMessage(
+              `Erro ao deletar conta: ${error.message || "Tente novamente."}`
+            );
+          }
+        } finally {
+          setLoading(false);
+        }
+      },
+      onCancel: () => setConfirmModal(null),
+    });
+  };
 
   return (
     <div className="flex flex-col w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
@@ -99,11 +422,12 @@ export default function EditarPerfil() {
               name="foto"
               accept="image/*"
               className="block w-full text-sm text-gray-500
-                         file:mr-4 file:py-2 file:px-4
-               min-w-[300px]           file:rounded-full file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-blue-300 file:text-blue-700
-                         hover:file:bg-blue-100"
+                                file:mr-4 file:py-2 file:px-4
+                       min-w-[300px]          file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-300 file:text-blue-700
+                                hover:file:bg-blue-100"
+              onChange={handleFileChange}
             />
           </div>
           <button
@@ -116,7 +440,10 @@ export default function EditarPerfil() {
         </form>
 
         {/* Formulário de Email */}
-        <form className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8">
+        <form
+          onSubmit={handleUpdateEmail}
+          className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8"
+        >
           <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
             Alterar Email
           </h2>
@@ -125,7 +452,7 @@ export default function EditarPerfil() {
               htmlFor="email"
               className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
-              Email:
+              Novo Email:
             </label>
             <input
               type="email"
@@ -137,11 +464,31 @@ export default function EditarPerfil() {
               required
             />
           </div>
+          <div className="mb-4">
+            <label
+              htmlFor="currentPasswordEmail"
+              className="block text-[var(--subText)] text-sm font-bold mb-2"
+            >
+              Senha Atual (para confirmar):
+            </label>
+            <input
+              type="password"
+              id="currentPasswordEmail"
+              name="currentPasswordEmail"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
+              required
+            />
+          </div>
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-700 text-white [var(--text) font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={
-              loading || !email || (userData && email === userData.email)
+              loading ||
+              !email ||
+              (userData && email === userData.email) ||
+              !currentPassword
             }
           >
             Atualizar Email
@@ -149,7 +496,10 @@ export default function EditarPerfil() {
         </form>
 
         {/* Formulário de Mudança de Senha */}
-        <form className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8">
+        <form
+          onSubmit={handleChangePassword}
+          className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8"
+        >
           <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
             Mudar Senha
           </h2>
@@ -217,11 +567,13 @@ export default function EditarPerfil() {
         <div className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8 text-left text-[var(--text)]">
           <h2 className="text-xl font-semibold mb-4">Informações da Conta</h2>
           <p className="mb-2">
-            <span className="font-bold">Email Atual:</span>{" "}
+            <span className="font-bold">Email Atual:</span>
             {userData?.email || "N/A"}
           </p>
           <p className="mb-2">
-            <span className="font-bold">Membro Desde:</span>
+            {creationDate && (
+              <span className="font-bold">Membro Desde: {creationDate}</span>
+            )}
           </p>
         </div>
 
@@ -235,6 +587,7 @@ export default function EditarPerfil() {
           </p>
           <button
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            onClick={handleDeleteAccount}
             disabled={loading}
           >
             Deletar Minha Conta
