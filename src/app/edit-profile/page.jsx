@@ -3,12 +3,7 @@
 import React, { useState, useEffect } from "react";
 import BackButton from "../../components/BackButton";
 import ConfirmModal from "../../components/ConfirmModal";
-export default function EditarPerfil({
-  loggedInUserEmail,
-  backendUrl,
-  onUserUpdate,
-  onUserDelete,
-}) {
+export default function EditarPerfil() {
   const [userData, setUserData] = useState(null);
   const [currentProfilePhoto, setCurrentProfilePhoto] = useState(
     "/assets/default-avatar.png"
