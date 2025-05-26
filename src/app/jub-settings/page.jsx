@@ -1,30 +1,32 @@
 "use client";
 
-import BackButton from '../../components/BackButton';
-import NotificationSwitch from '../../components/NotificationSwitch'; // Import the refined component
-import ThemeButton from '../../components/ThemeSwitch2';
-import React, { useState, useEffect } from 'react';
+import BackButton from "../../components/BackButton";
+import NotificationSwitch from "../../components/NotificationSwitch";
+import ThemeButton from "../../components/ThemeSwitch2";
+import React, { useState, useEffect } from "react";
 
 export default function SettingsPage() {
-  const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] = useState(false);
-  const [browserNotificationPermission, setBrowserNotificationPermission] = useState('default');
-  const [notificationStatusMessage, setNotificationStatusMessage] = useState('');
+  const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] =
+    useState(false);
+  const [browserNotificationPermission, setBrowserNotificationPermission] =
+    useState("default");
+  const [notificationStatusMessage, setNotificationStatusMessage] =
+    useState("");
 
   useEffect(() => {
-    // Load user's preference from localStorage
     const savedPreference = localStorage.getItem("notificationsEnabled");
     if (savedPreference !== null) {
       setIsNotificationAllowedByUser(savedPreference === "true");
     }
 
-    // Check current browser notification permission
     if ("Notification" in window) {
       setBrowserNotificationPermission(Notification.permission);
     } else {
-      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
+      setNotificationStatusMessage(
+        "Este navegador não suporta notificações de desktop."
+      );
     }
 
-    // Add a listener for the 'storage' event to react to changes in other tabs/windows
     const handleStorageChange = () => {
       const updatedPreference = localStorage.getItem("notificationsEnabled");
       setIsNotificationAllowedByUser(updatedPreference === "true");
@@ -33,70 +35,76 @@ export default function SettingsPage() {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
-  // Function to handle the toggle change from NotificationSwitch
   const handleNotificationToggle = async (newValue) => {
     setIsNotificationAllowedByUser(newValue);
     localStorage.setItem("notificationsEnabled", newValue.toString());
-    console.log("Notificações (User Preference):", newValue ? "Ativadas" : "Desativadas");
+    console.log(
+      "Notificações (User Preference):",
+      newValue ? "Ativadas" : "Desativadas"
+    );
 
     if (newValue) {
-      // If user is enabling notifications, request browser permission
       if ("Notification" in window) {
         const permission = await Notification.requestPermission();
         setBrowserNotificationPermission(permission);
 
         if (permission === "granted") {
-          setNotificationStatusMessage("Permissão de notificação concedida pelo navegador.");
-          // Optionally send a test notification immediately after granting permission
+          setNotificationStatusMessage(
+            "Permissão de notificação concedida pelo navegador."
+          );
           showTestNotification();
         } else if (permission === "denied") {
-          setNotificationStatusMessage("Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador.");
+          setNotificationStatusMessage(
+            "Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador."
+          );
         } else if (permission === "default") {
-          setNotificationStatusMessage("Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador.");
+          setNotificationStatusMessage(
+            "Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador."
+          );
         }
       }
     } else {
-      // If user is disabling notifications, clear status and don't prompt
       setNotificationStatusMessage("Notificações desativadas pelo botão.");
     }
   };
 
-  // Function to request permission and show a notification
   const showTestNotification = () => {
-    // First, check if notifications are allowed by the user's toggle switch
     if (!isNotificationAllowedByUser) {
       setNotificationStatusMessage("Notificações desativadas pelo botão.");
       return;
     }
 
-    // Check browser Notification API support
     if (!("Notification" in window)) {
-      setNotificationStatusMessage("Este navegador não suporta notificações de desktop.");
+      setNotificationStatusMessage(
+        "Este navegador não suporta notificações de desktop."
+      );
       return;
     }
 
-    // Proceed based on current browser permission state
     if (browserNotificationPermission === "granted") {
       new Notification("Notificação de Teste!", {
         body: "Esta é uma notificação de exemplo do seu aplicativo.",
-        icon: "https://placehold.co/64x64/3b82f6/ffffff?text=N", // Example icon
-        vibrate: [200, 100, 200] // Example vibration pattern for mobile
+        icon: "https://placehold.co/64x64/3b82f6/ffffff?text=N",
+        vibrate: [200, 100, 200],
       });
       setNotificationStatusMessage("Notificação de teste enviada!");
     } else if (browserNotificationPermission === "denied") {
-      setNotificationStatusMessage("Permissão de notificação bloqueada. Por favor, ative nas configurações do seu navegador.");
+      setNotificationStatusMessage(
+        "Permissão de notificação bloqueada. Por favor, ative nas configurações do seu navegador."
+      );
     } else if (browserNotificationPermission === "default") {
-      setNotificationStatusMessage("Permissão de notificação pendente. Ative no pop-up do navegador.");
+      setNotificationStatusMessage(
+        "Permissão de notificação pendente. Ative no pop-up do navegador."
+      );
     }
   };
-
 
   return (
     <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
@@ -108,8 +116,8 @@ export default function SettingsPage() {
           Configurações
         </h1>
 
-        <div className="mb-14">
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-center w-full gap-14 mb-14 bg-[var(--subbackground)] rounded-lg shadow-md p-2 py-4">
+          <div className="w-full flex items-center justify-between">
             <div className="flex items-center">
               <span className="text-2xl font-semibold">Tema</span>
             </div>
@@ -117,9 +125,8 @@ export default function SettingsPage() {
               <ThemeButton />
             </div>
           </div>
-        </div>
-        <div className="mb-14">
-          <div className="flex items-center justify-between">
+
+          <div className="w-full flex items-center justify-between">
             <span className="text-2xl font-semibold">Notificações</span>
             <NotificationSwitch
               checked={isNotificationAllowedByUser}
@@ -134,17 +141,18 @@ export default function SettingsPage() {
           )}
           <button
             onClick={showTestNotification}
-            className="mt-6 py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out"
+            className=" py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out max-w-60"
           >
             Testar Notificação
           </button>
         </div>
 
-
-        <div>
+        <div className="bg-[var(--subbackground)] rounded-lg shadow-md p-2 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="text-2xl font-semibold">Tamanho das Tarefas</span>
+              <span className="text-2xl font-semibold">
+                Tamanho das Tarefas
+              </span>
             </div>
             <select className="text-1xl shadow appearance-none border-none rounded w-auto py-2 px-3 text-white text-center bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] focus:outline-none focus:shadow-outline">
               <option value="small" className="text-black text-center">

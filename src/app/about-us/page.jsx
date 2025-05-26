@@ -66,23 +66,24 @@ export default function about() {
         <BackButton /> Voltar
       </div>
 
-      <section className="flex flex-col justfy-center items-center text-center max-w-4xl">
+      <section className="flex flex-col justfy-center items-center text-center w-full">
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4  mt-18">
           Sobre nós
         </h1>
-        <h2 className="text-xl font-semibold mb-10">
-          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
-          juntam para encarar esse desafio?
-        </h2>
+
         <Image
           src={patoDiferente}
           className="h-auto w-40 mb-10 object-cover"
           alt="pato"
           priority
         />
+        <h2 className="text-xl text-[var(--subText)] font-semibold mb-10">
+          O que acontece quando 6 programadores, motivados pelo Mega P.S., se
+          juntam para encarar esse desafio?
+        </h2>
       </section>
 
-      <section className="max-w-5xl w-full p-6 bg-[var(--subbackground)] /70 backdrop-blur rounded-xl shadow-xl">
+      <section className="w-full p-6 bg-[var(--subbackground)] /70 backdrop-blur rounded-xl shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => paginate(-1)}
@@ -136,16 +137,16 @@ export default function about() {
         </div>
       </section>
 
-      <section className="max-w-4xl w-full mb-16 mt-16 bg-[var(--subbackground)] backdrop-blur rounded-xl p-6 shadow-md space-y-6 ">
+      <section className="w-full my-16 bg-[var(--subbackground)] backdrop-blur rounded-xl p-6 shadow-md space-y-6">
         <div className="mb-6">
-          <h3 className="text-2xl font-bold text-[var(--secondary)] mb-2">
+          <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             📌 Descrição do Projeto
           </h3>
           <p className="text-[var(--text)]"></p>
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secondary)] mb-2">
+          <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🎯 Desafio
           </h3>
           <p className="text-[var(--text)]">
@@ -155,7 +156,7 @@ export default function about() {
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secondary)] mb-2">
+          <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🛠️ Processo
           </h3>
           <p className="text-[var(--text)]">
@@ -164,7 +165,7 @@ export default function about() {
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secondary)] mb-2">
+          <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             📚 Aprendizados e desafios individuais
           </h3>
           <p className="text-[var(--text)]">
@@ -173,7 +174,7 @@ export default function about() {
         </div>
 
         <div>
-          <h3 className="text-2xl font-bold text-[var(--secondary)] mb-2">
+          <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🙏 Agradecimento
           </h3>
           <p className="text-[var(--text)] ">[Gratiluz]</p>

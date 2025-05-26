@@ -46,11 +46,11 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="flex flex-col  h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
+    <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flew-col gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
-      <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-12">
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Central de Ajuda
         </h1>
@@ -62,7 +62,7 @@ export default function HelpPage() {
             priority
           />
         </div>
-        <p className="text-lg mb-8">
+        <p className="text-xl text-[var(--subText)] font-semibold mb-10">
           Opa! O Jubileu chegou pra te dar uma mãozinha! Que tal a gente dar uma
           olhadinha nas perguntas mais frequentes sobre como usar o nosso app?
         </p>
@@ -70,20 +70,20 @@ export default function HelpPage() {
         {/* --- */}
 
         <section className="mb-14 text-left">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Perguntas Frequentes (FAQ)
           </h2>
           <div className="space-y-4">
             {faqItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-[var(--background-secondary)] rounded-lg shadow-md overflow-hidden"
+                className="bg-[var(--subbackground)] rounded-lg shadow-md overflow-hidden"
               >
                 <button
                   className="flex justify-between items-center w-full p-4 text-left focus:outline-none"
                   onClick={() => toggleQuestion(index)}
                 >
-                  <span className="font-semibold text-lg text-[var(--primary)]">
+                  <span className="font-semibold text-lg text-[var(--secondary)]">
                     {item.question}
                   </span>
                   <span
@@ -106,11 +106,11 @@ export default function HelpPage() {
 
         {/* --- */}
 
-        <section className="text-left mb-14">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
+        <section className="text-left mb-14 ">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Dicas Rápidas
           </h2>
-          <ul className="list-disc list-inside space-y-2 text-[var(--text-secondary)]">
+          <ul className="list-disc list-inside space-y-2 text-[var(--secondary)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
             <li>
               Mantenha o aplicativo atualizado para as últimas funcionalidades.
             </li>
@@ -126,19 +126,15 @@ export default function HelpPage() {
 
         {/* --- */}
 
-        <section className="text-left">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text">
+        <section className="text-left ">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Ainda Precisa de Ajuda?
           </h2>
-          <p className="text-lg text-[var(--text-secondary)]">
+          <p className="text-lg text-[var(--secondary)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
             Se você não encontrou a resposta para sua pergunta, considere
             verificar a documentação completa do aplicativo (se disponível) ou
             aguarde futuras atualizações para mais opções de suporte.
           </p>
-          {/* You can add a link to a contact form or email here if you set one up */}
-          {/* <a href="mailto:support@example.com" className="mt-4 inline-block py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
-            Enviar um E-mail
-          </a> */}
         </section>
       </div>
     </div>

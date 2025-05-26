@@ -26,7 +26,7 @@ export default function EditarPerfil() {
       <div className="font-semibold text-xl absolute top-24 left-5 lg:right-[calc(100vw-770px)] flex flex-row gap-4 justify-center items-center">
         <BackButton /> Voltar
       </div>
-      <div className="flex flex-col justify-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col justify-center justify-items-center text-center container mx-auto py-10 px-4 sm:px-6 lg:px-12">
         <h1 className="text-3xl font-extrabold bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text pb-4 mb-4 mt-18">
           Editar Perfil
         </h1>
@@ -73,9 +73,9 @@ export default function EditarPerfil() {
             e.preventDefault();
             handlePhotoUpload();
           }}
-          className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8"
+          className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8"
         >
-          <h2 className="text-xl font-semibold mb-4 text-white">
+          <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
             Alterar Foto de Perfil
           </h2>
           <div className="flex flex-col items-center justify-center mb-6">
@@ -89,7 +89,7 @@ export default function EditarPerfil() {
 
             <label
               htmlFor="foto"
-              className="block text-gray-300 text-sm font-bold mb-2 cursor-pointer"
+              className="block text-[var(--subText)] text-sm font-bold mb-2 cursor-pointer"
             >
               Escolher Foto:
             </label>
@@ -100,7 +100,7 @@ export default function EditarPerfil() {
               accept="image/*"
               className="block w-full text-sm text-gray-500
                          file:mr-4 file:py-2 file:px-4
-                         file:rounded-full file:border-0
+               min-w-[300px]           file:rounded-full file:border-0
                          file:text-sm file:font-semibold
                          file:bg-blue-300 file:text-blue-700
                          hover:file:bg-blue-100"
@@ -116,14 +116,14 @@ export default function EditarPerfil() {
         </form>
 
         {/* Formulário de Email */}
-        <form className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-white">
+        <form className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
             Alterar Email
           </h2>
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-gray-300 text-sm font-bold mb-2"
+              className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
               Email:
             </label>
@@ -133,13 +133,13 @@ export default function EditarPerfil() {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 "
+              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-green-500 hover:bg-green-700 text-white [var(--text) font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={
               loading || !email || (userData && email === userData.email)
             }
@@ -149,12 +149,14 @@ export default function EditarPerfil() {
         </form>
 
         {/* Formulário de Mudança de Senha */}
-        <form className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-white">Mudar Senha</h2>
+        <form className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
+            Mudar Senha
+          </h2>
           <div className="mb-4">
             <label
               htmlFor="currentPassword"
-              className="block text-gray-300 text-sm font-bold mb-2"
+              className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
               Senha Atual:
             </label>
@@ -164,14 +166,14 @@ export default function EditarPerfil() {
               name="currentPassword"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 "
+              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
               required
             />
           </div>
           <div className="mb-4">
             <label
               htmlFor="newPassword"
-              className="block text-gray-300 text-sm font-bold mb-2"
+              className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
               Nova Senha:
             </label>
@@ -181,14 +183,14 @@ export default function EditarPerfil() {
               name="newPassword"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 "
+              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
               required
             />
           </div>
           <div className="mb-6">
             <label
               htmlFor="confirmNewPassword"
-              className="block text-gray-300 text-sm font-bold mb-2"
+              className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
               Confirmar Nova Senha:
             </label>
@@ -198,7 +200,7 @@ export default function EditarPerfil() {
               name="confirmNewPassword"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 "
+              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
               required
             />
           </div>
@@ -212,7 +214,7 @@ export default function EditarPerfil() {
         </form>
 
         {/* Informações da Conta */}
-        <div className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8 text-left text-white">
+        <div className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8 text-left text-[var(--text)]">
           <h2 className="text-xl font-semibold mb-4">Informações da Conta</h2>
           <p className="mb-2">
             <span className="font-bold">Email Atual:</span>{" "}
@@ -224,8 +226,8 @@ export default function EditarPerfil() {
         </div>
 
         {/* Botão Deletar Conta */}
-        <div className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4 text-white">
+        <div className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
             Deletar Conta
           </h2>
           <p className="text-red-400 mb-4">
