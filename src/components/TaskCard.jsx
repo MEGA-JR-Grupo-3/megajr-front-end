@@ -156,7 +156,7 @@ function TaskCardComponent({
         setLoadingState(false);
       }
     },
-    [backendUr, firebaseIdToken]
+    [backendUrl, firebaseIdToken]
   );
 
   const handleDelete = useCallback(async () => {

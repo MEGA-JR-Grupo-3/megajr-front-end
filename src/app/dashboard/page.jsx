@@ -52,6 +52,8 @@ function Dashboard() {
   // FUNÇÃO DE APLICAÇÃO DE FILTROS E ORDENAÇÃO
 
   const applyFiltersAndSort = useCallback(() => {
+    console.log("applyFiltersAndSort executed");
+
     let tasksToFilter = [...allTasks];
 
     if (currentSearchTerm) {
@@ -69,7 +71,7 @@ function Dashboard() {
     let completedTasks = tasksToFilter.filter(
       (task) => task.estado_tarefa === "Finalizada"
     );
-
+    console.log("Setting allTasks/filteredTasks/completedTasksCount");
     setCompletedTasksCount(completedTasks.length);
 
     if (filterType) {
@@ -135,13 +137,14 @@ function Dashboard() {
     completedTasks.sort(() => {
       return 0;
     });
-
+    console.log("Setting allTasks/filteredTasks/completedTasksCount");
     setFilteredTasks([...pendingTasks, ...completedTasks]);
   }, [allTasks, filterType, sortOrder, currentSearchTerm, priorityOrder]);
 
   useEffect(() => {
+    console.log("useEffect (applyFiltersAndSort) triggered");
     applyFiltersAndSort();
-  }, [allTasks, filterType, sortOrder, currentSearchTerm, applyFiltersAndSort]);
+  }, [allTasks, filterType, sortOrder, currentSearchTerm]);
 
   const fetchTasks = async () => {
     if (user?.email && firebaseIdToken) {
@@ -157,6 +160,7 @@ function Dashboard() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("Setting allTasks/filteredTasks/completedTasksCount");
           setAllTasks(data);
         } else {
           console.error(
@@ -234,6 +238,7 @@ function Dashboard() {
   };
 
   const handleTaskDeleted = (deletedTaskId) => {
+    console.log("Setting allTasks/filteredTasks/completedTasksCount");
     setAllTasks((prev) =>
       prev.filter((task) => task.id_tarefa !== deletedTaskId)
     );
@@ -246,6 +251,7 @@ function Dashboard() {
           ? { ...task, ...updatedTask }
           : task
       );
+    console.log("Setting allTasks/filteredTasks/completedTasksCount");
     setAllTasks(updateTaskInList);
   };
 
@@ -268,6 +274,7 @@ function Dashboard() {
       oldIndex,
       newIndex
     );
+    console.log("Setting allTasks/filteredTasks/completedTasksCount");
     setFilteredTasks(newOrderedFilteredTasks);
     const updatedTaskOrder = newOrderedFilteredTasks
       .filter((task) => task.estado_tarefa === "Pendente")

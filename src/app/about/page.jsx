@@ -4,13 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import patoDiferente from "/assets/pato-diferente.png";
+import patoDiferente from "../../../public/assets/pato-diferente.png";
 import BackButton from "../../components/BackButton";
-import enzoImg from "/assets/enzo.png";
-import jeanImg from "/assets/jean.png";
-import jonImg from "/assets/jon.png";
-import nicolasImg from "/assets/nicolas.png";
-import laraImg from "/assets/lara.png";
+import enzoImg from "../../../public/assets/enzo.png";
+import jeanImg from "../../../public/assets/jean.png";
+import jonImg from "../../../public/assets/jon.png";
+import nicolasImg from "../../../public/assets/nicolas.png";
+import laraImg from "../../../public/assets/lara.png";
 const originalTeamMembers = [
   {
     name: "Edilson Enzo",

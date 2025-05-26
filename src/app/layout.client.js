@@ -17,10 +17,32 @@ export default function RootLayoutClient({ children }) {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [firebaseIdToken, setFirebaseIdToken] = useState(null);
   const [registeredName, setRegisteredName] = useState("");
   const [user, setUser] = useState(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const publicPaths = useMemo(() => ["/", "/login", "/register"], []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        try {
+          const idToken = await currentUser.getIdToken();
+          setFirebaseIdToken(idToken);
+          localStorage.setItem("jwt_token", idToken);
+        } catch (error) {
+          console.error("Erro ao obter Firebase ID Token:", error);
+          auth.signOut();
+        }
+      } else {
+        setFirebaseIdToken(null);
+        localStorage.removeItem("jwt_token");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -37,13 +59,14 @@ export default function RootLayoutClient({ children }) {
   }, [router, pathname, publicPaths]);
 
   useEffect(() => {
-    if (user && isAuthenticated) {
+    if (user && isAuthenticated && firebaseIdToken) {
       const fetchUserData = async () => {
         try {
           const response = await fetch(`${backendUrl}/user-data`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${firebaseIdToken}`,
             },
             body: JSON.stringify({ email: user.email }),
           });
@@ -54,6 +77,13 @@ export default function RootLayoutClient({ children }) {
           } else {
             console.error("Erro ao buscar dados do usuário:", response.status);
             setRegisteredName("");
+            if (response.status === 401 || response.status === 403) {
+              console.error(
+                "Sessão expirada ou não autorizada. Faça login novamente."
+              );
+              auth.signOut();
+              router.push("/");
+            }
           }
         } catch (error) {
           console.error("Erro ao comunicar com o backend:", error);
@@ -65,7 +95,8 @@ export default function RootLayoutClient({ children }) {
     } else if (!user) {
       setRegisteredName("");
     }
-  }, [user, isAuthenticated, backendUrl]);
+  }, [user, isAuthenticated, backendUrl, firebaseIdToken, router]);
+
   if (isLoading) {
     return <SplashScreen />;
   }
