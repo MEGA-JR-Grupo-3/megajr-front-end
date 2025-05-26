@@ -79,16 +79,9 @@ function Login() {
   };
 
   const handleGoogleLoginSuccess = async (user) => {
-    console.log(
-      "Login com Google Sucesso: Iniciando handleGoogleLoginSuccess",
-      user
-    );
     if (user) {
       const firebaseIdToken = await user.getIdToken();
       try {
-        console.log(
-          "Tentando enviar dados para o backend /google-login (sincronização)..."
-        );
         const response = await fetch(`${backendUrl}/google-login`, {
           method: "POST",
           headers: {
@@ -100,12 +93,8 @@ function Login() {
             email: user.email,
           }),
         });
-        console.log("Requisição /google-login finalizada. Resposta:", response);
 
         if (response.ok) {
-          console.log(
-            "Dados do usuário do Google sincronizados com o backend com sucesso."
-          );
           localStorage.setItem("jwt_token", firebaseIdToken);
           localStorage.setItem("loggedInUserEmail", user.email);
           router.push("/dashboard");
