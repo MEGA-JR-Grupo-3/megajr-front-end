@@ -103,7 +103,6 @@ export default function EditarPerfil({
               id="foto"
               name="foto"
               accept="image/*"
-              onChange={handleFileChange}
               className="block w-full text-sm text-gray-500
                          file:mr-4 file:py-2 file:px-4
                          file:rounded-full file:border-0
@@ -122,10 +121,7 @@ export default function EditarPerfil({
         </form>
 
         {/* Formulário de Email */}
-        <form
-          onSubmit={handleUpdateEmail}
-          className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8"
-        >
+        <form className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4 text-white">
             Alterar Email
           </h2>
@@ -158,10 +154,7 @@ export default function EditarPerfil({
         </form>
 
         {/* Formulário de Mudança de Senha */}
-        <form
-          onSubmit={handleChangePassword}
-          className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8"
-        >
+        <form className="w-full max-w-sm p-6 bg-gray-800 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4 text-white">Mudar Senha</h2>
           <div className="mb-4">
             <label
@@ -231,8 +224,7 @@ export default function EditarPerfil({
             {userData?.email || "N/A"}
           </p>
           <p className="mb-2">
-            <span className="font-bold">Membro Desde:</span>{" "}
-            {formatCreationDate(userData?.creationDate)}
+            <span className="font-bold">Membro Desde:</span>
           </p>
         </div>
 
@@ -245,7 +237,6 @@ export default function EditarPerfil({
             Esta ação é irreversível e deletará todos os seus dados.
           </p>
           <button
-            onClick={handleDeleteAccount}
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
