@@ -38,11 +38,14 @@ const sidebarVariants = {
   },
 };
 
-const MenuHamburguer = () => {
+const MenuHamburguer = ({ profilePicture }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [userName, setUserName] = useState(null);
   const [creationDate, setCreationDate] = useState(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState(
+    "/assets/default-avatar.png"
+  );
   const menuRef = useRef(null);
   const router = useRouter();
 
@@ -50,6 +53,7 @@ const MenuHamburguer = () => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUserName(user.displayName || "Usuário Anônimo");
+        setProfilePhotoUrl(user.photoURL || "/assets/default-avatar.png");
         const creationTime = user.metadata?.creationTime;
         if (creationTime) {
           const date = new Date(creationTime);
@@ -59,6 +63,7 @@ const MenuHamburguer = () => {
       } else {
         setUserName(null);
         setCreationDate(null);
+        setProfilePhotoUrl("/assets/default-avatar.png");
       }
     });
 
@@ -131,21 +136,30 @@ const MenuHamburguer = () => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--sidebar-primary)] via-[var(--sidebar-primary)] to-[var(--sidebar-secondary)] overflow-hidden"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--sidebar)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
             <div className="flex flex-row items-start justify-between mb-4">
-              <div>
-                {userName && (
-                  <h3 className="text-lg font-semiboldtext-white">
-                    {userName}
-                  </h3>
-                )}
-                {creationDate && (
-                  <p className="text-sm text-gray-300">
-                    Conta criada em: {creationDate}
-                  </p>
-                )}
+              <div className="flex flex-row items-center justify-between gap-2">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-600 shadow-lg bg-white">
+                  <img
+                    src={profilePhotoUrl}
+                    alt="Foto de Perfil"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  {userName && (
+                    <h3 className="text-lg font-semiboldtext-white">
+                      {userName}
+                    </h3>
+                  )}
+                  {creationDate && (
+                    <p className="text-sm text-gray-300">
+                      Conta criada em: {creationDate}
+                    </p>
+                  )}
+                </div>
               </div>
               <button
                 variant="ghost"

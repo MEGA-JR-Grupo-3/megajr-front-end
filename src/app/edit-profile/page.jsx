@@ -16,6 +16,8 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
 import patoConfig from "../../../public/assets/pato-config.png";
+import { LineSpinner } from "ldrs/react";
+import "ldrs/react/LineSpinner.css";
 
 export default function EditarPerfil() {
   const [userData, setUserData] = useState(null);
@@ -369,7 +371,11 @@ export default function EditarPerfil() {
         </div>
 
         {/* Mensagens de Feedback */}
-        {loading && <div className="text-blue-500 mb-4">Carregando...</div>}
+        {loading && (
+          <div className="flex justify-center items-center h-screen">
+            <LineSpinner size="40" stroke="3" speed="1" color="black" />
+          </div>
+        )}
         {errorMessage && (
           <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)] z-50">
             <div className="h-[200px] w-[340px] bg-[var(--subbackground)] rounded-2xl border border-[#ffffff] p-4 flex flex-col justify-center text-center text-red-600">

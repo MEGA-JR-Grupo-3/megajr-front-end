@@ -8,8 +8,7 @@ body {
 :root {
   --primary: #916902;
   --secondary: #b98e55;
-  --sidebar-primary: #c1af6d;
-  --sidebar-secondary: #bcae78;
+  --sidebar: #916902;
   --background: #fff5d2;
   --background-2: #fff5d2;
   --subbackground: #fdf1b9;
@@ -25,8 +24,7 @@ body {
 [data-theme="dark"] {
   --primary: #0083dd;
   --secondary: #00c9b7;
-  --sidebar-primary: #00375c;
-  --sidebar-secondary: #0a4e89;
+  --sidebar: #00375c;
   --background: #1e2939;
   --background-2: #e1e1e1;
   --subbackground: #121b2a;

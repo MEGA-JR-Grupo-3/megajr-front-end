@@ -98,10 +98,7 @@ export default function HelpPage() {
                   </span>
                 </button>
                 {activeQuestion === index && (
-                  <div
-                    className="p-4 pt-0 text-[var(--text-secondary)]"
-                    style={{ backgroundColor: "#ffff" }}
-                  >
+                  <div className="p-4 pt-0 text-[var(--text-secondary)] bg-[var(--subbackground)]">
                     <p>{item.answer}</p>
                   </div>
                 )}
