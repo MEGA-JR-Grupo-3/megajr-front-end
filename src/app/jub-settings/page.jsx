@@ -218,30 +218,38 @@ export default function SettingsPage() {
           >
             Mostrar minhas notificações
           </button>
-        </div>
-
-        <div className="bg-[var(--subbackground)] rounded-lg shadow-md p-2 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full"> {/* Adicionado w-full aqui */}
             <div className="flex items-center">
               <span className="text-2xl font-semibold">
                 Tamanho das Tarefas
               </span>
             </div>
-            <select
-              className="text-1xl shadow appearance-none border-none rounded w-auto py-2 px-3 text-white text-center bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] focus:outline-none focus:shadow-outline"
-              value={taskSize} 
-              onChange={handleTaskSizeChange}
-            >
-              <option value="small" className="text-black text-center">
-                Pequeno
-              </option>
-              <option value="medium" className="text-black text-center">
-                Médio
-              </option>
-              <option value="large" className="text-black text-center">
-                Grande
-              </option>
-            </select>
+            <div className="relative"> {/* Adicionado um container para a seta do select */}
+              <select
+                className="block appearance-none w-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white py-2 px-4 pr-8 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-opacity-50 transition-all duration-300 ease-in-out cursor-pointer"
+                value={taskSize}
+                onChange={handleTaskSizeChange}
+              >
+                <option value="small" className="text-black bg-white">
+                  Pequeno
+                </option>
+                <option value="medium" className="text-black bg-white">
+                  Médio
+                </option>
+                <option value="large" className="text-black bg-white">
+                  Grande
+                </option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <svg
+                  className="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 6.757 7.586 5.343 9z" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
