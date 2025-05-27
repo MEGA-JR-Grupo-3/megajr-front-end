@@ -42,6 +42,8 @@ export default function EditarPerfil() {
   const [confirmModal, setConfirmModal] = useState(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+  const [pendingEmailChange, setPendingEmailChange] = useState(null);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
