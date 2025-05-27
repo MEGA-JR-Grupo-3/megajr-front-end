@@ -66,6 +66,31 @@ export default function EditarPerfil() {
             if (data.foto_perfil) {
               setCurrentProfilePhoto(data.foto_perfil);
             }
+            if (data.email !== user.email) {
+              const updateEmailBackendResponse = await fetch(
+                `${backendUrl}/update-email`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                  },
+                  body: JSON.stringify({ newEmail: user.email }),
+                }
+              );
+              const updateEmailBackendData =
+                await updateEmailBackendResponse.json();
+              if (!updateEmailBackendResponse.ok) {
+                console.error(
+                  "Erro ao sincronizar email com o backend após verificação:",
+                  updateEmailBackendData.message
+                );
+              } else {
+                console.log(
+                  "Email sincronizado com o backend após verificação."
+                );
+              }
+            }
           } else {
             console.error(
               "Erro ao buscar dados do usuário no backend:",
@@ -82,7 +107,6 @@ export default function EditarPerfil() {
           setLoading(false);
         }
       } else {
-        // Usuário deslogado
         setUserData(null);
         setEmail("");
         setCreationDate(null);
@@ -91,7 +115,7 @@ export default function EditarPerfil() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [backendUrl]);
 
   const displayPhoto = newProfilePhotoPreview || currentProfilePhoto;
 
@@ -190,26 +214,12 @@ export default function EditarPerfil() {
       );
       await reauthenticateWithCredential(userData, credential);
 
-      await updateEmail(userData, email);
+      await userData.verifyBeforeUpdateEmail(email);
 
-      const idToken = await userData.getIdToken();
-      const response = await fetch(`${backendUrl}/update-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ newEmail: email }),
-      });
+      setSuccessMessage(
+        "Um email de verificação foi enviado para o novo endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email."
+      );
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Erro ao sincronizar email com o backend."
-        );
-      }
-
-      setSuccessMessage("Email atualizado com sucesso!");
       setCurrentPassword("");
     } catch (error) {
       console.error("Erro ao atualizar email:", error);
