@@ -7,16 +7,19 @@ import {
   auth,
   storage,
   updateProfile,
-  updateEmail,
   reauthenticateWithCredential,
   EmailAuthProvider,
   updatePassword,
   deleteUser,
   sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink,
 } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  updateEmail,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+} from "firebase/auth";
 import Image from "next/image";
 import patoConfig from "../../../public/assets/pato-config.png";
 import { LineSpinner } from "ldrs/react";
@@ -54,6 +57,62 @@ export default function EditarPerfil() {
           setCreationDate(formattedDate);
         }
 
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+          let emailFromStorage = window.localStorage.getItem("emailForSignIn");
+          if (!emailFromStorage) {
+            emailFromStorage = prompt(
+              "Por favor, digite seu e-mail para confirmar:"
+            );
+          }
+
+          if (emailFromStorage) {
+            setLoading(true);
+            setErrorMessage(null);
+            setSuccessMessage(null);
+            try {
+              const result = await signInWithEmailLink(
+                auth,
+                emailFromStorage,
+                window.location.href
+              );
+              window.localStorage.removeItem("emailForSignIn");
+              const idToken = await result.user.getIdToken();
+              const response = await fetch(`${backendUrl}/update-email`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({ newEmail: result.user.email }),
+              });
+
+              const data = await response.json();
+              if (!response.ok) {
+                throw new Error(
+                  data.message || "Erro ao sincronizar email com o backend."
+                );
+              }
+              setSuccessMessage("Email atualizado e sincronizado com sucesso!");
+              setEmail(result.user.email);
+              o;
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+              );
+            } catch (error) {
+              console.error("Erro ao completar a atualização do email:", error);
+              setErrorMessage(
+                `Erro ao verificar e atualizar email: ${
+                  error.message || "Tente novamente."
+                }`
+              );
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+
         try {
           setLoading(true);
           const idToken = await user.getIdToken();
@@ -70,6 +129,9 @@ export default function EditarPerfil() {
               setCurrentProfilePhoto(data.foto_perfil);
             }
             if (data.email !== user.email) {
+              console.log(
+                "Email do Firebase e do Backend são diferentes. Sincronizando..."
+              );
               const updateEmailBackendResponse = await fetch(
                 `${backendUrl}/update-email`,
                 {
@@ -217,15 +279,21 @@ export default function EditarPerfil() {
       );
       await reauthenticateWithCredential(userData, credential);
 
-      await updateEmail(userData, email);
+      const actionCodeSettings = {
+        url: `https://megajr-front.netlify.app/edit-profile`,
+        handleCodeInApp: true,
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem("emailForSignIn", email);
+      setPendingEmailChange(email);
 
       setSuccessMessage(
-        "Um email de verificação foi enviado para o novo endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email."
+        "Um email de verificação foi enviado para o NOVO endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email."
       );
 
       setCurrentPassword("");
     } catch (error) {
-      console.error("Erro ao atualizar email:", error);
+      console.error("Erro ao iniciar atualização de email:", error);
       if (error.code === "auth/requires-recent-login") {
         setErrorMessage(
           "Sua sessão expirou. Por favor, faça login novamente para atualizar seu email."
