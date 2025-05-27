@@ -386,7 +386,7 @@ export default function EditarPerfil() {
 
         {/* Mensagens de Feedback */}
         {loading && (
-          <div className="flex justify-center items-center h-screen">
+          <div className="fixed top-0 left-0 w-screen flex justify-center items-center h-screen">
             <LineSpinner size="40" stroke="3" speed="1" color="black" />
           </div>
         )}
