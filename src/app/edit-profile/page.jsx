@@ -11,7 +11,6 @@ import {
   EmailAuthProvider,
   updatePassword,
   deleteUser,
-  sendSignInLinkToEmail,
 } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
