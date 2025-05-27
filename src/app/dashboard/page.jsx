@@ -37,7 +37,6 @@ function Dashboard() {
   const router = useRouter();
   const [firebaseIdToken, setFirebaseIdToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
   const [confirmModal, setConfirmModal] = useState(null);
   const [isAddTaskFormVisible, setIsAddTaskFormVisible] = useState(false);
   const [completedTasksCount, setCompletedTasksCount] = useState(0);
@@ -614,7 +613,7 @@ function Dashboard() {
                     {filteredTasks.map((tarefa) => (
                       <li
                         key={tarefa.id_tarefa}
-                        className="flex justify-center"
+                        className=" flex justify-center"
                       >
                         <TaskCard
                           tarefa={tarefa}

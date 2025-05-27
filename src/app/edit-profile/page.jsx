@@ -13,7 +13,6 @@ import {
   deleteUser,
 } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { updateEmail } from "firebase/auth";
 import Image from "next/image";
 import patoConfig from "../../../public/assets/pato-config.png";
 import { LineSpinner } from "ldrs/react";
@@ -27,7 +26,8 @@ export default function EditarPerfil() {
   const [newProfilePhotoPreview, setNewProfilePhotoPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [creationDate, setCreationDate] = useState(null);
-  const [email, setEmail] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [newAccountName, setNewAccountName] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -41,7 +41,6 @@ export default function EditarPerfil() {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         setUserData(user);
-        setEmail(user.email || "");
         setCurrentProfilePhoto(user.photoURL || "/assets/default-avatar.png");
 
         const creationTime = user.metadata?.creationTime;
@@ -66,33 +65,9 @@ export default function EditarPerfil() {
             if (data.foto_perfil) {
               setCurrentProfilePhoto(data.foto_perfil);
             }
-            if (data.email !== user.email) {
-              console.log(
-                "Email do Firebase e do Backend são diferentes. Sincronizando..."
-              );
-              const updateEmailBackendResponse = await fetch(
-                `${backendUrl}/update-email`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${idToken}`,
-                  },
-                  body: JSON.stringify({ newEmail: user.email }),
-                }
-              );
-              const updateEmailBackendData =
-                await updateEmailBackendResponse.json();
-              if (!updateEmailBackendResponse.ok) {
-                console.error(
-                  "Erro ao sincronizar email com o backend após verificação:",
-                  updateEmailBackendData.message
-                );
-              } else {
-                console.log(
-                  "Email sincronizado com o backend após verificação."
-                );
-              }
+            if (data.account_name) {
+              setAccountName(data.account_name);
+              setNewAccountName(data.account_name);
             }
           } else {
             console.error(
@@ -111,73 +86,15 @@ export default function EditarPerfil() {
         }
       } else {
         setUserData(null);
-        setEmail("");
         setCreationDate(null);
         setCurrentProfilePhoto("/assets/default-avatar.png");
+        setAccountName("");
+        setNewAccountName("");
       }
     });
 
     return () => unsubscribe();
   }, [backendUrl]);
-
-  const handleUpdateEmail = async (e) => {
-    e.preventDefault();
-    if (!userData) {
-      setErrorMessage("Usuário não logado.");
-      return;
-    }
-    if (!email || email === userData.email) {
-      setErrorMessage("Por favor, insira um novo email diferente do atual.");
-      return;
-    }
-    if (!currentPassword) {
-      setErrorMessage(
-        "Por favor, digite sua senha atual para confirmar a mudança de email."
-      );
-      return;
-    }
-
-    setLoading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    try {
-      const credential = EmailAuthProvider.credential(
-        userData.email,
-        currentPassword
-      );
-      await reauthenticateWithCredential(userData, credential);
-
-      await updateEmail(userData, email);
-
-      setSuccessMessage(
-        "Um email de verificação foi enviado para o novo endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email. O email da sua conta só será alterado após esta verificação."
-      );
-
-      setCurrentPassword("");
-
-      window.localStorage.removeItem("emailForSignIn");
-    } catch (error) {
-      console.error("Erro ao atualizar email:", error);
-      if (error.code === "auth/requires-recent-login") {
-        setErrorMessage(
-          "Sua sessão expirou. Por favor, faça login novamente para atualizar seu email."
-        );
-      } else if (error.code === "auth/invalid-credential") {
-        setErrorMessage(
-          "Senha atual incorreta. Por favor, digite sua senha atual para confirmar."
-        );
-      } else if (error.code === "auth/email-already-in-use") {
-        setErrorMessage("Este email já está em uso por outra conta.");
-      } else {
-        setErrorMessage(
-          `Erro ao atualizar email: ${error.message || "Tente novamente."}`
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const displayPhoto = newProfilePhotoPreview || currentProfilePhoto;
 
@@ -239,6 +156,54 @@ export default function EditarPerfil() {
       console.error("Erro ao atualizar foto de perfil:", error);
       setErrorMessage(
         `Erro ao atualizar foto de perfil: ${
+          error.message || "Tente novamente."
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Nova função para atualizar o nome da conta no backend
+  const handleUpdateAccountName = async (e) => {
+    e.preventDefault();
+    if (!userData) {
+      setErrorMessage("Usuário não logado.");
+      return;
+    }
+    if (!newAccountName || newAccountName === accountName) {
+      setErrorMessage("Por favor, insira um novo nome diferente do atual.");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const idToken = await userData.getIdToken();
+      const response = await fetch(`${backendUrl}/update-account-name`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ newAccountName }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Erro ao atualizar nome da conta no backend."
+        );
+      }
+
+      setAccountName(newAccountName); // Atualiza o estado local
+      setSuccessMessage("Nome da conta atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar nome da conta:", error);
+      setErrorMessage(
+        `Erro ao atualizar nome da conta: ${
           error.message || "Tente novamente."
         }`
       );
@@ -473,59 +438,39 @@ export default function EditarPerfil() {
           </button>
         </form>
 
-        {/* Formulário de Email */}
+        {/* Formulário de Nome da Conta */}
         <form
-          onSubmit={handleUpdateEmail}
+          onSubmit={handleUpdateAccountName}
           className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8"
         >
           <h2 className="text-xl font-semibold mb-4 text-[var(--text)]">
-            Alterar Email
+            Alterar Nome da Conta
           </h2>
           <div className="mb-4">
             <label
-              htmlFor="email"
+              htmlFor="accountName"
               className="block text-[var(--subText)] text-sm font-bold mb-2"
             >
-              Novo Email:
+              Novo Nome da Conta:
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="currentPasswordEmail"
-              className="block text-[var(--subText)] text-sm font-bold mb-2"
-            >
-              Senha Atual (para confirmar):
-            </label>
-            <input
-              type="password"
-              id="currentPasswordEmail"
-              name="currentPasswordEmail"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              type="text"
+              id="accountName"
+              name="accountName"
+              value={newAccountName}
+              onChange={(e) => setNewAccountName(e.target.value)}
               className="shadow appearance-none border rounded w-full min-w-[300px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-[var(--background)]"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={
-              loading ||
-              !email ||
-              (userData && email === userData.email) ||
-              !currentPassword
+              loading || !newAccountName || newAccountName === accountName
             }
           >
-            Atualizar Email
+            Atualizar Nome
           </button>
         </form>
 
@@ -600,6 +545,10 @@ export default function EditarPerfil() {
         {/* Informações da Conta */}
         <div className="flex flex-col justify-center items-center w-full p-6 bg-[var(--subbackground)] rounded-lg shadow-md mb-8 text-left text-[var(--text)]">
           <h2 className="text-xl font-semibold mb-4">Informações da Conta</h2>
+          <p className="mb-2">
+            <span className="font-bold">Nome da Conta:</span>
+            {accountName || "N/A"}
+          </p>
           <p className="mb-2">
             <span className="font-bold">Email Atual:</span>
             {userData?.email || "N/A"}

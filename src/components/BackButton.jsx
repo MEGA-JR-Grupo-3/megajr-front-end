@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react"; // ícone de seta
+import { ArrowLeft } from "lucide-react";
 
 export default function BackButton() {
   return (

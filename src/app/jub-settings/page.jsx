@@ -18,19 +18,16 @@ export default function SettingsPage() {
   const [taskSize, setTaskSize] = useState("medium");
 
   useEffect(() => {
-    // Carrega do localStorage as preferências do usuário para notificações
     const savedPreference = localStorage.getItem("notificationsEnabled");
     if (savedPreference !== null) {
       setIsNotificationAllowedByUser(savedPreference === "true");
     }
 
-    // Carrega do localStorage a preferência do usuário para o tamanho da tarefa
     const savedTaskSize = localStorage.getItem("taskSize");
     if (savedTaskSize !== null) {
       setTaskSize(savedTaskSize);
     }
 
-    // Verifica se o navegador tem permissão para enviar notificações
     if ("Notification" in window) {
       setBrowserNotificationPermission(Notification.permission);
     } else {
@@ -39,25 +36,21 @@ export default function SettingsPage() {
       );
     }
 
-    // Carrega as tarefas (EXEMPLO: Supondo que você as tenha no localStorage como JSON)
     const storedTasks = localStorage.getItem("tasks");
     if (storedTasks) {
       setTasks(JSON.parse(storedTasks));
     }
 
-    // Adiciona um listener para o evento 'storage' para reagir a mudanças em outras abas/janelas
     const handleStorageChange = () => {
       const updatedPreference = localStorage.getItem("notificationsEnabled");
       setIsNotificationAllowedByUser(updatedPreference === "true");
       if ("Notification" in window) {
         setBrowserNotificationPermission(Notification.permission);
       }
-      // Atualiza as tarefas também se elas mudarem em outra aba
       const updatedTasks = localStorage.getItem("tasks");
       if (updatedTasks) {
         setTasks(JSON.parse(updatedTasks));
       }
-      // Atualiza o tamanho da tarefa
       const updatedTaskSize = localStorage.getItem("taskSize");
       if (updatedTaskSize) {
         setTaskSize(updatedTaskSize);
@@ -71,7 +64,6 @@ export default function SettingsPage() {
     };
   }, []);
 
-  // Função para lidar com a mudança do botão de alternância (toggle) do NotificationSwitch
   const handleNotificationToggle = async (newValue) => {
     setIsNotificationAllowedByUser(newValue);
     localStorage.setItem("notificationsEnabled", newValue.toString());
@@ -101,7 +93,6 @@ export default function SettingsPage() {
         }
       }
     } else {
-      //Se o usuário está desativando as notificações, limpa o status
       setNotificationStatusMessage("Notificações desativadas pelo botão.");
     }
   };
@@ -151,15 +142,12 @@ export default function SettingsPage() {
 
       //Para tarefas com prioridade "urgente" que ainda não foram feitas
       if (task.priority === "urgente" && !task.completed) {
-        sendNotification(
-          `Tarefa Urgente: ${task.titulo}`, //Alterado de task.title para task.titulo
-          {
-            body: "Esta tarefa tem prioridade urgente e ainda não foi concluída!",
-            icon: pato,
-            tag: `urgent-task-${task.id_tarefa}`, // Alterado de task.id para task.id_tarefa
-            renotify: true,
-          }
-        );
+        sendNotification(`Tarefa Urgente: ${task.titulo}`, {
+          body: "Esta tarefa tem prioridade urgente e ainda não foi concluída!",
+          icon: pato,
+          tag: `urgent-task-${task.id_tarefa}`,
+          renotify: true,
+        });
         notificationsSentCount++;
       }
 

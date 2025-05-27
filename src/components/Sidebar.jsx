@@ -48,11 +48,31 @@ const MenuHamburguer = ({ profilePicture }) => {
   );
   const menuRef = useRef(null);
   const router = useRouter();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        setUserName(user.displayName || "Usuário Anônimo");
+        try {
+          const idToken = await user.getIdToken();
+          const response = await fetch(`${backendUrl}/user-data`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+          const data = await response.json();
+          if (response.ok && data.name) {
+            setUserName(data.name);
+          } else {
+            setUserName(user.displayName || "Usuário Anônimo");
+          }
+        } catch (error) {
+          console.error("Erro ao buscar nome do usuário no backend:", error);
+          setUserName(user.displayName || "Usuário Anônimo");
+        }
+
         setProfilePhotoUrl(user.photoURL || "/assets/default-avatar.png");
         const creationTime = user.metadata?.creationTime;
         if (creationTime) {
@@ -68,7 +88,7 @@ const MenuHamburguer = ({ profilePicture }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -121,7 +141,7 @@ const MenuHamburguer = ({ profilePicture }) => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b]  transition-colors cursor-pointer"
+        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b]  transition-colors cursor-pointer"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -229,7 +249,7 @@ const MenuHamburguer = ({ profilePicture }) => {
             <div className="mt-auto">
               <button
                 variant="ghost"
-                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:opacity-70"
+                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:opacity-70"
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
