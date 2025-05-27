@@ -12,6 +12,9 @@ import {
   EmailAuthProvider,
   updatePassword,
   deleteUser,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
@@ -214,7 +217,7 @@ export default function EditarPerfil() {
       );
       await reauthenticateWithCredential(userData, credential);
 
-      await userData.verifyBeforeUpdateEmail(email);
+      await updateEmail(userData, email);
 
       setSuccessMessage(
         "Um email de verificação foi enviado para o novo endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email."
