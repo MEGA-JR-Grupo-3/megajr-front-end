@@ -305,9 +305,10 @@ export default function EditarPerfil() {
         url: `https://megajr-front.netlify.app/edit-profile`,
         handleCodeInApp: true,
       };
+
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
       window.localStorage.setItem("emailForSignIn", email);
-      setPendingEmailChange(email);
 
       setSuccessMessage(
         "Um email de verificação foi enviado para o NOVO endereço. Por favor, verifique sua caixa de entrada (incluindo spam) e clique no link para completar a atualização do seu email."
