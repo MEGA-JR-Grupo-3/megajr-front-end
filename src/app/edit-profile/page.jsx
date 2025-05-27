@@ -42,41 +42,31 @@ export default function EditarPerfil() {
   const [confirmModal, setConfirmModal] = useState(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const [pendingEmailChange, setPendingEmailChange] = useState(null);
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUserData(user);
-        setEmail(user.email || "");
-        setCurrentProfilePhoto(user.photoURL || "/assets/default-avatar.png");
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let emailFromStorage = window.localStorage.getItem("emailForSignIn");
 
-        const creationTime = user.metadata?.creationTime;
-        if (creationTime) {
-          const date = new Date(creationTime);
-          const formattedDate = date.toLocaleDateString("pt-BR");
-          setCreationDate(formattedDate);
+        if (!emailFromStorage) {
+          emailFromStorage = prompt(
+            "Por favor, digite seu e-mail para confirmar a alteração:"
+          );
         }
 
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-          let emailFromStorage = window.localStorage.getItem("emailForSignIn");
-          if (!emailFromStorage) {
-            emailFromStorage = prompt(
-              "Por favor, digite seu e-mail para confirmar:"
+        if (emailFromStorage) {
+          setLoading(true);
+          setErrorMessage(null);
+          setSuccessMessage(null);
+          try {
+            const result = await signInWithEmailLink(
+              auth,
+              emailFromStorage,
+              window.location.href
             );
-          }
 
-          if (emailFromStorage) {
-            setLoading(true);
-            setErrorMessage(null);
-            setSuccessMessage(null);
-            try {
-              const result = await signInWithEmailLink(
-                auth,
-                emailFromStorage,
-                window.location.href
-              );
-              window.localStorage.removeItem("emailForSignIn");
+            window.localStorage.removeItem("emailForSignIn");
+
+            if (result.user) {
               const idToken = await result.user.getIdToken();
               const response = await fetch(`${backendUrl}/update-email`, {
                 method: "POST",
@@ -89,29 +79,59 @@ export default function EditarPerfil() {
 
               const data = await response.json();
               if (!response.ok) {
+                console.error(
+                  "Erro ao sincronizar email com o backend:",
+                  data.message
+                );
                 throw new Error(
                   data.message || "Erro ao sincronizar email com o backend."
                 );
               }
               setSuccessMessage("Email atualizado e sincronizado com sucesso!");
               setEmail(result.user.email);
-              o;
-              window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-              );
-            } catch (error) {
-              console.error("Erro ao completar a atualização do email:", error);
-              setErrorMessage(
-                `Erro ao verificar e atualizar email: ${
-                  error.message || "Tente novamente."
-                }`
-              );
-            } finally {
-              setLoading(false);
+              setUserData(result.user);
             }
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+          } catch (error) {
+            console.error("Erro ao completar a atualização do email:", error);
+            setErrorMessage(
+              `Erro ao verificar e atualizar email: ${
+                error.message || "Tente novamente."
+              }`
+            );
+            window.localStorage.removeItem("emailForSignIn");
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
+          } finally {
+            setLoading(false);
           }
+        } else {
+          setErrorMessage("E-mail não fornecido para confirmar a alteração.");
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        }
+      }
+
+      if (user) {
+        setUserData(user);
+        setEmail(user.email || "");
+        setCurrentProfilePhoto(user.photoURL || "/assets/default-avatar.png");
+
+        const creationTime = user.metadata?.creationTime;
+        if (creationTime) {
+          const date = new Date(creationTime);
+          const formattedDate = date.toLocaleDateString("pt-BR");
+          setCreationDate(formattedDate);
         }
 
         try {
@@ -129,6 +149,7 @@ export default function EditarPerfil() {
             if (data.foto_perfil) {
               setCurrentProfilePhoto(data.foto_perfil);
             }
+
             if (data.email !== user.email) {
               console.log(
                 "Email do Firebase e do Backend são diferentes. Sincronizando..."
