@@ -12,10 +12,13 @@ import Image from "next/image";
 import Logo from "../../public/assets/splash-pato.png";
 import Sidebar from "../components/Sidebar";
 
-export default function RootLayoutClient({ children }) {
+export default function RootLayoutClient({ children, dosis }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [isAuthDataLoaded, setIsAuthDataLoaded] = useState(false);
+  const [minSplashTimePassed, setMinSplashTimePassed] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [firebaseIdToken, setFirebaseIdToken] = useState(null);
   const [registeredName, setRegisteredName] = useState("");
@@ -23,9 +26,25 @@ export default function RootLayoutClient({ children }) {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const publicPaths = useMemo(() => ["/", "/login", "/register"], []);
 
+  const showSplashScreen =
+    mounted && !(isAuthDataLoaded && minSplashTimePassed);
+
   useEffect(() => {
+    setMounted(true);
+
+    const timer = setTimeout(() => {
+      setMinSplashTimePassed(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       setUser(currentUser);
+      setIsAuthenticated(!!currentUser);
+
       if (currentUser) {
         try {
           const idToken = await currentUser.getIdToken();
@@ -34,31 +53,21 @@ export default function RootLayoutClient({ children }) {
         } catch (error) {
           console.error("Erro ao obter Firebase ID Token:", error);
           auth.signOut();
+          setIsAuthDataLoaded(true);
         }
       } else {
         setFirebaseIdToken(null);
         localStorage.removeItem("jwt_token");
+        setIsAuthDataLoaded(true);
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-      setIsAuthenticated(!!currentUser);
-      setIsLoading(false);
-      if (currentUser && publicPaths.includes(pathname)) {
-        router.push("/dashboard");
-      } else if (!currentUser && !publicPaths.includes(pathname)) {
-        router.push("/");
-      }
-    });
-    return () => unsubscribe();
-  }, [router, pathname, publicPaths]);
+    if (!mounted) return;
 
-  useEffect(() => {
     if (user && isAuthenticated && firebaseIdToken) {
       const fetchUserData = async () => {
         try {
@@ -88,43 +97,77 @@ export default function RootLayoutClient({ children }) {
         } catch (error) {
           console.error("Erro ao comunicar com o backend:", error);
           setRegisteredName("");
+        } finally {
+          setIsAuthDataLoaded(true);
         }
       };
-
       fetchUserData();
-    } else if (!user) {
-      setRegisteredName("");
+    } else if (user !== undefined && !isAuthenticated) {
+      setIsAuthDataLoaded(true);
     }
-  }, [user, isAuthenticated, backendUrl, firebaseIdToken, router]);
+  }, [user, isAuthenticated, backendUrl, firebaseIdToken, router, mounted]);
 
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  useEffect(() => {
+    if (!mounted || showSplashScreen) return;
+
+    if (isAuthenticated && publicPaths.includes(pathname)) {
+      router.push("/dashboard");
+    } else if (!isAuthenticated && !publicPaths.includes(pathname)) {
+      router.push("/");
+    }
+  }, [
+    isAuthenticated,
+    pathname,
+    router,
+    publicPaths,
+    mounted,
+    showSplashScreen,
+  ]);
 
   const reloadPage = () => {
     window.location.reload();
   };
 
+  if (!mounted) {
+    return (
+      <body
+        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)] min-h-screen`}
+      >
+        {children}
+      </body>
+    );
+  }
+
   return (
     <Providers>
-      <ToastContainer autoClose={3000} position="bottom-left" />
+      <body
+        className={`${dosis.className} antialiased bg-[var(--background)] text-[var(--text)] min-h-screen`}
+      >
+        {showSplashScreen && <SplashScreen />}
 
-      {isAuthenticated && (
-        <nav className="w-full flex flex-row items-center justify-between pr-5 px-3.5 ">
-          <Image
-            src={Logo}
-            className="lg:hidden h-14 w-auto"
-            alt="Logo Jubileu"
-            onClick={() => reloadPage()}
-            priority
-          />
-          <h2 className="lg:hidden text-xl font-bold">
-            Olá, {registeredName || user?.displayName || "parceiro(a)!"}
-          </h2>
-          <Sidebar />
-        </nav>
-      )}
-      {children}
+        <ToastContainer autoClose={3000} position="bottom-left" />
+
+        {!showSplashScreen && (
+          <>
+            {isAuthenticated && (
+              <nav className="w-full flex flex-row items-center justify-between pr-5 px-3.5 ">
+                <Image
+                  src={Logo}
+                  className="lg:hidden h-14 w-auto"
+                  alt="Logo Jubileu"
+                  onClick={() => reloadPage()}
+                  priority
+                />
+                <h2 className="lg:hidden text-xl font-bold">
+                  Olá, {registeredName || user?.displayName || "parceiro(a)!"}
+                </h2>
+                <Sidebar />
+              </nav>
+            )}
+            {children}
+          </>
+        )}
+      </body>
     </Providers>
   );
 }
