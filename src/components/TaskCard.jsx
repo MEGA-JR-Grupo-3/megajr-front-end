@@ -327,21 +327,18 @@ function TaskCardComponent({
   const cardAnimationClasses = isDragging
     ? ""
     : "transition-shadow duration-300";
-  const cardDraggableClass = isDraggable
-    ? "touch-action-none"
-    : "cursor-pointer";
+  const cardDraggableClass = isDraggable ? "touch-action-none" : "";
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // Combina as classes dinâmicas para o tamanho do card
       className={`relative rounded-lg shadow-lg flex flex-col justify-between transition-all duration-300 ease-in-out ${getCardSizeClasses()} ${
         tarefa.estado_tarefa === "Finalizada"
           ? "bg-gray-300 opacity-60"
           : "bg-[var(--subbackground)]"
-      } border border-[var(--details)] ${cardAnimationClasses} ${cardDraggableClass}`}
+      } border border-[var(--details)] ${cardAnimationClasses} $`}
       onClick={
         !isDraggable && !isEditing && !isExpanded ? openEditMode : undefined
       }
@@ -349,7 +346,7 @@ function TaskCardComponent({
       <div className="flex flex-row w-full justify-between items-start gap-2">
         {isDraggable && (
           <div
-            className="flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 py-1 flex-shrink-0"
+            className={`flex items-center justify-center cursor-grab text-gray-400 hover:text-gray-600 active:text-blue-500 py-1 flex-shrink-0 ${cardDraggableClass}`}
             {...listeners}
           >
             <MdOutlineDragIndicator size={24} />
