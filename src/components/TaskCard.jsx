@@ -329,14 +329,17 @@ function TaskCardComponent({
     : "transition-shadow duration-300";
   const cardDraggableClass = isDraggable ? "touch-action-none" : "";
 
+  // Variável para verificar se a tarefa está finalizada
+  const isTaskCompleted = tarefa.estado_tarefa === "Finalizada";
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       className={`relative rounded-lg shadow-lg flex flex-col justify-between transition-all duration-300 ease-in-out ${getCardSizeClasses()} ${
-        tarefa.estado_tarefa === "Finalizada"
-          ? "bg-gray-300 opacity-60"
+        isTaskCompleted
+          ? "bg-[var(--taskcompleted)] opacity-60"
           : "bg-[var(--subbackground)]"
       } border border-[var(--details)] ${cardAnimationClasses} $`}
       onClick={
@@ -371,8 +374,12 @@ function TaskCardComponent({
             />
           ) : (
             <h3
-              className={`font-semibold text-[var(--text)] text-start ${getTitleSizeClasses()} ${
+              className={`font-semibold  text-start ${getTitleSizeClasses()} ${
                 !isExpanded ? "truncate-text" : ""
+              } ${
+                isTaskCompleted
+                  ? "line-through text-gray-500"
+                  : "text-[var(--text)]"
               }`}
             >
               {tarefa.titulo}
@@ -389,7 +396,7 @@ function TaskCardComponent({
               <input
                 type="checkbox"
                 className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
-                checked={tarefa.estado_tarefa === "Finalizada"}
+                checked={isTaskCompleted} // Use a nova variável
                 onChange={handleStatusChange}
                 disabled={isUpdatingStatus || isDeleting}
               />
@@ -446,47 +453,50 @@ function TaskCardComponent({
           </>
         )}
 
-        <div className="flex gap-2 mt-2 items-center">
-          {isEditing ? (
-            <input
-              type="date"
-              name="data_prazo"
-              value={editFormData.data_prazo}
-              onChange={handleEditChange}
-              className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow ${getDatePrioritySizeClasses()}`}
-              disabled={isLoading}
-            />
-          ) : (
-            <p
-              className={`rounded-md inline-block flex-grow ${
-                dueDateInfo.className
-              } ${getDatePrioritySizeClasses()}`}
-            >
-              {dueDateInfo.text}
-            </p>
-          )}
+        {/* Condição para esconder Data Prazo e Prioridade */}
+        {!isTaskCompleted && (
+          <div className="flex gap-2 mt-2 items-center">
+            {isEditing ? (
+              <input
+                type="date"
+                name="data_prazo"
+                value={editFormData.data_prazo}
+                onChange={handleEditChange}
+                className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent flex-grow ${getDatePrioritySizeClasses()}`}
+                disabled={isLoading}
+              />
+            ) : (
+              <p
+                className={`rounded-md inline-block flex-grow ${
+                  dueDateInfo.className
+                } ${getDatePrioritySizeClasses()}`}
+              >
+                {dueDateInfo.text}
+              </p>
+            )}
 
-          {isEditing ? (
-            <select
-              name="prioridade"
-              value={editFormData.prioridade}
-              onChange={handleEditChange}
-              className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5 ${getDatePrioritySizeClasses()}`}
-              disabled={isLoading}
-            >
-              <option value="Baixa">Baixa</option>{" "}
-              <option value="Normal">Normal</option>
-              <option value="Alta">Alta</option>{" "}
-              <option value="Urgente">Urgente</option>
-            </select>
-          ) : (
-            <p
-              className={`rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses} ${getDatePrioritySizeClasses()}`}
-            >
-              {tarefa.prioridade}
-            </p>
-          )}
-        </div>
+            {isEditing ? (
+              <select
+                name="prioridade"
+                value={editFormData.prioridade}
+                onChange={handleEditChange}
+                className={`text-gray-500 border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent w-2/5 ${getDatePrioritySizeClasses()}`}
+                disabled={isLoading}
+              >
+                <option value="Baixa">Baixa</option>{" "}
+                <option value="Normal">Normal</option>
+                <option value="Alta">Alta</option>{" "}
+                <option value="Urgente">Urgente</option>
+              </select>
+            ) : (
+              <p
+                className={`rounded-md inline-block font-medium w-2/5 text-center ${priorityClasses} ${getDatePrioritySizeClasses()}`}
+              >
+                {tarefa.prioridade}
+              </p>
+            )}
+          </div>
+        )}
 
         {(isExpanded || isEditing) && (
           <div className="flex items-center gap-2 mt-4">
@@ -509,7 +519,6 @@ function TaskCardComponent({
                 >
                   Cancelar
                 </button>
-                {/* Botão para colapsar enquanto edita, se estiver expandido */}
                 {isExpanded && (
                   <button
                     onClick={toggleExpand}
@@ -521,7 +530,7 @@ function TaskCardComponent({
                 )}
               </>
             ) : (
-              isExpanded && ( // Botão Editar só aparece se expandido e não editando
+              isExpanded && (
                 <button
                   onClick={openEditMode}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-xs focus:outline-none focus:shadow-outline"
