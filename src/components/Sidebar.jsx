@@ -145,7 +145,7 @@ const MenuHamburguer = ({ profilePicture }) => {
                   <img
                     src={profilePhotoUrl}
                     alt="Foto de Perfil"
-                    className="w-full h-full object-cover"
+                    className="w-[66px] h-[66px] object-cover"
                   />
                 </div>
                 <div className="flex flex-col">
