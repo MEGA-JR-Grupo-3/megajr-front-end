@@ -192,9 +192,7 @@ const MenuHamburguer = ({ profilePicture }) => {
               </button>
             </div>
             <div className="flex items-center justify-between ">
-              <h2 className="text-xl font-semibold text-gray-900 text-white mt-6">
-                Menu
-              </h2>
+              <h2 className="text-xl font-semibold text-white mt-6">Menu</h2>
             </div>
             <div className="space-y-6 flex-grow">
               {/* Editar Perfil */}
