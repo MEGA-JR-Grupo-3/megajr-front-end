@@ -178,7 +178,7 @@ export default function Register() {
             />
           </form>
           <Link href="/login">
-            <button className="mt-[20px] self-center underline text-[#676767]">
+            <button className="cursor-pointer mt-[20px] self-center underline text-[#676767] hover:text-[#007bff] hover:no-underline">
               login
             </button>
           </Link>

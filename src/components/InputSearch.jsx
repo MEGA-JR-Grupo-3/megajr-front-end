@@ -30,7 +30,7 @@ function InputSearch({ tarefas, onSearch }) {
         placeholder="Pesquisar tarefas..."
         value={searchTerm}
         onChange={handleInputChange}
-        className="bg-[var(--subbackground)] w-full text-gray-700 px-4 py-2 border border-[var(--text)] rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10"
+        className="bg-[var(--subbackground)] w-full text-gray-700 px-4 py-2 border border-[var(--text)] rounded-3xl mt-5 focus:outline-none focus:ring focus:var(--primary) pr-10 placeholder-[var(--text)]"
       />
       <div className="absolute right-10 lg:right-[10px] top-[40px] transform -translate-y-1/2 flex items-center space-x-2">
         {searchTerm && (

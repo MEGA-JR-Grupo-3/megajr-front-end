@@ -482,7 +482,7 @@ function Dashboard() {
         >
           <FontAwesomeIcon
             icon={faFilter}
-            className="text-xl text-gray-700 hover:text-gray-400 cursor-pointer"
+            className="text-3xl hover:text-gray-400 cursor-pointer text-[var(--text)]"
           />
         </button>
         {showFilterOptions && (

@@ -141,7 +141,7 @@ const MenuHamburguer = ({ profilePicture }) => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b]  transition-colors cursor-pointer"
+        className="lg:hidden text-[var(--primary)] hover:text-[#8b8b8b] transition-colors cursor-pointer"
         aria-label="Abrir Menu"
       >
         <FontAwesomeIcon icon={faBars} size="2x" />
@@ -170,7 +170,7 @@ const MenuHamburguer = ({ profilePicture }) => {
                 </div>
                 <div className="flex flex-col">
                   {userName && (
-                    <h3 className="text-lg font-semiboldtext-white">
+                    <h3 className="text-lg font-semibold text-white">
                       {userName}
                     </h3>
                   )}
@@ -192,68 +192,113 @@ const MenuHamburguer = ({ profilePicture }) => {
               </button>
             </div>
             <div className="flex items-center justify-between ">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-gray-900 text-white mt-6">
                 Menu
               </h2>
             </div>
-
-            {/* Botões de Navegação */}
-            <div className="space-y-6">
+            <div className="space-y-6 flex-grow">
+              {/* Editar Perfil */}
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
+                className="w-full justify-start text-start text-white cursor-pointer font-semibold
+                                relative overflow-hidden group py-2 px-4 transition-all duration-300
+                                hover:rounded-full hover:bg-[var(--background-2)] hover:shadow-md"
                 onClick={() => {
                   router.push("/edit-profile");
                   setIsOpen(false);
                 }}
               >
                 <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
-                Editar Perfil
+                <span
+                  className="relative z-10 inline-block
+                                  group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
+                  Editar Perfil
+                </span>
               </button>
+
+              {/* Configurações */}
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
+                className="w-full justify-start text-start text-white cursor-pointer font-semibold
+                                relative overflow-hidden group py-2 px-4 transition-all duration-300
+                                hover:rounded-full hover:bg-[var(--background-2)] hover:shadow-md"
                 onClick={() => {
                   router.push("/jub-settings");
                   setIsOpen(false);
                 }}
               >
                 <FontAwesomeIcon icon={faCog} className="mr-2" />
-                Configurações
+                <span
+                  className="relative z-10 inline-block
+                                  group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
+                  Configurações
+                </span>
               </button>
+
+              {/* Sobre Nós */}
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
+                className="w-full justify-start text-start text-white cursor-pointer font-semibold
+                                relative overflow-hidden group py-2 px-4 transition-all duration-300
+                                hover:rounded-full hover:bg-[var(--background-2)] hover:shadow-md"
                 onClick={() => {
                   router.push("/about-us");
                   setIsOpen(false);
                 }}
               >
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
-                Sobre Nós
+                <span
+                  className="relative z-10 inline-block
+                                  group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
+                  Sobre Nós
+                </span>
               </button>
+
+              {/* Central de Ajuda */}
               <button
                 variant="ghost"
-                className="w-full justify-start text-start text-gray-700 dark:text-gray-300 hover:opacity-70 cursor-pointer"
+                className="w-full justify-start text-start text-white cursor-pointer font-semibold
+                                relative overflow-hidden group py-2 px-4 transition-all duration-300
+                                hover:rounded-full hover:bg-[var(--background-2)] hover:shadow-md"
                 onClick={() => {
                   router.push("/help");
                   setIsOpen(false);
                 }}
               >
                 <FontAwesomeIcon icon={faQuestionCircle} className="mr-2" />
-                Central de Ajuda
+                <span
+                  className="relative z-10 inline-block
+                                  group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
+                  Central de Ajuda
+                </span>
               </button>
             </div>
 
             {/* Botão de Logout */}
-            <div className="mt-auto">
+            <div className="absolute bottom-[60px] w-full pr-12">
               <button
                 variant="ghost"
-                className="w-full absolute bottom-[60px] text-start  text-gray-700 dark:text-gray-300 hover:opacity-70"
+                className="w-full text-start text-white cursor-pointer font-semibold
+                                relative overflow-hidden group py-2 px-4 transition-all duration-300
+                                hover:rounded-full hover:bg-[var(--background-2)] hover:shadow-md"
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                Sair
+                <span
+                  className="relative z-10 inline-block
+                                  group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
+                  Sair
+                </span>
               </button>
             </div>
           </motion.div>

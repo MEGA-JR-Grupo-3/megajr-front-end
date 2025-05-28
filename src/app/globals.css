@@ -17,7 +17,6 @@ body {
   --button: #392a33;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
-  --taskcompleted: #c6c6c6;
 }
 
 /* Estilos para o tema escuro */
@@ -25,19 +24,17 @@ body {
   --primary: #0083dd;
   --secondary: #00c9b7;
   --background: #1e2939;
-  --background-2: #e1e1e1;
+  --background-2: #cde0e0;
   --subbackground: #121b2a;
   --bgcard: #121b2a;
   --text: #dcdcdc;
   --subText: #6c6c6c;
-  --button: #ebcedb;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
-  --taskcompleted: #626262;
 }
 
 .touch-action-none {
-  touch-action: pan-x !important;
+  touch-action: none !important;
 }
 
 .truncate-text {
