@@ -10,7 +10,7 @@ import enzoImg from "../../../public/assets/enzo.png";
 import jeanImg from "../../../public/assets/jean.png";
 import jonImg from "../../../public/assets/jon.png";
 import nicolasImg from "../../../public/assets/nicolas.png";
-import laraImg from "../../../public/assets/lara.png";
+import laraImg from "../../../public/assets/Lara.png";
 const originalTeamMembers = [
   {
     name: "Edilson Enzo",
