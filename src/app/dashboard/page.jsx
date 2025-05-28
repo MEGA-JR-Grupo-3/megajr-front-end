@@ -49,7 +49,6 @@ function Dashboard() {
 
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
-  // Crie refs para os elementos que você quer monitorar o clique fora
   const filterOptionsRef = useRef(null);
   const addTaskFormRef = useRef(null);
 
@@ -465,15 +464,18 @@ function Dashboard() {
     return order === "asc" ? "Crescente" : "Decrescente";
   };
 
-  // --- Função para lidar com cliques fora dos menus ---
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Fecha as opções de filtro se o clique for fora delas
-      if (filterOptionsRef.current && !filterOptionsRef.current.contains(event.target)) {
+      if (
+        filterOptionsRef.current &&
+        !filterOptionsRef.current.contains(event.target)
+      ) {
         setShowFilterOptions(false);
       }
-      // Fecha o formulário de adicionar tarefa se o clique for fora dele
-      if (addTaskFormRef.current && !addTaskFormRef.current.contains(event.target)) {
+      if (
+        addTaskFormRef.current &&
+        !addTaskFormRef.current.contains(event.target)
+      ) {
         setIsAddTaskFormVisible(false);
       }
     };
@@ -482,7 +484,7 @@ function Dashboard() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []); // O array de dependências vazio garante que o efeito só seja executado uma vez no montagem e desmontagem
+  }, []);
 
   if (loading) {
     return (
@@ -504,35 +506,35 @@ function Dashboard() {
         >
           <FontAwesomeIcon
             icon={faFilter}
-            className="text-3xl hover:text-gray-400 cursor-pointer text-[var(--text)]"
+            className="text-3xl text-gray-700 cursor-pointer"
           />
         </button>
         {showFilterOptions && (
           <div
-            ref={filterOptionsRef} // Atribua a ref ao elemento das opções de filtro
+            ref={filterOptionsRef}
             className="absolute top-full right-4 lg:right-32 mt-2 w-48 bg-white border border-gray-200 gap-2 rounded-md shadow-lg z-10 flex flex-col p-2"
           >
-            <h4 className="text-sm font-semibold text-gray-700 mb-1">
+            <h4 className="text-sm font-semibold text-[var(--text)] mb-1">
               Filtrar por:
             </h4>
             <Button
               buttonText="Prioridade"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
               onClick={() => handleApplyFilter("priority")}
             />
             <Button
               buttonText="Data"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
               onClick={() => handleApplyFilter("date")}
             />
             <Button
               buttonText="Título"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
               onClick={() => handleApplyFilter("title")}
             />
             <Button
               buttonText="Descrição"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
               onClick={() => handleApplyFilter("description")}
             />
           </div>
@@ -679,8 +681,12 @@ function Dashboard() {
         <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
         {isAddTaskFormVisible && (
           <div
-            ref={addTaskFormRef} // Atribua a ref ao elemento AddTaskForm
             className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setIsAddTaskFormVisible(false);
+              }
+            }}
           >
             <AddTaskForm
               onClose={() => setIsAddTaskFormVisible(false)}

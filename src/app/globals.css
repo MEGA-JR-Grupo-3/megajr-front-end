@@ -17,6 +17,7 @@ body {
   --button: #392a33;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
+  --taskcompleted: #c6c6c6;
 }
 
 /* Estilos para o tema escuro */
@@ -31,6 +32,7 @@ body {
   --subText: #6c6c6c;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
+  --taskcompleted: #626262;
 }
 
 .touch-action-none {
