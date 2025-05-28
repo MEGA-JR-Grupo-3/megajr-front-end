@@ -6,15 +6,14 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #916902;
-  --secondary: #b98e55;
-  --sidebar: #916902;
-  --background: #fff5d2;
-  --background-2: #fff5d2;
-  --subbackground: #fdf1b9;
-  --bgcard: #feeec8;
-  --text: #b17600;
-  --subText: #b38d1d;
+  --primary: #3b005e;
+  --secondary: #634982;
+  --background: #fef7dd;
+  --background-2: #faf4dd;
+  --subbackground: #e3e3e3;
+  --bgcard: #fff8e9;
+  --text: #3b005e;
+  --subText: #58157e;
   --button: #392a33;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
@@ -25,7 +24,6 @@ body {
 [data-theme="dark"] {
   --primary: #0083dd;
   --secondary: #00c9b7;
-  --sidebar: #00375c;
   --background: #1e2939;
   --background-2: #e1e1e1;
   --subbackground: #121b2a;

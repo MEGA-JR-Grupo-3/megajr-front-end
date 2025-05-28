@@ -113,7 +113,7 @@ export default function HelpPage() {
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Dicas Rápidas
           </h2>
-          <ul className="list-disc list-inside space-y-2 text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
+          <ul className="list-disc list-inside space-y-2 text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-4">
             <li>
               Mantenha o aplicativo atualizado para as últimas funcionalidades.
             </li>
@@ -121,9 +121,7 @@ export default function HelpPage() {
               Use a função de pesquisa para encontrar tarefas rapidamente.
             </li>
             <li>Organize suas tarefas com prazos para melhor gestão.</li>
-            <li>
-              Explore as **Configurações** para personalizar sua experiência.
-            </li>
+            <li>Explore as Configurações para personalizar sua experiência.</li>
           </ul>
         </section>
 
@@ -131,7 +129,7 @@ export default function HelpPage() {
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-transparent bg-clip-text w-fit">
             Ainda Precisa de Ajuda?
           </h2>
-          <p className="text-lg text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-2">
+          <p className="text-lg text-[var(--text)] bg-[var(--subbackground)] rounded-lg shadow-md p-4">
             Se você não encontrou a resposta para sua pergunta, considere
             verificar a documentação completa do aplicativo ou aguarde futuras
             atualizações para mais opções de suporte.

@@ -156,16 +156,16 @@ const MenuHamburguer = ({ profilePicture }) => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-[var(--sidebar)] overflow-hidden"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
             <div className="flex flex-row items-start justify-between mb-4">
               <div className="flex flex-row items-center justify-between gap-2">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-600 shadow-lg bg-white">
+                <div className="relative w-[66px] h-[66px] rounded-full  border-2 border-[var(--secondary)] shadow-xl flex-shrink-0">
                   <img
                     src={profilePhotoUrl}
                     alt="Foto de Perfil"
-                    className="w-[66px] h-[66px] object-cover"
+                    className="w-full h-full object-cover rounded-full overflow-hidden"
                   />
                 </div>
                 <div className="flex flex-col">
