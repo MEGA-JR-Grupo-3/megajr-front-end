@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react"; // Adicione useRef aqui
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebaseConfig";
 import ButtonAddTask from "../../components/ButtonAddTask";
@@ -49,6 +49,10 @@ function Dashboard() {
 
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
+  // Crie refs para os elementos que você quer monitorar o clique fora
+  const filterOptionsRef = useRef(null);
+  const addTaskFormRef = useRef(null);
+
   const priorityOrder = {
     Urgente: 1,
     Alta: 2,
@@ -65,7 +69,6 @@ function Dashboard() {
   );
 
   // FUNÇÃO DE APLICAÇÃO DE FILTROS E ORDENAÇÃO
-
   const applyFiltersAndSort = useCallback(() => {
     let tasksToFilter = [...allTasks];
 
@@ -462,6 +465,25 @@ function Dashboard() {
     return order === "asc" ? "Crescente" : "Decrescente";
   };
 
+  // --- Função para lidar com cliques fora dos menus ---
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Fecha as opções de filtro se o clique for fora delas
+      if (filterOptionsRef.current && !filterOptionsRef.current.contains(event.target)) {
+        setShowFilterOptions(false);
+      }
+      // Fecha o formulário de adicionar tarefa se o clique for fora dele
+      if (addTaskFormRef.current && !addTaskFormRef.current.contains(event.target)) {
+        setIsAddTaskFormVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []); // O array de dependências vazio garante que o efeito só seja executado uma vez no montagem e desmontagem
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -477,7 +499,7 @@ function Dashboard() {
 
         <button
           onClick={() => setShowFilterOptions(!showFilterOptions)}
-          className="p-2 mt-[20px]  text-gray-800 rounded-md  transition-colors duration-200"
+          className="p-2 mt-[20px] text-gray-800 rounded-md transition-colors duration-200"
           aria-label="Abrir opções de filtro"
         >
           <FontAwesomeIcon
@@ -486,28 +508,31 @@ function Dashboard() {
           />
         </button>
         {showFilterOptions && (
-          <div className="absolute top-full right-4 lg:right-32 mt-2 w-48 bg-white border border-gray-200 gap-2 rounded-md shadow-lg z-10 flex flex-col p-2">
+          <div
+            ref={filterOptionsRef} // Atribua a ref ao elemento das opções de filtro
+            className="absolute top-full right-4 lg:right-32 mt-2 w-48 bg-white border border-gray-200 gap-2 rounded-md shadow-lg z-10 flex flex-col p-2"
+          >
             <h4 className="text-sm font-semibold text-gray-700 mb-1">
               Filtrar por:
             </h4>
             <Button
               buttonText="Prioridade"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
               onClick={() => handleApplyFilter("priority")}
             />
             <Button
               buttonText="Data"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
               onClick={() => handleApplyFilter("date")}
             />
             <Button
               buttonText="Título"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
               onClick={() => handleApplyFilter("title")}
             />
             <Button
               buttonText="Descrição"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-100 "
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-gray-700" // Corrigi a cor do texto para ser visível
               onClick={() => handleApplyFilter("description")}
             />
           </div>
@@ -593,22 +618,22 @@ function Dashboard() {
                 ) : (
                   <ul
                     className={`grid gap-4 pt-[30px] pb-[80px] w-full px-4 justify-items-center
-  ${
-    taskDisplaySize === "small"
-      ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 w-"
-      : ""
-  }
-  ${
-    taskDisplaySize === "medium"
-      ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
-      : ""
-  }
-  ${
-    taskDisplaySize === "large"
-      ? "grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2"
-      : ""
-  }
-`}
+                      ${
+                        taskDisplaySize === "small"
+                          ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 w-"
+                          : ""
+                      }
+                      ${
+                        taskDisplaySize === "medium"
+                          ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+                          : ""
+                      }
+                      ${
+                        taskDisplaySize === "large"
+                          ? "grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2"
+                          : ""
+                      }
+                    `}
                   >
                     {filteredTasks.map((tarefa) => (
                       <li
@@ -653,11 +678,16 @@ function Dashboard() {
         )}
         <ButtonAddTask onClick={() => setIsAddTaskFormVisible(true)} />
         {isAddTaskFormVisible && (
-          <AddTaskForm
-            onClose={() => setIsAddTaskFormVisible(false)}
-            onTaskAdded={handleTaskAdded}
-            firebaseIdToken={firebaseIdToken}
-          />
+          <div
+            ref={addTaskFormRef} // Atribua a ref ao elemento AddTaskForm
+            className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
+          >
+            <AddTaskForm
+              onClose={() => setIsAddTaskFormVisible(false)}
+              onTaskAdded={handleTaskAdded}
+              firebaseIdToken={firebaseIdToken}
+            />
+          </div>
         )}
       </div>
     </div>
