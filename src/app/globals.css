@@ -6,14 +6,15 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #3B005E;
+  --primary: #3b005e;
   --secondary: #634982;
-  --background: #fcefdd;
-  --background-2: #ffe3f3;
-  --subbackground: #f2dde9;
-  --bgcard: #ffd2ec;
-  --text: #3B005E;
-  --subText: #3B005E;
+  --background: #fef7dd;
+  --background-2: #faf4dd;
+  --subbackground: #e3e3e3;
+  --bgcard: #fff8e9;
+  --text: #3b005e;
+  --subText: #58157e;
+  --button: #392a33;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
 }

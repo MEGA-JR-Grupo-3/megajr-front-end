@@ -153,7 +153,7 @@ export default function RootLayoutClient({ children, dosis }) {
               <nav className="w-full flex flex-row items-center justify-between pr-5 px-3.5 ">
                 <Image
                   src={Logo}
-                  className="lg:hidden h-14 w-auto"
+                  className="lg:hidden h-14 w-auto cursor-pointer"
                   alt="Logo Jubileu"
                   onClick={() => reloadPage()}
                   priority

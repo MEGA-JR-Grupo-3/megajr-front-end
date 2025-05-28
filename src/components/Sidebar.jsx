@@ -156,16 +156,16 @@ const MenuHamburguer = ({ profilePicture }) => {
             initial="closed"
             animate="open"
             exit="closed"
-            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] overflow-hidden h-full"
+            className="fixed top-0 right-0 lg:left-0 h-screen w-80 bg-background shadow-lg z-50 p-6 space-y-8 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] overflow-hidden"
           >
             {/* Cabeçalho do Menu */}
             <div className="flex flex-row items-start justify-between mb-4">
               <div className="flex flex-row items-center justify-between gap-2">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-600 shadow-lg bg-white">
+                <div className="relative w-[66px] h-[66px] rounded-full  border-2 border-[var(--secondary)] shadow-xl flex-shrink-0">
                   <img
                     src={profilePhotoUrl}
                     alt="Foto de Perfil"
-                    className="w-[66px] h-[66px] object-cover"
+                    className="w-full h-full object-cover rounded-full overflow-hidden"
                   />
                 </div>
                 <div className="flex flex-col">
@@ -192,9 +192,7 @@ const MenuHamburguer = ({ profilePicture }) => {
               </button>
             </div>
             <div className="flex items-center justify-between ">
-              <h2 className="text-xl font-semibold text-gray-900 text-white mt-6">
-                Menu
-              </h2>
+              <h2 className="text-xl font-semibold text-white mt-6">Menu</h2>
             </div>
             <div className="space-y-6 flex-grow">
               {/* Editar Perfil */}
@@ -209,9 +207,11 @@ const MenuHamburguer = ({ profilePicture }) => {
                 }}
               >
                 <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
-                <span className="relative z-10 inline-block
+                <span
+                  className="relative z-10 inline-block
                                   group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
-                                  group-hover:text-transparent group-hover:bg-clip-text">
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
                   Editar Perfil
                 </span>
               </button>
@@ -228,9 +228,11 @@ const MenuHamburguer = ({ profilePicture }) => {
                 }}
               >
                 <FontAwesomeIcon icon={faCog} className="mr-2" />
-                <span className="relative z-10 inline-block
+                <span
+                  className="relative z-10 inline-block
                                   group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
-                                  group-hover:text-transparent group-hover:bg-clip-text">
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
                   Configurações
                 </span>
               </button>
@@ -247,9 +249,11 @@ const MenuHamburguer = ({ profilePicture }) => {
                 }}
               >
                 <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
-                <span className="relative z-10 inline-block
+                <span
+                  className="relative z-10 inline-block
                                   group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
-                                  group-hover:text-transparent group-hover:bg-clip-text">
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
                   Sobre Nós
                 </span>
               </button>
@@ -266,9 +270,11 @@ const MenuHamburguer = ({ profilePicture }) => {
                 }}
               >
                 <FontAwesomeIcon icon={faQuestionCircle} className="mr-2" />
-                <span className="relative z-10 inline-block
+                <span
+                  className="relative z-10 inline-block
                                   group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
-                                  group-hover:text-transparent group-hover:bg-clip-text">
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
                   Central de Ajuda
                 </span>
               </button>
@@ -284,9 +290,11 @@ const MenuHamburguer = ({ profilePicture }) => {
                 onClick={handleLogout}
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-                <span className="relative z-10 inline-block
+                <span
+                  className="relative z-10 inline-block
                                   group-hover:bg-gradient-to-b group-hover:from-[var(--primary)] group-hover:to-[var(--secondary)]
-                                  group-hover:text-transparent group-hover:bg-clip-text">
+                                  group-hover:text-transparent group-hover:bg-clip-text"
+                >
                   Sair
                 </span>
               </button>
