@@ -6,40 +6,34 @@ body {
 
 /* Estilos para o tema claro (padrão) */
 :root {
-  --primary: #916902;
-  --secondary: #b98e55;
-  --sidebar: #916902;
-  --background: #fff5d2;
-  --background-2: #fff5d2;
-  --subbackground: #fdf1b9;
-  --bgcard: #feeec8;
-  --text: #b17600;
-  --subText: #b38d1d;
-  --button: #392a33;
+  --primary: #3B005E;
+  --secondary: #634982;
+  --background: #fcefdd;
+  --background-2: #ffe3f3;
+  --subbackground: #f2dde9;
+  --bgcard: #ffd2ec;
+  --text: #3B005E;
+  --subText: #3B005E;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
-  --taskcompleted: #c6c6c6;
 }
 
 /* Estilos para o tema escuro */
 [data-theme="dark"] {
   --primary: #0083dd;
   --secondary: #00c9b7;
-  --sidebar: #00375c;
   --background: #1e2939;
-  --background-2: #e1e1e1;
+  --background-2: #cde0e0;
   --subbackground: #121b2a;
   --bgcard: #121b2a;
   --text: #dcdcdc;
   --subText: #6c6c6c;
-  --button: #ebcedb;
   --buttonRed: #ff0000;
   --buttonLightRed: #f64848;
-  --taskcompleted: #626262;
 }
 
 .touch-action-none {
-  touch-action: pan-x !important;
+  touch-action: none !important;
 }
 
 .truncate-text {

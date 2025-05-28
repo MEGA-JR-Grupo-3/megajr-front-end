@@ -119,7 +119,7 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-24 justify-center px-8 min-h-screen">
+<div className="flex flex-col items-center gap-24 justify-center px-8 min-h-screen">
       <h2 className="text-[32px] font-[700] text-center pt-[30px]">
         Jubileu está esperando sua próxima tarefa!
       </h2>
@@ -162,8 +162,9 @@ function Login() {
             />
           </form>
           <GoogleLoginButton onSuccess={handleGoogleLoginSuccess} />
+          {/* Adicione as classes de hover aqui! */}
           <Link href="/register">
-            <button className="mt-[20px] self-center underline text-[#676767]">
+            <button className="cursor-pointer mt-[20px] self-center underline text-[#676767] hover:text-[#007bff] hover:no-underline">
               cadastrar-se
             </button>
           </Link>
@@ -181,7 +182,8 @@ function Login() {
               onClick={() => setErrorMessage("")}
             />
             <Link href="/register">
-              <button className="mt-[20px] self-center underline text-[#676767]">
+              {/* Este já estava correto */}
+              <button className="cursor-pointer mt-[20px] self-center underline text-[#676767] hover:text-[#007bff] hover:no-underline">
                 cadastrar-se
               </button>
             </Link>
