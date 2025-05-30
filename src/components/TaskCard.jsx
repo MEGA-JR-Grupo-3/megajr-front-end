@@ -25,29 +25,57 @@ const getPriorityColor = (priority) => {
 };
 
 const getDueDateStatus = (dueDate) => {
-  if (!dueDate)
+  if (!dueDate) {
     return { text: "Indefinido", className: "text-gray-400 bg-gray-100" };
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const taskDueDate = new Date(dueDate);
-  taskDueDate.setHours(0, 0, 0, 0);
-  const oneDay = 24 * 60 * 60 * 1000;
-  const daysDifference = Math.round(
-    (taskDueDate.getTime() - today.getTime()) / oneDay
-  );
+  }
 
-  if (daysDifference < 0)
+  let taskDueDate;
+
+  if (typeof dueDate === "string" && dueDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [year, month, day] = dueDate.split("-").map(Number);
+    taskDueDate = new Date(Date.UTC(year, month - 1, day));
+  } else {
+    taskDueDate = new Date(dueDate);
+  }
+
+  if (isNaN(taskDueDate.getTime())) {
+    console.warn(
+      "Formato de data inválido recebido em getDueDateStatus:",
+      dueDate
+    );
     return {
-      text: `Atrasada (${taskDueDate.toLocaleDateString("pt-BR")})`,
+      text: "Data Inválida",
       className: "bg-red-200 text-red-700 font-semibold",
     };
-  if (daysDifference <= 3)
+  }
+
+  const displayDate = new Date(taskDueDate);
+  displayDate.setUTCHours(12, 0, 0, 0);
+
+  const today = new Date();
+  const todayUTC = new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+  );
+
+  const oneDay = 24 * 60 * 60 * 1000;
+  const daysDifference = Math.round(
+    (taskDueDate.getTime() - todayUTC.getTime()) / oneDay
+  );
+
+  if (daysDifference < 0) {
     return {
-      text: `Próxima (${taskDueDate.toLocaleDateString("pt-BR")})`,
+      text: `Atrasada (${displayDate.toLocaleDateString("pt-BR")})`,
+      className: "bg-red-200 text-red-700 font-semibold",
+    };
+  }
+  if (daysDifference <= 3) {
+    return {
+      text: `Próxima (${displayDate.toLocaleDateString("pt-BR")})`,
       className: "bg-yellow-200 text-yellow-700",
     };
+  }
   return {
-    text: `Prazo: ${taskDueDate.toLocaleDateString("pt-BR")}`,
+    text: `Prazo: ${displayDate.toLocaleDateString("pt-BR")}`,
     className: "bg-green-100 text-green-700",
   };
 };
@@ -69,17 +97,31 @@ function TaskCardComponent({
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const initialFormData = useMemo(
-    () => ({
+  const initialFormData = useMemo(() => {
+    let formattedDate = "";
+    if (tarefa.data_prazo) {
+      try {
+        const dateObj = new Date(tarefa.data_prazo);
+        if (!isNaN(dateObj.getTime())) {
+          formattedDate = dateObj.toISOString().split("T")[0];
+        }
+      } catch (error) {
+        console.error(
+          "Erro ao processar data_prazo:",
+          tarefa.data_prazo,
+          error
+        );
+        formattedDate = "";
+      }
+    }
+
+    return {
       titulo: tarefa.titulo,
       descricao: tarefa.descricao || "",
-      data_prazo: tarefa.data_prazo
-        ? new Date(tarefa.data_prazo).toISOString().split("T")[0]
-        : "",
+      data_prazo: formattedDate,
       prioridade: tarefa.prioridade,
-    }),
-    [tarefa.titulo, tarefa.descricao, tarefa.data_prazo, tarefa.prioridade]
-  );
+    };
+  }, [tarefa.titulo, tarefa.descricao, tarefa.data_prazo, tarefa.prioridade]);
 
   const [editFormData, setEditFormData] = useState(initialFormData);
 
@@ -329,7 +371,6 @@ function TaskCardComponent({
     : "transition-shadow duration-300";
   const cardDraggableClass = isDraggable ? "touch-action-none" : "";
 
-  // Variável para verificar se a tarefa está finalizada
   const isTaskCompleted = tarefa.estado_tarefa === "Finalizada";
 
   return (
@@ -396,7 +437,7 @@ function TaskCardComponent({
               <input
                 type="checkbox"
                 className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
-                checked={isTaskCompleted} // Use a nova variável
+                checked={isTaskCompleted}
                 onChange={handleStatusChange}
                 disabled={isUpdatingStatus || isDeleting}
               />
@@ -428,7 +469,6 @@ function TaskCardComponent({
         className={`w-full mt-2 ${isDraggable ? "pl-[calc(24px+0.5rem)]" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Seção Expandida/Edição */}
         {(isExpanded || isEditing) && (
           <>
             {isEditing ? (
@@ -453,7 +493,6 @@ function TaskCardComponent({
           </>
         )}
 
-        {/* Condição para esconder Data Prazo e Prioridade */}
         {!isTaskCompleted && (
           <div className="flex gap-2 mt-2 items-center">
             {isEditing ? (

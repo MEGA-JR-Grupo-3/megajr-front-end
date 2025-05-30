@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react"; // Adicione useRef aqui
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebaseConfig";
 import ButtonAddTask from "../../components/ButtonAddTask";
@@ -162,14 +162,12 @@ function Dashboard() {
     applyFiltersAndSort();
   }, [allTasks, filterType, sortOrder, currentSearchTerm]);
 
-  //Carregar o taskSise
   useEffect(() => {
     const savedTaskSize = localStorage.getItem("taskSize");
     if (savedTaskSize) {
       setTaskDisplaySize(savedTaskSize);
     }
 
-    //Listener se for alterado
     const handleStorageChange = (event) => {
       if (event.key === "taskSize") {
         setTaskDisplaySize(event.newValue || "medium");
@@ -541,7 +539,6 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Área de exibição do filtro ativo e botões de ordem */}
       {filterType && (
         <div className="flex flex-col lg:flex-row items-center gap-2 mt-4 p-2 bg-purple-100 rounded-md shadow-sm">
           <span className="bg-purple-600 text-white text-sm font-semibold py-1 px-3 rounded-full flex items-center gap-1">
