@@ -20,9 +20,9 @@ const SplashScreen = () => {
         </h2>
         <Image src="/assets/gif-pato.gif" alt="Logo" width={200} height={200} />
 
-        <div className="absolute bottom-8 text-center text-[var(--text)] text-base">
+        <span className="absolute bottom-8 text-center text-[var(--text)] text-base">
           Desenvolvido por CodeQuack
-        </div>
+        </span>
       </div>
     )
   );
