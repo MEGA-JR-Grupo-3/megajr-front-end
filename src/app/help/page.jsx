@@ -32,7 +32,7 @@ export default function HelpPage() {
     {
       question: "Onde minhas tarefas são salvas?",
       answer:
-        "Suas tarefas são salvas localmente no seu navegador. Isso significa que elas são acessíveis mesmo offline e privadas para o seu dispositivo. Lembre-se que se você limpar os dados do navegador, suas tarefas podem ser perdidas.",
+        "Suas tarefas são salvas localmente no seu navegador.",
     },
     {
       question: "Existe um limite para o número de tarefas?",
