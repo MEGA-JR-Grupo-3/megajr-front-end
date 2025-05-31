@@ -397,7 +397,7 @@ export default function EditarPerfil() {
 
         {/* Mensagens de Feedback e Modal de Confirmação */}
         {loading && (
-          <div className="fixed top-0 left-0 w-full h-full bg-[#000000a5] bg-opacity-50 flex justify-center items-center">
+          <div className="fixed top-0 left-0 w-full h-full bg-[#000000a5] bg-opacity-50 flex justify-center items-center  z-50">
             <LineSpinner size="40" stroke="3" speed="1" color="white" />
           </div>
         )}
@@ -439,7 +439,7 @@ export default function EditarPerfil() {
 
         <div className="space-y-8 p-4">
           {/* Seção Principal: Foto, Nome e Informações da Conta */}
-          <section className="bg-[var(--subbackground)] rounded-xl shadow-lg p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-8">
+          <section className="bg-[var(--subbackground)] rounded-xl shadow-lg p-6 md:p-8 flex flex-col sm:justify-center sm:flex-row items-center  gap-8">
             {/* Foto de Perfil */}
             <div className="relative w-40 h-40 rounded-full  border-4 border-[var(--primary)] shadow-xl flex-shrink-0">
               <img
@@ -467,7 +467,7 @@ export default function EditarPerfil() {
             </div>
 
             {/* Nome, Email e Data de Criação */}
-            <div className="flex flex-col items-center sm:items-start text-center sm:text-left w-full">
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
               <div className="mb-4 flex flex-col items-center sm:items-start w-full">
                 {isEditingName ? (
                   <form
