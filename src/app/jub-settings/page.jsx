@@ -27,7 +27,6 @@ export default function SettingsPage() {
           setFirebaseIdToken(idToken);
         } catch (error) {
           console.error("Erro ao obter Firebase ID Token:", error);
-          // Opcional: redirecionar ou mostrar erro para o usuário
         }
       } else {
         setFirebaseIdToken(null);
@@ -58,11 +57,12 @@ export default function SettingsPage() {
               response.status,
               await response.text()
             );
-            // Opcional: mostrar uma mensagem de erro para o usuário
           }
         } catch (error) {
-          console.error("Erro de rede ao buscar tarefas para configurações:", error);
-          // Opcional: mostrar uma mensagem de erro de rede
+          console.error(
+            "Erro de rede ao buscar tarefas para configurações:",
+            error
+          );
         }
       }
     };
@@ -78,12 +78,10 @@ export default function SettingsPage() {
       setTaskSize(savedTaskSize);
     }
 
-    // Listener para mudanças no localStorage
     const handleStorageChange = (event) => {
       if (event.key === "taskSize") {
         setTaskSize(event.newValue || "medium");
       }
-      // Não precisamos mais do 'tasks' no localStorage aqui.
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -97,23 +95,6 @@ export default function SettingsPage() {
     setTaskSize(newSize);
     localStorage.setItem("taskSize", newSize);
   };
-
-    // Certifique-se de que a propriedade da data seja 'data_prazo' e não 'dueDate'
-    // E que 'estado_tarefa' seja 'Finalizada' e não 'completed'
-    // E 'prioridade' seja 'Urgente' e não 'priority'
-    tasks.forEach((task) => {
-      const dueDate = task.data_prazo ? new Date(task.data_prazo) : null;
-
-      // Para tarefas com menos de 3 dias para o prazo final e que ainda não foram feitas
-      if (
-        task.estado_tarefa !== "Finalizada" &&
-        dueDate &&
-        dueDate <= threeDaysFromNow &&
-        dueDate >= now
-      ) {
-        const diffTime = Math.abs(dueDate.getTime() - now.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      }})
 
   return (
     <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
