@@ -1,13 +1,17 @@
 "use client";
 
-import BackButton from "../../components/BackButton";
-import NotificationSwitch from "../../components/NotificationSwitch";
-import ThemeButton from "../../components/ThemeSwitch2";
 import React, { useState, useEffect } from "react";
 import { auth } from "../../firebaseConfig";
 import Image from "next/image";
+
+// Componentes
+import BackButton from "../../components/BackButton";
+import NotificationSwitch from "../../components/NotificationSwitch";
+import ThemeButton from "../../components/ThemeSwitch2";
+
+// Imagens
 import patoConfig from "../../../public/assets/pato-config.png";
-import pato from "../icon.png"
+import pato from "../../icon.png";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -22,18 +26,26 @@ export default function SettingsPage() {
     useState("");
   const [taskSize, setTaskSize] = useState("medium");
 
+  // --- Efeito para Observar o Estado de Autenticação e Obter o Firebase ID Token ---
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
-        const idToken = await currentUser.getIdToken();
-        setFirebaseIdToken(idToken);
+        try {
+          const idToken = await currentUser.getIdToken();
+          setFirebaseIdToken(idToken);
+        } catch (error) {
+          console.error("Erro ao obter Firebase ID Token:", error);
+          // Opcional: redirecionar ou mostrar erro para o usuário
+        }
       } else {
         setFirebaseIdToken(null);
+        setTasks([]); // Limpa as tarefas se o usuário deslogar
       }
     });
     return () => unsubscribe();
   }, []);
 
+  // --- Efeito para Buscar Tarefas do Backend (quando o token estiver disponível) ---
   useEffect(() => {
     const fetchTasksForSettings = async () => {
       if (firebaseIdToken) {
@@ -47,19 +59,27 @@ export default function SettingsPage() {
           });
           if (response.ok) {
             const data = await response.json();
-            setTasks(data); 
+            setTasks(data); // Define as tarefas com os dados do backend
           } else {
-            console.error("Failed to fetch tasks for settings:", await response.text());
+            console.error(
+              "Falha ao buscar tarefas para configurações:",
+              response.status,
+              await response.text()
+            );
+            // Opcional: mostrar uma mensagem de erro para o usuário
           }
         } catch (error) {
-          console.error("Network error fetching tasks for settings:", error);
+          console.error("Erro de rede ao buscar tarefas para configurações:", error);
+          // Opcional: mostrar uma mensagem de erro de rede
         }
       }
     };
 
     fetchTasksForSettings();
-  }, [firebaseIdToken]); 
+    // A lista de dependências garante que a busca seja executada novamente se o token mudar
+  }, [firebaseIdToken, backendUrl]); // Adicione backendUrl também por boa prática, embora raramente mude.
 
+  // --- Efeito para Carregar Preferências do LocalStorage (exceto tarefas) ---
   useEffect(() => {
     const savedPreference = localStorage.getItem("notificationsEnabled");
     if (savedPreference !== null) {
@@ -79,25 +99,17 @@ export default function SettingsPage() {
       );
     }
 
-    const storedTasks = localStorage.getItem("tasks");
-    if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
-    }
-
-    const handleStorageChange = () => {
-      const updatedPreference = localStorage.getItem("notificationsEnabled");
-      setIsNotificationAllowedByUser(updatedPreference === "true");
-      if ("Notification" in window) {
-        setBrowserNotificationPermission(Notification.permission);
+    // Listener para mudanças no localStorage (principalmente para notificações e taskSize)
+    const handleStorageChange = (event) => {
+      if (event.key === "notificationsEnabled") {
+        setIsNotificationAllowedByUser(event.newValue === "true");
+        if ("Notification" in window) {
+            setBrowserNotificationPermission(Notification.permission);
+        }
+      } else if (event.key === "taskSize") {
+        setTaskSize(event.newValue || "medium");
       }
-      const updatedTasks = localStorage.getItem("tasks");
-      if (updatedTasks) {
-        setTasks(JSON.parse(updatedTasks));
-      }
-      const updatedTaskSize = localStorage.getItem("taskSize");
-      if (updatedTaskSize) {
-        setTaskSize(updatedTaskSize);
-      }
+      // Não precisamos mais do 'tasks' no localStorage aqui.
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -105,7 +117,7 @@ export default function SettingsPage() {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []);
+  }, []); // Este useEffect não precisa de dependências que causariam re-renderizações desnecessárias
 
   const handleNotificationToggle = async (newValue) => {
     setIsNotificationAllowedByUser(newValue);
@@ -116,7 +128,6 @@ export default function SettingsPage() {
     );
 
     if (newValue) {
-      // Se o usuário está ativando as notificações, solicita a permissão do navegador
       if ("Notification" in window) {
         const permission = await Notification.requestPermission();
         setBrowserNotificationPermission(permission);
@@ -140,22 +151,20 @@ export default function SettingsPage() {
     }
   };
 
-  // Função para lidar com a mudança do tamanho da tarefa
   const handleTaskSizeChange = (event) => {
     const newSize = event.target.value;
     setTaskSize(newSize);
     localStorage.setItem("taskSize", newSize);
   };
 
-  //Funções de notificação
   const sendNotification = (title, options = {}) => {
-    console.log({ tasks, now, threeDaysFromNow });
+    // Agora 'tasks' no console.log deve ter os dados corretos
+    // console.log({ tasks, now, threeDaysFromNow }); // Removi now/threeDaysFromNow daqui pois não estão definidos neste escopo
     if (Notification.permission === "granted") {
       new Notification(title, options);
     }
   };
 
-  //Função para enviar notificações de tarefas urgentes e com prazo próximo
   const sendUrgentAndDueNotifications = () => {
     if (!isNotificationAllowedByUser) {
       setNotificationStatusMessage("Notificações desativadas pelo botão.");
@@ -181,14 +190,17 @@ export default function SettingsPage() {
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(now.getDate() + 3);
 
+    // Certifique-se de que a propriedade da data seja 'data_prazo' e não 'dueDate'
+    // E que 'estado_tarefa' seja 'Finalizada' e não 'completed'
+    // E 'prioridade' seja 'Urgente' e não 'priority'
     tasks.forEach((task) => {
-      const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+      const dueDate = task.data_prazo ? new Date(task.data_prazo) : null;
 
-      //Para tarefas com prioridade "urgente" que ainda não foram feitas
-      if (task.priority === "urgente" && !task.completed) {
+      // Para tarefas com prioridade "Urgente" que ainda não foram feitas
+      if (task.prioridade === "Urgente" && task.estado_tarefa !== "Finalizada") {
         sendNotification(`Tarefa Urgente: ${task.titulo}`, {
           body: "Esta tarefa tem prioridade urgente e ainda não foi concluída!",
-          icon: pato,
+          icon: pato.src, // Use .src para imagens estáticas importadas
           tag: `urgent-task-${task.id_tarefa}`,
           renotify: true,
         });
@@ -197,7 +209,7 @@ export default function SettingsPage() {
 
       // Para tarefas com menos de 3 dias para o prazo final e que ainda não foram feitas
       if (
-        !task.completed &&
+        task.estado_tarefa !== "Finalizada" &&
         dueDate &&
         dueDate <= threeDaysFromNow &&
         dueDate >= now
@@ -205,15 +217,12 @@ export default function SettingsPage() {
         const diffTime = Math.abs(dueDate.getTime() - now.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        sendNotification(
-          `Prazo Próximo: ${task.titulo}`, 
-          {
-            body: `Faltam ${diffDays} dia(s) para o prazo final desta tarefa!`,
-            icon: pato,
-            tag: `due-task-${task.id_tarefa}`, 
-            renotify: true,
-          }
-        );
+        sendNotification(`Prazo Próximo: ${task.titulo}`, {
+          body: `Faltam ${diffDays} dia(s) para o prazo final desta tarefa!`,
+          icon: pato.src, // Use .src para imagens estáticas importadas
+          tag: `due-task-${task.id_tarefa}`,
+          renotify: true,
+        });
         notificationsSentCount++;
       }
     });
