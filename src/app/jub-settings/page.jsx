@@ -6,24 +6,16 @@ import Image from "next/image";
 
 // Componentes
 import BackButton from "../../components/BackButton";
-import NotificationSwitch from "../../components/NotificationSwitch";
 import ThemeButton from "../../components/ThemeSwitch2";
 
 // Imagens
 import patoConfig from "../../../public/assets/pato-config.png";
-import pato from "../../icon.png";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function SettingsPage() {
   const [tasks, setTasks] = useState([]);
   const [firebaseIdToken, setFirebaseIdToken] = useState(null);
-  const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] =
-    useState(false);
-  const [browserNotificationPermission, setBrowserNotificationPermission] =
-    useState("default");
-  const [notificationStatusMessage, setNotificationStatusMessage] =
-    useState("");
   const [taskSize, setTaskSize] = useState("medium");
 
   // --- Efeito para Observar o Estado de Autenticação e Obter o Firebase ID Token ---
@@ -81,32 +73,14 @@ export default function SettingsPage() {
 
   // --- Efeito para Carregar Preferências do LocalStorage (exceto tarefas) ---
   useEffect(() => {
-    const savedPreference = localStorage.getItem("notificationsEnabled");
-    if (savedPreference !== null) {
-      setIsNotificationAllowedByUser(savedPreference === "true");
-    }
-
     const savedTaskSize = localStorage.getItem("taskSize");
     if (savedTaskSize !== null) {
       setTaskSize(savedTaskSize);
     }
 
-    if ("Notification" in window) {
-      setBrowserNotificationPermission(Notification.permission);
-    } else {
-      setNotificationStatusMessage(
-        "Este navegador não suporta notificações de desktop."
-      );
-    }
-
-    // Listener para mudanças no localStorage (principalmente para notificações e taskSize)
+    // Listener para mudanças no localStorage
     const handleStorageChange = (event) => {
-      if (event.key === "notificationsEnabled") {
-        setIsNotificationAllowedByUser(event.newValue === "true");
-        if ("Notification" in window) {
-            setBrowserNotificationPermission(Notification.permission);
-        }
-      } else if (event.key === "taskSize") {
+      if (event.key === "taskSize") {
         setTaskSize(event.newValue || "medium");
       }
       // Não precisamos mais do 'tasks' no localStorage aqui.
@@ -117,95 +91,18 @@ export default function SettingsPage() {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []); // Este useEffect não precisa de dependências que causariam re-renderizações desnecessárias
-
-  const handleNotificationToggle = async (newValue) => {
-    setIsNotificationAllowedByUser(newValue);
-    localStorage.setItem("notificationsEnabled", newValue.toString());
-    console.log(
-      "Notificações (Preferência do Usuário):",
-      newValue ? "Ativadas" : "Desativadas"
-    );
-
-    if (newValue) {
-      if ("Notification" in window) {
-        const permission = await Notification.requestPermission();
-        setBrowserNotificationPermission(permission);
-
-        if (permission === "granted") {
-          setNotificationStatusMessage(
-            "Permissão de notificação concedida pelo navegador."
-          );
-        } else if (permission === "denied") {
-          setNotificationStatusMessage(
-            "Permissão de notificação negada pelo navegador. Por favor, ative nas configurações do seu navegador."
-          );
-        } else if (permission === "default") {
-          setNotificationStatusMessage(
-            "Permissão de notificação pendente ou bloqueada. Por favor, aceite a solicitação do navegador."
-          );
-        }
-      }
-    } else {
-      setNotificationStatusMessage("Notificações desativadas pelo botão.");
-    }
-  };
-
+  }, []);
   const handleTaskSizeChange = (event) => {
     const newSize = event.target.value;
     setTaskSize(newSize);
     localStorage.setItem("taskSize", newSize);
   };
 
-  const sendNotification = (title, options = {}) => {
-    // Agora 'tasks' no console.log deve ter os dados corretos
-    // console.log({ tasks, now, threeDaysFromNow }); // Removi now/threeDaysFromNow daqui pois não estão definidos neste escopo
-    if (Notification.permission === "granted") {
-      new Notification(title, options);
-    }
-  };
-
-  const sendUrgentAndDueNotifications = () => {
-    if (!isNotificationAllowedByUser) {
-      setNotificationStatusMessage("Notificações desativadas pelo botão.");
-      return;
-    }
-
-    if (!("Notification" in window)) {
-      setNotificationStatusMessage(
-        "Este navegador não suporta notificações de desktop."
-      );
-      return;
-    }
-
-    if (browserNotificationPermission !== "granted") {
-      setNotificationStatusMessage(
-        "Permissão de notificação não concedida pelo navegador."
-      );
-      return;
-    }
-
-    let notificationsSentCount = 0;
-    const now = new Date();
-    const threeDaysFromNow = new Date();
-    threeDaysFromNow.setDate(now.getDate() + 3);
-
     // Certifique-se de que a propriedade da data seja 'data_prazo' e não 'dueDate'
     // E que 'estado_tarefa' seja 'Finalizada' e não 'completed'
     // E 'prioridade' seja 'Urgente' e não 'priority'
     tasks.forEach((task) => {
       const dueDate = task.data_prazo ? new Date(task.data_prazo) : null;
-
-      // Para tarefas com prioridade "Urgente" que ainda não foram feitas
-      if (task.prioridade === "Urgente" && task.estado_tarefa !== "Finalizada") {
-        sendNotification(`Tarefa Urgente: ${task.titulo}`, {
-          body: "Esta tarefa tem prioridade urgente e ainda não foi concluída!",
-          icon: pato.src, // Use .src para imagens estáticas importadas
-          tag: `urgent-task-${task.id_tarefa}`,
-          renotify: true,
-        });
-        notificationsSentCount++;
-      }
 
       // Para tarefas com menos de 3 dias para o prazo final e que ainda não foram feitas
       if (
@@ -216,27 +113,7 @@ export default function SettingsPage() {
       ) {
         const diffTime = Math.abs(dueDate.getTime() - now.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        sendNotification(`Prazo Próximo: ${task.titulo}`, {
-          body: `Faltam ${diffDays} dia(s) para o prazo final desta tarefa!`,
-          icon: pato.src, // Use .src para imagens estáticas importadas
-          tag: `due-task-${task.id_tarefa}`,
-          renotify: true,
-        });
-        notificationsSentCount++;
-      }
-    });
-
-    if (notificationsSentCount > 0) {
-      setNotificationStatusMessage(
-        `Foram enviadas ${notificationsSentCount} notificações de tarefas.`
-      );
-    } else {
-      setNotificationStatusMessage(
-        "Nenhuma tarefa urgente ou com prazo próximo encontrada no momento."
-      );
-    }
-  };
+      }})
 
   return (
     <div className="flex flex-col h-screen w-screen lg:w-[calc(100vw-320px)] justify-self-end items-center p-2 transition-all duration-300 text-[var(--text)]">
@@ -269,25 +146,6 @@ export default function SettingsPage() {
               <ThemeButton />
             </div>
           </div>
-
-          <div className="w-full flex items-center justify-between">
-            <span className="text-2xl font-semibold">Notificações</span>
-            <NotificationSwitch
-              checked={isNotificationAllowedByUser}
-              onChange={handleNotificationToggle}
-            />
-          </div>
-          {notificationStatusMessage && (
-            <p className="font-semibold mt-4 text-sm text-[var(--text-secondary)]">
-              {notificationStatusMessage}
-            </p>
-          )}
-          <button
-            onClick={sendUrgentAndDueNotifications}
-            className="mt-6 py-2 px-4 rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 ease-in-out"
-          >
-            Mostrar minhas notificações
-          </button>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               <span className="text-2xl font-semibold">

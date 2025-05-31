@@ -15,11 +15,6 @@ export default function HelpPage() {
         "Para criar uma nova tarefa, vá para a tela inicial, clique no botão flutuante '+' no canto inferior direito e preencha os detalhes como título, descrição e prazo.",
     },
     {
-      question: "Como ativo as notificações?",
-      answer:
-        "Você pode ativar as notificações na página de **Configurações**. Basta ir até a seção 'Notificações', se as notificações estiverem como 'não permitidas' clique no interruptor para permitir. O navegador pode pedir permissão, por favor, aceite para receber os alertas.",
-    },
-    {
       question: "Posso alterar o tema do aplicativo?",
       answer:
         "Sim! Na página de **Configurações**, você encontrará a opção 'Tema'. Clique no botão para alternar entre os temas claro e escuro.",
