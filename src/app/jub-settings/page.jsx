@@ -6,6 +6,7 @@ import ThemeButton from "../../components/ThemeSwitch2";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import patoConfig from "../../../public/assets/pato-config.png";
+import pato from "../icon.png"
 
 export default function SettingsPage() {
   const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] =
@@ -106,6 +107,7 @@ export default function SettingsPage() {
 
   //Funções de notificação
   const sendNotification = (title, options = {}) => {
+    console.log({ tasks, now, threeDaysFromNow });
     if (Notification.permission === "granted") {
       new Notification(title, options);
     }
@@ -162,11 +164,11 @@ export default function SettingsPage() {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         sendNotification(
-          `Prazo Próximo: ${task.titulo}`, //Alterado de task.title para task.titulo
+          `Prazo Próximo: ${task.titulo}`, 
           {
             body: `Faltam ${diffDays} dia(s) para o prazo final desta tarefa!`,
             icon: pato,
-            tag: `due-task-${task.id_tarefa}`, // Alterado de task.id para task.id_tarefa
+            tag: `due-task-${task.id_tarefa}`, 
             renotify: true,
           }
         );
