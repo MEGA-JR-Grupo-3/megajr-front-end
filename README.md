@@ -2,7 +2,7 @@
 
 Repositório do projeto Front-End do Grupo 3 da Mega, desenvolvido com **React**, **Next.js (App Router)** e **Tailwind CSS**.
 
-🔗 **Deploy:** [https://megajr-back-end.onrender.com/](https://megajr-back-end.onrender.com)
+🔗 **Deploy:** [https://megajr-back-end.onrender.com/](https://megajr-front.netlify.app/)
 
 ---
 
