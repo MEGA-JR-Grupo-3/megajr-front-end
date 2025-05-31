@@ -52,7 +52,7 @@ function AddTaskForm({ onClose, onTaskAdded, firebaseIdToken }) {
   };
 
   return (
-    <div className="bg-[var(--subbackground)] text-[var(--subText)] rounded-md p-6 w-[330px]">
+    <div className="bg-[var(--subbackground)] text-[var(--text)] rounded-md p-6 w-[330px] z-50">
       <h2 className="text-xl font-semibold mb-4">Adicionar Nova Tarefa</h2>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
         <div>
