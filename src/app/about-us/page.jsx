@@ -10,7 +10,7 @@ import enzoImg from "../../../public/assets/enzo.png";
 import jeanImg from "../../../public/assets/jean.png";
 import jonImg from "../../../public/assets/jon.png";
 import nicolasImg from "../../../public/assets/nicolas.png";
-import laraImg from "../../../public/assets/Lara.png";
+import laraImg from "../../../public/assets/lara.png";
 const originalTeamMembers = [ //array com as informações de cada membro
   {
     name: "Edilson Enzo",
@@ -19,7 +19,7 @@ const originalTeamMembers = [ //array com as informações de cada membro
   },
   {
     name: "Nicolas",
-    role: "Designer Developer",
+    role: "UI designer",
     image: nicolasImg,
   },
   {
@@ -142,15 +142,15 @@ export default function about() {
           <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             📌 Descrição do Projeto
           </h3>
-          <p className="text-[var(--text)]">O JubiTasks é uma aplicação web desenvolvida para otimizar o gerenciamento de tarefas pessoais e profissionais, proporcionando uma experiência intuitiva e eficiente ao usuário. Nosso objetivo com o JubiTasks é oferecer uma ferramenta robusta e flexível que ajude o usuário a manter suas atividades organizadas e seus prazos sob controle</p>
+          <p className="text-[var(--text)] font-bold">O JubiTasks é uma aplicação web desenvolvida para otimizar o gerenciamento de tarefas pessoais e profissionais, proporcionando uma experiência intuitiva e eficiente ao usuário. Nosso objetivo com o JubiTasks é oferecer uma ferramenta robusta e flexível que ajude o usuário a manter suas atividades organizadas e seus prazos sob controle</p>
         </div>
 
         <div>
           <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🎯 Desafio
           </h3>
-          <p className="text-[var(--text)]">
-            O projeto foi construído sobre uma base tecnológica moderna e performática. Next.js, um framework React que nos permitiu criar uma Single Page Application (SPA) de alto desempenho; Autenticação: Utilizamos o Firebase Authentication para um sistema de registro e login seguro e eficiente; Para o backend, utilizamos o PostgreSQL, que interage com o Firebase e gerencia os dados do nosso CRUD. O JubiTasks representa não apenas o cumprimento dos requisitos de um CRUD de tarefas, mas também a aplicação de boas práticas de desenvolvimento web, a preocupação com a experiência do usuário e a criação de um produto funcional e agradável de usar.
+          <p className="text-[var(--text)] font-bold">
+            O projeto foi construído sobre uma base tecnológica moderna e performática. Next.js, um framework React que nos permitiu criar um CRUD de alto desempenho; Autenticação: Utilizamos o Firebase Authentication para um sistema de registro e login seguro e eficiente; Para o backend, utilizamos o PostgreSQL, que interage com o Firebase, Node por ser uma Linguagem Única (back e front), o TypeScrypt que permite ao código Node.js ser robusto e compreensível e Express que serviu como o 'esqueleto' para organizar e responder as requisições do front. O JubiTasks representa não apenas o cumprimento dos requisitos de um CRUD de tarefas, mas também a aplicação de boas práticas de desenvolvimento web, a preocupação com a experiência do usuário e a criação de um produto funcional e agradável de usar.
           </p>
         </div>
 
@@ -158,7 +158,7 @@ export default function about() {
           <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🛠️ Processo
           </h3>
-          <p className="text-[var(--text)]">
+          <p className="text-[var(--text)] font-bold">
             Inicialmente, o projeto teve um início um pouco mais gradual. Isso se deveu à necessidade de garantir que todos os membros da equipe pudessem aprofundar seus conhecimentos e se alinhar plenamente com as tecnologias e ferramentas específicas de suas respectivas funções. Esse período foi, na verdade, um investimento estratégico em capacitação. Posteriormente, priorizou-se a implementação dos módulos de registro e login. Entendemos que essas funcionalidades, embora pareçam simples na superfície, são o alicerce de qualquer aplicação com dados de usuário. A aderência ao protótipo de design no Figma nos permitiu focar na implementação da lógica de negócios, sabendo que a aparência e a usabilidade já estavam bem definidas.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function about() {
           <h3 className="text-xl font-bold text-[var(--text)] mb-2">
             🙏 Agradecimento
           </h3>
-          <p className="text-[var(--text)] ">Gostaríamos de expressar nossa mais sincera gratidão pela oportunidade de apresentar o JubiTasks. Além da avaliação, este processo seletivo representou uma jornada de aprendizado inestimável para toda a nossa equipe. Somos gratos pelos cursos gratuitos que foram disponibilizados. O conhecimento adquirido através desses recursos foi fundamental e decisivo para a nossa capacitação e para a construção do projeto que acabamos de demonstrar. Estamos verdadeiramente entusiasmados com a possibilidade de integrar uma equipe como a Mega Jr.</p>
+          <p className="text-[var(--text)] font-bold ">Gostaríamos de expressar nossa mais sincera gratidão pela oportunidade de apresentar o JubiTasks. Além da avaliação, este processo seletivo representou uma jornada de aprendizado inestimável para toda a nossa equipe. Somos gratos pelos cursos gratuitos que foram disponibilizados. O conhecimento adquirido através desses recursos foi fundamental e decisivo para a nossa capacitação e para a construção do projeto que acabamos de demonstrar. Estamos verdadeiramente entusiasmados com a possibilidade de integrar uma equipe como a Mega Jr.</p>
         </div>
       </section>
       <div className="text-2xl flex flex-col items-center justify-end h-full mb-10">

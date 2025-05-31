@@ -4,19 +4,61 @@ import BackButton from "../../components/BackButton";
 import NotificationSwitch from "../../components/NotificationSwitch";
 import ThemeButton from "../../components/ThemeSwitch2";
 import React, { useState, useEffect } from "react";
+import { auth } from "../../firebaseConfig";
 import Image from "next/image";
 import patoConfig from "../../../public/assets/pato-config.png";
 import pato from "../icon.png"
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function SettingsPage() {
+  const [tasks, setTasks] = useState([]);
+  const [firebaseIdToken, setFirebaseIdToken] = useState(null);
   const [isNotificationAllowedByUser, setIsNotificationAllowedByUser] =
     useState(false);
   const [browserNotificationPermission, setBrowserNotificationPermission] =
     useState("default");
   const [notificationStatusMessage, setNotificationStatusMessage] =
     useState("");
-  const [tasks, setTasks] = useState([]);
   const [taskSize, setTaskSize] = useState("medium");
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (currentUser) {
+        const idToken = await currentUser.getIdToken();
+        setFirebaseIdToken(idToken);
+      } else {
+        setFirebaseIdToken(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const fetchTasksForSettings = async () => {
+      if (firebaseIdToken) {
+        try {
+          const response = await fetch(`${backendUrl}/tasks`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${firebaseIdToken}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setTasks(data); 
+          } else {
+            console.error("Failed to fetch tasks for settings:", await response.text());
+          }
+        } catch (error) {
+          console.error("Network error fetching tasks for settings:", error);
+        }
+      }
+    };
+
+    fetchTasksForSettings();
+  }, [firebaseIdToken]); 
 
   useEffect(() => {
     const savedPreference = localStorage.getItem("notificationsEnabled");

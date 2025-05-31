@@ -32,7 +32,7 @@ export default function HelpPage() {
     {
       question: "Onde minhas tarefas são salvas?",
       answer:
-        "Suas tarefas são salvas localmente no seu navegador.",
+        "Suas tarefas são salvas no banco de dados do back-end do JubiTasks, necessitando assim de internet para acessá-las.",
     },
     {
       question: "Existe um limite para o número de tarefas?",

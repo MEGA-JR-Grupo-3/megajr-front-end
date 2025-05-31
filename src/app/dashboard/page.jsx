@@ -512,27 +512,27 @@ function Dashboard() {
             ref={filterOptionsRef}
             className="absolute top-full right-4 lg:right-32 mt-2 w-48 bg-white border border-gray-200 gap-2 rounded-md shadow-lg z-10 flex flex-col p-2"
           >
-            <h4 className="text-sm font-semibold text-[var(--text)] mb-1">
+            <h4 className="text-sm font-semibold text-[var(--bgcard)] mb-1">
               Filtrar por:
             </h4>
             <Button
               buttonText="Prioridade"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--bgcard)]"
               onClick={() => handleApplyFilter("priority")}
             />
             <Button
               buttonText="Data"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--bgcard)]"
               onClick={() => handleApplyFilter("date")}
             />
             <Button
               buttonText="Título"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--bgcard)]"
               onClick={() => handleApplyFilter("title")}
             />
             <Button
               buttonText="Descrição"
-              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--text)]"
+              buttonStyle="w-full text-left p-2 rounded-md hover:bg-gray-100 text-[var(--bgcard)]"
               onClick={() => handleApplyFilter("description")}
             />
           </div>
@@ -541,7 +541,7 @@ function Dashboard() {
 
       {filterType && (
         <div className="flex flex-col lg:flex-row items-center gap-2 mt-4 p-2 bg-purple-100 rounded-md shadow-sm">
-          <span className="bg-purple-600 text-white text-sm font-semibold py-1 px-3 rounded-full flex items-center gap-1">
+          <span className="bg-[var(--background)] text-white text-sm font-semibold py-1 px-3 rounded-full flex items-center gap-1">
             Filtrado por: {getFilterLabel(filterType)}
             <button
               onClick={handleRemoveFilter}
